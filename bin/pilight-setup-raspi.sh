@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Installs all nessessary software/packages and configuration on rasperian
+# Installs all necessary software/packages and configuration on rasperian
 #
 
 # create individual unique ssh keys for this host
@@ -19,5 +19,5 @@ ln -s apache-maven-3.2.3/bin/mvn $HOME/bin/mvn
 git clone timo@schatzkammer.subluna.org:Dev/git
 mv git pilight
 
-# aliase einrichten
+# setup aliase
 echo "alias l='ls -al $@'" >> $HOME/.bash_rc
