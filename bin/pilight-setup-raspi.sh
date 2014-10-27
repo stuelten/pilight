@@ -3,6 +3,9 @@
 # Installs all nessessary software/packages and configuration on rasperian
 #
 
+# create individual unique ssh keys for this host
+sudo rm /etc/ssh/ssh_host_* && sudo dpkg-reconfigure openssh-server
+
 # install some basic packages
 sudo apt-get install -y screen nano mc wget bash-completion git
 
