@@ -3,17 +3,27 @@
 # Installs all necessary software/packages and configuration on rasperian
 #
 
-ask_proceed_step() {
-    read -p "$1 (y/n)?" -er proceed
-    case "$proceed" in
-        y|yes|Y|YES)
-            echo "Proceed: $1"
-            return 0;;
-        *)
-            echo "Skip: $1"
-            return 1;;
-    esac
+if [[ "$1" == "-y" ]]
+then
+    AUTO_PROCEED=true
+fi
 
+ask_proceed_step() {
+    if [[ $AUTO_PROCEED ]]
+    then
+            echo "Proceed: $1"
+            return 0
+    else
+        read -p "$1 (y/n)?" -er proceed
+        case "$proceed" in
+            y|yes|Y|YES)
+                echo "Proceed: $1"
+                return 0;;
+            *)
+                echo "Skip: $1"
+                return 1;;
+        esac
+    fi
 }
 
 wait_for_enter() {
