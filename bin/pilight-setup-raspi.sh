@@ -9,6 +9,7 @@ then
 fi
 
 ask_proceed_step() {
+    echo
     if [[ $AUTO_PROCEED ]]
     then
             echo "Proceed: $1"
