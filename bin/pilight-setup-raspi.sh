@@ -3,9 +3,24 @@
 # Installs all necessary software/packages and configuration on rasperian
 #
 
-echo "Create individual unique ssh keys for this host..."
-sudo dpkg-reconfigure openssh-server
-read -p "Press Enter" -er dummy
+ask_proceed_step() {
+    read -p "$1 (y/n)?" -er proceed
+    case "$proceed" in
+        y|yes|Y|YES)
+            echo "Proceed: $1"
+            return 0;;
+        *)
+            echo "Skip: $1"
+            return 1;;
+    esac
+
+}
+
+if ( ask_proceed_step "Create individual unique ssh keys for this host" )
+then
+    sudo dpkg-reconfigure openssh-server
+    read -p "Press Enter" -er dummy
+fi
 
 echo "Configure WLAN network:"
 read -p "Enter WLAN SSID: " -er ssid
