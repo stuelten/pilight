@@ -85,13 +85,5 @@ public class PiLightSensor implements GpioPinListenerDigital {
 
     // ----------------------------------------------------------------------
 
-    public String toString() {
-        String ret = new ToStringBuilder(this)
-                .append("name", name)
-                .append("on", isOn())
-                .append("pin", pin)
-                .toString();
-        return ret;
-    }
 
 }

@@ -29,7 +29,7 @@
         <module>pilight-logic</module>
         <module>pilight-webui</module>
         <module>pilight-io-test</module>
-        <module>pilight-ee</module>
+        <module>pilight-services</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -68,6 +68,10 @@
         <project.build.sourceEncoding>${encoding.default}</project.build.sourceEncoding>
         <!-- generate reports in UTF-8 too -->
         <project.reporting.outputEncoding>${encoding.default}</project.reporting.outputEncoding>
+
+        <!-- dependency versions -->
+        <jersey.version>2.13</jersey.version>
+
     </properties>
 
     <repositories>
@@ -135,6 +139,17 @@
                 <groupId>com.pi4j</groupId>
                 <artifactId>pi4j-core</artifactId>
                 <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <!-- web environment -->
+
+            <!-- Jersey for RestFUL services -->
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>${jersey.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- logging -->

@@ -3,8 +3,10 @@
 # Installs all necessary software/packages and configuration on rasperian
 #
 
+# Proceed with all steps
 if [[ "$1" == "-y" ]]
 then
+    shift
     AUTO_PROCEED=true
 fi
 
@@ -65,10 +67,15 @@ fi
 
 if ( ask_proceed_step "Install maven" )
 then
-    wget http://www.apache.org/dyn/closer.cgi?path=maven/maven-3/3.2.3/binaries/apache-maven-3.2.3-bin.tar.gz
-    tar -xvzf apache-maven-3.2.3-bin.tar.gz
+    VERSION=3.2.3
+    FILENAME=apache-maven-$VERSION-bin.tar.gz
+    URL=http://www.apache.org/dyn/closer.cgi?path=maven/maven-3/$VERSION/binaries/$FILENAME
+    TARGET_DIR=apache-maven-$VERSION
+    # name wget'ed tar, because wget uses filename from server which are inconsitent sometimes
+    wget -O $FILENAME $URL
+    tar -xvzf $FILENAME
     mkdir $HOME/bin
-    ln -s apache-maven-3.2.3/bin/mvn $HOME/bin/mvn
+    ln -s $TARGET_DIR/bin/mvn $HOME/bin/mvn
 fi
 
 if ( ask_proceed_step "Get sources for pilight" )
@@ -79,8 +86,10 @@ fi
 
 if ( ask_proceed_step "Configure bash aliases" )
 then
-    echo "alias l='ls -al $@'" >> $HOME/.bash_rc
-    echo "New .bash_rc:"
-    echo "-------------"
-    cat $HOME/.bash_rc
+    grep "alias l=" $HOME/.bash_rc && echo "Alias already defined" || {
+        echo "alias l='ls -al $@'" >> $HOME/.bash_rc
+        echo "New .bash_rc:"
+        echo "-------------"
+        cat $HOME/.bash_rc
+    }
 fi
