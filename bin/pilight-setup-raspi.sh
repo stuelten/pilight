@@ -40,7 +40,7 @@ then
     sudo service networking restart
     if ( ping -A -c 3 -w 5 www.heise.de )
     then
-        echo "Network setup successful"
+        echo "Network setup successful."
     else
         echo "Error accessing network. Press Ctrl+C to abort"
         wait_for_enter
@@ -49,7 +49,7 @@ fi
 
 if ( ask_proceed_step "Install basic packages (nano git screen mc wget bash-completion)" )
 then
-    sudo apt-get install -y nano git screen mc wget bash-completion
+    sudo aptitude install -y nano git screen mc wget bash-completion
 fi
 
 if ( ask_proceed_step "Install maven" )
