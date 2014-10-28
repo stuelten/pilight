@@ -4,7 +4,17 @@
 #
 
 # create individual unique ssh keys for this host
-sudo rm /etc/ssh/ssh_host_* && sudo dpkg-reconfigure openssh-server
+sudo dpkg-reconfigure openssh-server
+
+# install WLAN
+read -p "Enter WLAN SSID: " -er ssid
+read -p "Enter WLAN passphrase: " -er passphrase
+
+# create standard interface config
+cat interfaces | sed "s°#SSID#°$ssid" | sed "s°#PASSPHRASE#°$passphrase" > /etc/network/interface
+
+# restart network services to join wlan
+sudo service networking restart
 
 # install some basic packages
 sudo apt-get install -y screen nano mc wget bash-completion git
