@@ -1,31 +1,31 @@
 /*
- * Copyright 2014 Timo Stülten <timo.stuelten@googlemail.com>
+ * Copyright (c) 2014 Timo Stülten <timo.stuelten@googlemail.com>
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
  */
 package de.ckc.agwa.pilight.services;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.test.JerseyTest;
+import org.glassfish.jersey.test.TestProperties;
+import org.hamcrest.core.IsEqual;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.test.JerseyTest;
-import org.glassfish.jersey.test.TestProperties;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * @author Timo Stülten
@@ -67,7 +67,7 @@ public class PiLightServiceTest extends JerseyTest {
 //        // --
 //        // client.configuration().enable(new JsonJaxbFeature());
 //
-//        target = client.target(PiLightServiceConstants.BASE_URI);
+//        target = client.target(PiLightMain.BASE_URI);
 //    }
 //
 //    @After
@@ -81,11 +81,19 @@ public class PiLightServiceTest extends JerseyTest {
      * Request the server status.
      */
     @Test
-    public void testServerStatus() {
+    public void testServerStatusPlain() {
         final WebTarget target = target("/pilight");
 
-        String serverStatus = target.request(MediaType.TEXT_PLAIN).get(String.class);
-        Assert.assertNotNull("Server status must not be null", serverStatus);
+        {
+            String serverStatus = target.request(MediaType.TEXT_PLAIN).get(String.class);
+            Assert.assertNotNull("Server status must not be null", serverStatus);
+        }
+        {
+            PiLightService.Status serverStatus = target.request(MediaType.APPLICATION_JSON).get(PiLightService.Status.class);
+            Assert.assertNotNull("Server status must not be null", serverStatus);
+            Assert.assertThat(serverStatus.familiesCount, IsEqual.equalTo(0));
+            Assert.assertThat(serverStatus.lightsCount, IsEqual.equalTo(0));
+        }
     }
 
     /**
@@ -93,27 +101,30 @@ public class PiLightServiceTest extends JerseyTest {
      */
     @Test
     public void testPutGet() {
-        final String TESTLAMP = "testlamp";
-        final Entity<String> LAMP_ON = Entity.json(Boolean.TRUE.toString());
-        final Entity<String> LAMP_OFF = Entity.json(Boolean.FALSE.toString());
+        final String FAMILY = "testfamily";
+        final String LIGHT = "testlight";
+        final Entity<String> LIGHT_ON = Entity.json(Boolean.TRUE.toString());
+        final Entity<String> LIGHT_OFF = Entity.json(Boolean.FALSE.toString());
 
         {
-            Response responseLampOn = target("/pilight/" + TESTLAMP + "/status/").request().put(LAMP_ON);
+            /* Response responseLightOn = */
+            target("/pilight/" + FAMILY + "/" + LIGHT + "/status/").request().put(LIGHT_ON);
 
-            String lampMustBeOn = target("/pilight/" + TESTLAMP + "/status").request().get(String.class);
-            Assert.assertTrue("Lamp must be on.", Boolean.valueOf(lampMustBeOn));
+            String lightMustBeOn = target("/pilight/" + FAMILY + "/" + LIGHT + "/status").request().get(String.class);
+            Assert.assertTrue("Light must be on.", Boolean.valueOf(lightMustBeOn));
         }
         {
-            Response responseLampOff = target("/pilight/" + TESTLAMP + "/status/").request().put(LAMP_OFF);
+            /* Response responseLightOff = */
+            target("/pilight/" + FAMILY + "/" + LIGHT + "/status/").request().put(LIGHT_OFF);
 
-            String lampMustBeOff = target("/pilight/" + TESTLAMP + "/status").request().get(String.class);
-            Assert.assertFalse("Lamp must be off.", Boolean.valueOf(lampMustBeOff));
+            String lightMustBeOff = target("/pilight/" + FAMILY + "/" + LIGHT + "/status").request().get(String.class);
+            Assert.assertFalse("Light must be off.", Boolean.valueOf(lightMustBeOff));
         }
 
-        String serverStatus = target("/pilight").request().get(String.class);
+        PiLightService.Status serverStatus = target("/pilight").request(MediaType.APPLICATION_JSON_TYPE).get(PiLightService.Status.class);
         Assert.assertNotNull("Server status must not be null", serverStatus);
-        Assert.assertTrue("Status must know one lamp", serverStatus.contains(" 1 "));
-
+        Assert.assertThat("Status must know one family", serverStatus.familiesCount, IsEqual.equalTo(1));
+        Assert.assertThat("Status must know one lamp", serverStatus.lightsCount, IsEqual.equalTo(1));
     }
 
 }
