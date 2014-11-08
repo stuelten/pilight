@@ -32,12 +32,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Sets up sensors and switches.
+ * Sets up sensors and switches on raspi.
  *
  * @author Timo Stülten
  */
 @Singleton
-public class PiLightIOFactoryImpl implements PiLightIOFactory {
+public class PiLightIOFactoryImpl {
     /**
      * The logger for this class only.
      */
@@ -134,13 +134,11 @@ public class PiLightIOFactoryImpl implements PiLightIOFactory {
 
     // ----------------------------------------------------------------------
 
-    @Override
     @Produces
     public List<PiLightSensor> getLightSensors() {
         return Collections.unmodifiableList(lightSensors);
     }
 
-    @Override
     @Produces
     public List<PiLightSwitch> getSwitches() {
         return Collections.unmodifiableList(switches);

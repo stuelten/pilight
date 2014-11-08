@@ -17,10 +17,9 @@ package de.ckc.agwa.pilight.logic;
 
 import de.ckc.agwa.pilight.io.MockPiLightSensor;
 import de.ckc.agwa.pilight.io.MockPiLightSwitch;
-import de.ckc.agwa.pilight.io.PiLightIOFactory;
 import de.ckc.agwa.pilight.io.PiLightSensor;
 import de.ckc.agwa.pilight.io.PiLightSwitch;
-import org.jglue.cdiunit.AdditionalClasses;
+import org.jglue.cdiunit.AdditionalPackages;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,16 +35,13 @@ import java.util.List;
  *
  * @author Timo Stülten
  */
+@AdditionalPackages(PiLightMockFactory.class)
 @RunWith(CdiRunner.class)
-@AdditionalClasses(TestPiLightIOFactory.class)
 public class MotherMainTest {
     /**
      * The logger for this class only.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(MotherMainTest.class);
-
-    @Inject
-    PiLightIOFactory piLightIOFactory;
 
     @Inject
     List<PiLightSensor> sensors;
@@ -58,7 +54,6 @@ public class MotherMainTest {
 
     @Test
     public void testMother() {
-        LOGGER.info("Test '{}'", piLightIOFactory);
         LOGGER.info("Test sensors '{}'", sensors);
         LOGGER.info("Test switches '{}'", switches);
 

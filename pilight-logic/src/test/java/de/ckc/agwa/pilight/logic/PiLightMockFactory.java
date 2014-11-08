@@ -17,7 +17,6 @@ package de.ckc.agwa.pilight.logic;
 
 import de.ckc.agwa.pilight.io.MockPiLightSensor;
 import de.ckc.agwa.pilight.io.MockPiLightSwitch;
-import de.ckc.agwa.pilight.io.PiLightIOFactory;
 import de.ckc.agwa.pilight.io.PiLightSensor;
 import de.ckc.agwa.pilight.io.PiLightSwitch;
 
@@ -27,15 +26,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A mock factory producing {@link de.ckc.agwa.pilight.io.MockPiLightSensor}s
+ * and {@link de.ckc.agwa.pilight.io.MockPiLightSwitch}es.
+ *
  * @author Timo Stülten
  */
 @Singleton
-public class TestPiLightIOFactory implements PiLightIOFactory {
+public class PiLightMockFactory {
 
     private List<PiLightSensor> sensors = new ArrayList<>();
     private List<PiLightSwitch> switches = new ArrayList<>();
 
-    public TestPiLightIOFactory() {
+    public PiLightMockFactory() {
         PiLightSensor mother = new MockPiLightSensor("mother's lamp sensor");
         sensors.add(mother);
 
@@ -45,13 +47,11 @@ public class TestPiLightIOFactory implements PiLightIOFactory {
         switches.add(brother);
     }
 
-    @Override
     @Produces
     public List<PiLightSensor> getLightSensors() {
         return sensors;
     }
 
-    @Override
     @Produces
     public List<PiLightSwitch> getSwitches() {
         return switches;
