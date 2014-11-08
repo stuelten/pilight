@@ -15,6 +15,6 @@
  */
 
 /**
- * Die Logik, die die Lampen steuert.
+ * The logic controlling sensors and switches.
  */
 package de.ckc.agwa.pilight.logic;

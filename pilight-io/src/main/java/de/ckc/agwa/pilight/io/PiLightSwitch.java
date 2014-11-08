@@ -15,62 +15,39 @@
  */
 package de.ckc.agwa.pilight.io;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * Schaltet eine Lampe ein oder aus.
+ * A switch with a name and a state.
+ *
  * @author Timo Stülten
  */
-public class PiLightSwitch {
-    /** The logger for this class only. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightSwitch.class);
+public interface PiLightSwitch {
 
-    // ----------------------------------------------------------------------
+    /**
+     * Switch on or off.
+     *
+     * @param on switch on if {@code true}
+     */
+    void setOn(boolean on);
 
-    protected String name;
+    /**
+     * Is it switched on?
+     *
+     * @return {@code true} if switched on.
+     */
+    boolean isOn();
 
-    protected GpioPinDigitalOutput pin;
+    /**
+     * Get this switch's name
+     *
+     * @return the name
+     */
+    String getName();
 
-    // ----------------------------------------------------------------------
-
-    public void setOn(boolean on) {
-        pin.setState(on);
-    }
-
-    public boolean isOn() {
-        return pin.getState().isHigh();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    protected GpioPinDigitalOutput getPin() {
-        return pin;
-    }
-
-    protected void setPin(GpioPinDigitalOutput pin) {
-        LOGGER.info("{}: verwendet GPIO {}", this, this.pin);
-        this.pin = pin;
-    }
-
-    // ----------------------------------------------------------------------
-
-    public String toString() {
-        String ret = new ToStringBuilder(this)
-                .append("name", name)
-                .append("on", isOn())
-                .append("pin", pin)
-                .toString();
-        return ret;
-    }
+    /**
+     * Set this switch's name
+     *
+     * @param name the new name
+     */
+    void setName(String name);
 
 }

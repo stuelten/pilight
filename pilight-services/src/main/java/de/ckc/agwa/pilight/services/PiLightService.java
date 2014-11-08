@@ -19,8 +19,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Map;
@@ -39,14 +42,14 @@ public class PiLightService {
     // ----------------------------------------------------------------------
 
     /**
-     * Contains all lights
+     * Contains all lights.
      */
     protected static Map<String, Map<String, Boolean>> lights = new ConcurrentHashMap<>();
 
     // ----------------------------------------------------------------------
 
     /**
-     * This service's status.
+     * A bean for this service's status.
      */
     public static class Status {
         /**
@@ -75,7 +78,10 @@ public class PiLightService {
     public String serviceStatusPlain() {
         LOGGER.debug("serviceStatusPlain(): Called");
         Status status = serviceStatus();
-        return status.toString();
+        String ret = status.toString();
+
+        LOGGER.debug("serviceStatusPlain(): return '{}'", ret);
+        return ret;
     }
 
     /**
@@ -94,6 +100,8 @@ public class PiLightService {
         Status ret = new Status();
         ret.familiesCount = lights.size();
         ret.lightsCount = lightsCount;
+
+        LOGGER.debug("serviceStatus(): return '{}'", ret);
         return ret;
     }
 
@@ -119,7 +127,7 @@ public class PiLightService {
             status = familylights.get(light);
         }
 
-        LOGGER.debug("getStatus('{}'): return '{}'", light, status);
+        LOGGER.info("getStatus('{}'): return '{}'", light, status);
         return "" + status;
     }
 
@@ -138,7 +146,7 @@ public class PiLightService {
     public String setStatus(@PathParam("family") String family,
                             @PathParam("light") String light,
                             String status) {
-        LOGGER.debug("setStatus('{}'.'{}'): called", light, status);
+        LOGGER.info("setStatus('{}'.'{}'): called", light, status);
         Boolean checkedStatus = Boolean.valueOf(status);
 
         Map<String, Boolean> familylights = lights.get(family);

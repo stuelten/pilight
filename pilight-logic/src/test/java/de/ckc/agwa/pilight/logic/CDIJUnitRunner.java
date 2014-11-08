@@ -13,28 +13,26 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.ckc.agwa.pilight.io;
+package de.ckc.agwa.pilight.logic;
+
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.InitializationError;
 
 /**
+ * Test runner with CDI context.
+ *
  * @author Timo Stülten
  */
-public interface PiLightSensor {
+public class CDIJUnitRunner extends BlockJUnit4ClassRunner {
 
-    public interface StateChangeListener {
-        /**
-         * Called on every state change
-         */
-        void stateChanged(boolean state);
+    public CDIJUnitRunner(Class<Object> clazz) throws InitializationError {
+        super(clazz);
     }
 
-    void addStateChangeListener(StateChangeListener stateChangeListener);
-
-    void removeStateChangeListener(StateChangeListener stateChangeListener);
-
-    boolean isOn();
-
-    String getName();
-
-    void setName(String name);
+    @Override
+    protected Object createTest() {
+        final Class<?> test = getTestClass().getJavaClass();
+        return CDIContext.INSTANCE.getBean(test);
+    }
 
 }

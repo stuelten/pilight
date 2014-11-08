@@ -15,11 +15,24 @@
  */
 package de.ckc.agwa.pilight.logic;
 
+import javax.inject.Qualifier;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+
 /**
+ * Tagging annotation.
+ *
  * @author Timo Stülten
  */
-public class PiLightLogic {
-
-
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({FIELD, METHOD, PARAMETER, TYPE})
+public @interface TestSetup {
 
 }

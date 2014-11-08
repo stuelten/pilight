@@ -28,9 +28,13 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 
 /**
+ * Tests the {@link de.ckc.agwa.pilight.services.PiLightService}.
+ *
  * @author Timo Stülten
  */
 public class PiLightServiceTest extends JerseyTest {
+
+    public static final String PATH_PREFIX = "/pilight";
 
     @Override
     protected Application configure() {
@@ -45,36 +49,6 @@ public class PiLightServiceTest extends JerseyTest {
         config.register(PiLightMain.createMoxyJsonResolver());
     }
 
-//    @Before
-//    public void setUp() throws Exception {
-//        // start the server
-//        server = PiLightMain.startServer();
-//
-//        // create the client
-//        // Client client = ClientBuilder.newClient();
-//
-//        final Client client = ClientBuilder.newBuilder()
-////                // The line below that registers MOXy feature can be
-////                // omitted if FEATURE_AUTO_DISCOVERY_DISABLE is
-////                // not disabled.
-//                .register(MoxyJsonFeature.class)
-//                .register(JsonConfigResolver.class)
-//                .build();
-//
-//        // uncomment the following line if you want to enable
-//        // support for JSON in the client (you also have to uncomment
-//        // dependency on jersey-media-json module in pom.xml and Main.startServer())
-//        // --
-//        // client.configuration().enable(new JsonJaxbFeature());
-//
-//        target = client.target(PiLightMain.BASE_URI);
-//    }
-//
-//    @After
-//    public void tearDown() throws Exception {
-//        server.shutdownNow();
-//    }
-
     // ----------------------------------------------------------------------
 
     /**
@@ -82,7 +56,7 @@ public class PiLightServiceTest extends JerseyTest {
      */
     @Test
     public void testServerStatusPlain() {
-        final WebTarget target = target("/pilight");
+        final WebTarget target = target(PATH_PREFIX);
 
         {
             String serverStatus = target.request(MediaType.TEXT_PLAIN).get(String.class);
@@ -108,20 +82,20 @@ public class PiLightServiceTest extends JerseyTest {
 
         {
             /* Response responseLightOn = */
-            target("/pilight/" + FAMILY + "/" + LIGHT + "/status/").request().put(LIGHT_ON);
+            target(PATH_PREFIX + "/" + FAMILY + "/" + LIGHT + "/status/").request().put(LIGHT_ON);
 
-            String lightMustBeOn = target("/pilight/" + FAMILY + "/" + LIGHT + "/status").request().get(String.class);
+            String lightMustBeOn = target(PATH_PREFIX + "/" + FAMILY + "/" + LIGHT + "/status").request().get(String.class);
             Assert.assertTrue("Light must be on.", Boolean.valueOf(lightMustBeOn));
         }
         {
             /* Response responseLightOff = */
-            target("/pilight/" + FAMILY + "/" + LIGHT + "/status/").request().put(LIGHT_OFF);
+            target(PATH_PREFIX + "/" + FAMILY + "/" + LIGHT + "/status/").request().put(LIGHT_OFF);
 
-            String lightMustBeOff = target("/pilight/" + FAMILY + "/" + LIGHT + "/status").request().get(String.class);
+            String lightMustBeOff = target(PATH_PREFIX + "/" + FAMILY + "/" + LIGHT + "/status").request().get(String.class);
             Assert.assertFalse("Light must be off.", Boolean.valueOf(lightMustBeOff));
         }
 
-        PiLightService.Status serverStatus = target("/pilight").request(MediaType.APPLICATION_JSON_TYPE).get(PiLightService.Status.class);
+        PiLightService.Status serverStatus = target(PATH_PREFIX).request(MediaType.APPLICATION_JSON_TYPE).get(PiLightService.Status.class);
         Assert.assertNotNull("Server status must not be null", serverStatus);
         Assert.assertThat("Status must know one family", serverStatus.familiesCount, IsEqual.equalTo(1));
         Assert.assertThat("Status must know one lamp", serverStatus.lightsCount, IsEqual.equalTo(1));

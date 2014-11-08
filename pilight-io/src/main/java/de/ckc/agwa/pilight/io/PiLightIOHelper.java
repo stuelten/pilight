@@ -19,7 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Hilfsfunktionen.
+ * Helper methods.
+ *
  * @author Timo Stülten
  */
 public class PiLightIOHelper {
@@ -28,6 +29,10 @@ public class PiLightIOHelper {
 
     // ----------------------------------------------------------------------
 
+    /**
+     * Sleep without exception.
+     * @param millis time to wait in millis
+     */
     public static void sleep(long millis) {
         try {
             Thread.sleep(millis);

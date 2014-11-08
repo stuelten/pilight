@@ -34,6 +34,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>de.ckc.agwa</groupId>
+            <artifactId>pilight-io</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>compile</scope>

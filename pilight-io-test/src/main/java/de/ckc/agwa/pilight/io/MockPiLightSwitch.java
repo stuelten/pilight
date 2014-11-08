@@ -16,25 +16,38 @@
 package de.ckc.agwa.pilight.io;
 
 /**
+ * Mock implementation of a {@link de.ckc.agwa.pilight.io.PiLightSwitch}.
+ *
  * @author Timo Stülten
  */
-public interface PiLightSensor {
+public class MockPiLightSwitch extends AbstractPiLightSwitch {
 
-    public interface StateChangeListener {
-        /**
-         * Called on every state change
-         */
-        void stateChanged(boolean state);
+    protected boolean state;
+
+    // ----------------------------------------------------------------------
+
+    public MockPiLightSwitch() {
+        super();
     }
 
-    void addStateChangeListener(StateChangeListener stateChangeListener);
+    public MockPiLightSwitch(String name) {
+        super(name);
+    }
 
-    void removeStateChangeListener(StateChangeListener stateChangeListener);
+    public MockPiLightSwitch(String name, boolean state) {
+        this(name);
+        this.state = state;
+    }
 
-    boolean isOn();
+    // ----------------------------------------------------------------------
 
-    String getName();
+    public void setOn(boolean on) {
+        this.state = on;
+    }
 
-    void setName(String name);
+    @Override
+    public boolean isOn() {
+        return state;
+    }
 
 }

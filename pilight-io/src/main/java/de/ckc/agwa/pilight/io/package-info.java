@@ -15,6 +15,6 @@
  */
 
 /**
- * Die Logik für den Umgang mit Sensoren und Basis-I/O.
+ * A facade of switches fo lamps and sensors to trigger some logic via event listeners.
  */
 package de.ckc.agwa.pilight.io;
