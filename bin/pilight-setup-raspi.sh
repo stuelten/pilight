@@ -44,7 +44,8 @@ then
     read -p "Enter WLAN passphrase: " -er passphrase
 
     echo "Create standard interface config..."
-    cat interfaces | sed "s^#SSID#^$ssid^g" | sed "s^#PASSPHRASE#^$passphrase^g" > /etc/network/interface
+    cat interfaces | sed "s^#SSID#^$ssid^g" | sed "s^#PASSPHRASE#^$passphrase^g" > /etc/network/interfaces
+    chmod 600 /etc/network/interfaces
     echo "New network config:"
     echo "-------------------"
     cat /etc/network/interface
