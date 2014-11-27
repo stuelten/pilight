@@ -3,6 +3,9 @@
 # Installs all necessary software/packages and configuration on rasperian
 #
 
+# directory with this script
+BASEDIR=$( dirname "$0" )
+
 # Proceed with all steps
 if [[ "$1" == "-y" ]]
 then
@@ -17,7 +20,7 @@ ask_proceed_step() {
             echo "Proceed: $1"
             return 0
     else
-        read -p "$1 (y/n)?" -er proceed
+        read -p "$1 (y/n)? " -er proceed
         case "$proceed" in
             y|yes|Y|YES)
                 echo "Proceed: $1"
@@ -44,11 +47,11 @@ then
     read -p "Enter WLAN passphrase: " -er passphrase
 
     echo "Create standard interface config..."
-    cat interfaces | sed "s^#SSID#^$ssid^g" | sed "s^#PASSPHRASE#^$passphrase^g" > /etc/network/interfaces
+    cat $BASEDIR/interfaces | sed "s^#SSID#^$ssid^g" | sed "s^#PASSPHRASE#^$passphrase^g" > /etc/network/interfaces
     chmod 600 /etc/network/interfaces
     echo "New network config:"
     echo "-------------------"
-    cat /etc/network/interface
+    cat /etc/network/interfaces
 
     echo "Restart network services to join WLAN..."
     sudo service networking restart
@@ -63,7 +66,7 @@ fi
 
 if ( ask_proceed_step "Install basic packages (nano git screen mc wget bash-completion)" )
 then
-    sudo aptitude install -y nano git screen mc wget bash-completion
+    sudo aptitude install -y nano git subversion screen mc wget bash-completion
 fi
 
 if ( ask_proceed_step "Install maven" )
@@ -79,10 +82,16 @@ then
     ln -s $TARGET_DIR/bin/mvn $HOME/bin/mvn
 fi
 
-if ( ask_proceed_step "Get sources for pilight" )
+if ( ask_proceed_step "Get sources for pilight from git" )
 then
-    git clone timo@schatzkammer.subluna.org:Dev/git
-    mv git pilight
+    read -p "Enter git username: " -er username
+    git clone "$((username))@schatzkammer.subluna.org:Dev/git/pilight"
+fi
+
+if ( ask_proceed_step "Get sources for pilight from SVN" )
+then
+    read -p "Enter SVN username: " -er username
+    svn checkout --username "$username" svn://svn.ckc.de/agwebarchitecture/pilight
 fi
 
 if ( ask_proceed_step "Configure bash aliases" )
