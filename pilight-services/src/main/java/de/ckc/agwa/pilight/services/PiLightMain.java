@@ -15,12 +15,6 @@
  */
 package de.ckc.agwa.pilight.services;
 
-import javax.ws.rs.ext.ContextResolver;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
@@ -28,29 +22,42 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.ext.ContextResolver;
+import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Main class.
  */
 public class PiLightMain {
-    /** The logger for this class only. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightMain.class);
-
-    /** Search for service classes below this package root. */
+    /**
+     * Search for service classes below this package root.
+     */
     public static final Package SERVICE_ROOT = PiLightMain.class.getPackage();
-
-    /** Base URI for this app */
-    private static final URI BASE_URI = URI.create("http://localhost:9998/jsonmoxy/");
+    /**
+     * The logger for this class only.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightMain.class);
+    /**
+     * Base URI for this app
+     */
+    private static final URI BASE_URI = URI.create("http://localhost:9998/");
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
      */
+    @SuppressWarnings({"UseOfSystemOutOrSystemErr", "MethodCanBeVariableArityMethod"})
     public static void main(String[] args) {
         try {
-            System.out.println("JSON with MOXy Jersey Example App");
+            System.out.println("Start PiLightMain...");
 
             final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, createApp());
 
-            System.out.println(String.format("Application started.%nHit enter to stop it..."));
+            System.out.println("Application started for URL " + BASE_URI);
+            System.out.println("Hit enter to stop it...");
+
             //noinspection ResultOfMethodCallIgnored
             System.in.read();
             server.shutdownNow();
@@ -62,8 +69,9 @@ public class PiLightMain {
     // ----------------------------------------------------------------------
 
     public static ResourceConfig createApp() {
+        String SERVICE_ROOT_Name = SERVICE_ROOT.getName();
         return new ResourceConfig().
-                packages(SERVICE_ROOT.getName()).
+                packages(SERVICE_ROOT_Name).
                 register(createMoxyJsonResolver());
     }
 

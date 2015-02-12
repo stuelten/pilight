@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * This service receives and serves the status of lights for some families.
+ *
  * @author Timo Stülten
  */
 @Path("/pilight")
@@ -49,27 +51,7 @@ public class PiLightService {
     // ----------------------------------------------------------------------
 
     /**
-     * A bean for this service's status.
-     */
-    public static class Status {
-        /**
-         * Number of families
-         */
-        public int familiesCount;
-        /**
-         * Number of lights.
-         */
-        public int lightsCount;
-
-        @Override
-        public String toString() {
-            String ret = "Serving " + familiesCount + " families with " + lightsCount + " lights.";
-            return ret;
-        }
-    }
-
-    /**
-     * Get the service's status.
+     * Get this service's status as plain text.
      *
      * @return a String giving the number of served families and lights.
      */
@@ -80,12 +62,12 @@ public class PiLightService {
         Status status = serviceStatus();
         String ret = status.toString();
 
-        LOGGER.debug("serviceStatusPlain(): return '{}'", ret);
+        LOGGER.info("serviceStatusPlain(): return '{}'", ret);
         return ret;
     }
 
     /**
-     * Get the service's status.
+     * Get this service's status.
      *
      * @return a {@link Status} giving the number of served families and lights.
      */
@@ -94,12 +76,14 @@ public class PiLightService {
     public Status serviceStatus() {
         LOGGER.debug("serviceStatus(): Called");
         int lightsCount = 0;
-        for (Map<String, Boolean> familylights : lights.values()) {
-            lightsCount += familylights.size();
+        for (Map<String, Boolean> familyLights : lights.values()) {
+            lightsCount += familyLights.size();
         }
+
         Status ret = new Status();
-        ret.familiesCount = lights.size();
-        ret.lightsCount = lightsCount;
+        int familiesCount = lights.size();
+        ret.setFamiliesCount(familiesCount);
+        ret.setLightsCount(lightsCount);
 
         LOGGER.debug("serviceStatus(): return '{}'", ret);
         return ret;
@@ -108,7 +92,7 @@ public class PiLightService {
     /**
      * Get the status for some light.
      *
-     * @param family the name of the familiy
+     * @param family the name of the family
      * @param light  the name of the light
      * @return {@code true} for a burning light, {@code false} otherwise
      */
@@ -120,22 +104,21 @@ public class PiLightService {
         LOGGER.debug("getStatus('{}','{}'): called", family, light);
         Boolean status = null;
 
-        Map<String, Boolean> familylights = lights.get(family);
-        if (familylights == null) {
+        Map<String, Boolean> familyLights = lights.get(family);
+        if (null == familyLights) {
             status = Boolean.FALSE;
         } else {
-            status = familylights.get(light);
+            status = familyLights.get(light);
         }
 
         LOGGER.info("getStatus('{}'): return '{}'", light, status);
         return "" + status;
     }
 
-    // ----------------------------------------------------------------------
-
     /**
      * Set the status for some light.
      *
+     * @param family the name of the family
      * @param light  the light
      * @param status {@code true} for a burning light, {@code false} otherwise
      */
@@ -149,12 +132,12 @@ public class PiLightService {
         LOGGER.info("setStatus('{}'.'{}'): called", light, status);
         Boolean checkedStatus = Boolean.valueOf(status);
 
-        Map<String, Boolean> familylights = lights.get(family);
-        if (familylights == null) {
-            familylights = new ConcurrentHashMap<>();
-            lights.put(family, familylights);
+        Map<String, Boolean> familyLights = lights.get(family);
+        if (null == familyLights) {
+            familyLights = new ConcurrentHashMap<>();
+            lights.put(family, familyLights);
         }
-        familylights.put(light, checkedStatus);
+        familyLights.put(light, checkedStatus);
 
         return "" + checkedStatus;
     }
@@ -166,6 +149,45 @@ public class PiLightService {
                 .append("lights", lights)
                 .toString();
         return ret;
+    }
+
+    // ----------------------------------------------------------------------
+
+    /**
+     * A bean for this service's status.
+     */
+    public static class Status {
+        private int familiesCount = 0;
+        private int lightsCount = 0;
+
+        /**
+         * Number of families
+         */
+        public int getFamiliesCount() {
+            return familiesCount;
+        }
+
+        public void setFamiliesCount(int familiesCount) {
+            this.familiesCount = familiesCount;
+        }
+
+        /**
+         * Number of lights.
+         */
+        public int getLightsCount() {
+            return lightsCount;
+        }
+
+        public void setLightsCount(int lightsCount) {
+            this.lightsCount = lightsCount;
+        }
+
+        @Override
+        public String toString() {
+            String ret = "Serving " + getFamiliesCount() + " families with " + getLightsCount() + " lights.";
+            return ret;
+        }
+
     }
 
 }

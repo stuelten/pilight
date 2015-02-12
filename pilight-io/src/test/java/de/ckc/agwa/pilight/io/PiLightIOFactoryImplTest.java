@@ -17,7 +17,6 @@
 package de.ckc.agwa.pilight.io;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -31,13 +30,13 @@ public class PiLightIOFactoryImplTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(PiLightIOFactoryImplTest.class);
 
 
-    static PiLightIOFactoryImpl factory;
+    private static PiLightIOFactoryImpl factory = null;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        LOGGER.info("start setup Test...")
+        LOGGER.info("start setup Test...");
         factory = new PiLightIOFactoryImpl();
-        LOGGER.info("end setup Test.")
+        LOGGER.info("end setup Test.");
     }
 
     @After
@@ -48,14 +47,12 @@ public class PiLightIOFactoryImplTest {
     @Test
     public void testSwitchAndBlink() throws Exception {
 
-        factory.getLightSensors().get(0).addStateChangeListener(new PiLightSensor.StateChangeListener() {
-            @Override
-            public void stateChanged(boolean state) {
-                LOGGER.info("State change")
-                factory.getSwitches().get(0).setOn(state);
-            }
+        factory.getLightSensors().get(0).addStateChangeListener(state -> {
+            LOGGER.info("State change '{}'", state);
+            factory.getSwitches().get(0).setOn(state);
         });
 
+        // let it run
         PiLightIOHelper.sleep(600000);
     }
 

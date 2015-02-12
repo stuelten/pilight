@@ -65,8 +65,8 @@ public class PiLightServiceTest extends JerseyTest {
         {
             PiLightService.Status serverStatus = target.request(MediaType.APPLICATION_JSON).get(PiLightService.Status.class);
             Assert.assertNotNull("Server status must not be null", serverStatus);
-            Assert.assertThat(serverStatus.familiesCount, IsEqual.equalTo(0));
-            Assert.assertThat(serverStatus.lightsCount, IsEqual.equalTo(0));
+            Assert.assertThat(serverStatus.getFamiliesCount(), IsEqual.equalTo(0));
+            Assert.assertThat(serverStatus.getLightsCount(), IsEqual.equalTo(0));
         }
     }
 
@@ -75,10 +75,12 @@ public class PiLightServiceTest extends JerseyTest {
      */
     @Test
     public void testPutGet() {
-        final String FAMILY = "testfamily";
-        final String LIGHT = "testlight";
-        final Entity<String> LIGHT_ON = Entity.json(Boolean.TRUE.toString());
-        final Entity<String> LIGHT_OFF = Entity.json(Boolean.FALSE.toString());
+        final String FAMILY = "testFamily";
+        final String LIGHT = "testLight";
+        String jsonTRUE = Boolean.TRUE.toString();
+        final Entity<String> LIGHT_ON = Entity.json(jsonTRUE);
+        String jsonFALSE = Boolean.FALSE.toString();
+        final Entity<String> LIGHT_OFF = Entity.json(jsonFALSE);
 
         {
             /* Response responseLightOn = */
@@ -97,8 +99,8 @@ public class PiLightServiceTest extends JerseyTest {
 
         PiLightService.Status serverStatus = target(PATH_PREFIX).request(MediaType.APPLICATION_JSON_TYPE).get(PiLightService.Status.class);
         Assert.assertNotNull("Server status must not be null", serverStatus);
-        Assert.assertThat("Status must know one family", serverStatus.familiesCount, IsEqual.equalTo(1));
-        Assert.assertThat("Status must know one lamp", serverStatus.lightsCount, IsEqual.equalTo(1));
+        Assert.assertThat("Status must know one family", serverStatus.getFamiliesCount(), IsEqual.equalTo(1));
+        Assert.assertThat("Status must know one lamp", serverStatus.getLightsCount(), IsEqual.equalTo(1));
     }
 
 }
