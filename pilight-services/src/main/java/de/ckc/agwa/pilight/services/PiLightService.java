@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Timo Stülten <timo.stuelten@googlemail.com>
+ * Copyright (c) 2015 Timo Stülten <timo.stuelten@googlemail.com>
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package de.ckc.agwa.pilight.services;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,7 @@ public class PiLightService {
      * @return a String giving the number of served families and lights.
      */
     @GET
+    @Path("status")
     @Produces(MediaType.TEXT_PLAIN)
     public String serviceStatusPlain() {
         LOGGER.debug("serviceStatusPlain(): Called");
@@ -72,6 +74,7 @@ public class PiLightService {
      * @return a {@link Status} giving the number of served families and lights.
      */
     @GET
+    @Path("status")
     @Produces(MediaType.APPLICATION_JSON)
     public Status serviceStatus() {
         LOGGER.debug("serviceStatus(): Called");
@@ -90,6 +93,52 @@ public class PiLightService {
     }
 
     /**
+     * Get all known families.
+     *
+     * @return a String giving the families.
+     */
+    @GET
+    @Path("info/families")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String serviceStatusFamilies() {
+        LOGGER.debug("serviceStatusFamilies(): Called");
+        StringBuilder ret = new StringBuilder();
+        for (String family : lights.keySet()) {
+            String nameEscaped = StringEscapeUtils.escapeHtml(family);
+            ret.append(nameEscaped).append('\n');
+        }
+
+        LOGGER.info("serviceStatusFamilies(): return '{}'", ret);
+        return ret.toString();
+    }
+
+    // ----------------------------------------------------------------------
+
+    /**
+     * Get all known lamps for a family..
+     *
+     * @return a String giving the lamps.
+     */
+    @GET
+    @Path("families/{family}/info/lights")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String serviceFamilyInfoLamps(@PathParam("family") String family) {
+        LOGGER.debug("serviceFamilyInfoLamps('{}'): called", family);
+
+        Map<String, Boolean> lampMap = lights.get(family);
+        StringBuilder ret = new StringBuilder();
+        if (lampMap != null) {
+            for (String lamp : lampMap.keySet()) {
+                String nameEscaped = StringEscapeUtils.escapeHtml(lamp);
+                ret.append(nameEscaped).append('\n');
+            }
+        }
+
+        LOGGER.info("serviceFamilyInfoLamps('{}'): return '{}'", family, ret);
+        return ret.toString();
+    }
+
+    /**
      * Get the status for some light.
      *
      * @param family the name of the family
@@ -97,11 +146,11 @@ public class PiLightService {
      * @return {@code true} for a burning light, {@code false} otherwise
      */
     @GET
-    @Path("{family}/{light}/status")
+    @Path("families/{family}/lights/{light}/status")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getStatus(@PathParam("family") String family,
-                            @PathParam("light") String light) {
-        LOGGER.debug("getStatus('{}','{}'): called", family, light);
+    public String serviceFamilyLightStatusGet(@PathParam("family") String family,
+                                              @PathParam("light") String light) {
+        LOGGER.debug("serviceFamilyLightStatusGet('{}','{}'): called", family, light);
         Boolean status = null;
 
         Map<String, Boolean> familyLights = lights.get(family);
@@ -111,7 +160,7 @@ public class PiLightService {
             status = familyLights.get(light);
         }
 
-        LOGGER.info("getStatus('{}'): return '{}'", light, status);
+        LOGGER.info("serviceFamilyLightStatusGet('{}'): return '{}'", light, status);
         return "" + status;
     }
 
@@ -123,13 +172,13 @@ public class PiLightService {
      * @param status {@code true} for a burning light, {@code false} otherwise
      */
     @PUT
-    @Path("{family}/{light}/status/")
+    @Path("families/{family}/lights/{light}/status")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String setStatus(@PathParam("family") String family,
-                            @PathParam("light") String light,
-                            String status) {
-        LOGGER.info("setStatus('{}'.'{}'): called", light, status);
+    public String serviceFamilyLightStatusPut(@PathParam("family") String family,
+                                              @PathParam("light") String light,
+                                              String status) {
+        LOGGER.info("serviceFamilyLightStatusPut('{}'.'{}'): called", light, status);
         Boolean checkedStatus = Boolean.valueOf(status);
 
         Map<String, Boolean> familyLights = lights.get(family);
