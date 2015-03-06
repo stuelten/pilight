@@ -3,6 +3,14 @@
 # Installs all necessary software/packages and configuration on rasperian
 #
 
+# check if root
+if ( ! id | grep -q "uid=0" )
+then
+    echo "ERROR: Must be root!"
+    echo "Try sudo $0"
+    exit 1
+fi
+
 # directory with this script
 BASEDIR=$( dirname "$0" )
 
@@ -38,7 +46,7 @@ wait_for_enter() {
 
 if ( ask_proceed_step "Create individual unique ssh keys for this host" )
 then
-    sudo dpkg-reconfigure openssh-server
+    dpkg-reconfigure openssh-server
 fi
 
 if ( ask_proceed_step "Configure WLAN network" )
@@ -54,7 +62,7 @@ then
     cat /etc/network/interfaces
 
     echo "Restart network services to join WLAN..."
-    sudo service networking restart
+    service networking restart
     if ( ping -A -c 3 -w 5 www.heise.de )
     then
         echo "Network setup successful."
@@ -64,22 +72,15 @@ then
     fi
 fi
 
-if ( ask_proceed_step "Install basic packages (nano git screen mc wget bash-completion)" )
+BASIC_PACKAGES=nano git screen mc wget bash-completion
+if ( ask_proceed_step "Install basic packages ($BASIC_PACKAGES)" )
 then
-    sudo aptitude install -y nano git subversion screen mc wget bash-completion
+    aptitude install -y $BASIC_PACKAGES
 fi
 
 if ( ask_proceed_step "Install maven" )
 then
-    VERSION=3.2.3
-    FILENAME=apache-maven-$VERSION-bin.tar.gz
-    URL=http://www.apache.org/dyn/closer.cgi?path=maven/maven-3/$VERSION/binaries/$FILENAME
-    TARGET_DIR=apache-maven-$VERSION
-    # name wget'ed tar, because wget uses filename from server which are inconsitent sometimes
-    wget -O $FILENAME $URL
-    tar -xvzf $FILENAME
-    mkdir $HOME/bin
-    ln -s $TARGET_DIR/bin/mvn $HOME/bin/mvn
+    aptitude install -y maven
 fi
 
 if ( ask_proceed_step "Get sources for pilight from git" )
@@ -101,5 +102,6 @@ then
         echo "New .bash_rc:"
         echo "-------------"
         cat $HOME/.bash_rc
+        echo "-------------"
     }
 fi

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Timo Stülten <timo.stuelten@googlemail.com>
+ * Copyright (c) 2015 Timo Stülten <timo.stuelten@googlemail.com>
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class PiLightServiceTest extends JerseyTest {
      */
     @Test
     public void testServerStatusPlain() {
-        final WebTarget target = target(PATH_PREFIX);
+        final WebTarget target = target(PATH_PREFIX + "/status");
 
         {
             String serverStatus = target.request(MediaType.TEXT_PLAIN).get(String.class);
@@ -82,25 +82,60 @@ public class PiLightServiceTest extends JerseyTest {
         String jsonFALSE = Boolean.FALSE.toString();
         final Entity<String> LIGHT_OFF = Entity.json(jsonFALSE);
 
+        String path = PATH_PREFIX + "/families/" + FAMILY + "/lights/" + LIGHT + "/status/";
         {
             /* Response responseLightOn = */
-            target(PATH_PREFIX + "/" + FAMILY + "/" + LIGHT + "/status/").request().put(LIGHT_ON);
+            target(path).request().put(LIGHT_ON);
 
-            String lightMustBeOn = target(PATH_PREFIX + "/" + FAMILY + "/" + LIGHT + "/status").request().get(String.class);
+            String lightMustBeOn = target(path).request().get(String.class);
             Assert.assertTrue("Light must be on.", Boolean.valueOf(lightMustBeOn));
         }
         {
             /* Response responseLightOff = */
-            target(PATH_PREFIX + "/" + FAMILY + "/" + LIGHT + "/status/").request().put(LIGHT_OFF);
+            target(path).request().put(LIGHT_OFF);
 
-            String lightMustBeOff = target(PATH_PREFIX + "/" + FAMILY + "/" + LIGHT + "/status").request().get(String.class);
+            String lightMustBeOff = target(path).request().get(String.class);
             Assert.assertFalse("Light must be off.", Boolean.valueOf(lightMustBeOff));
         }
 
-        PiLightService.Status serverStatus = target(PATH_PREFIX).request(MediaType.APPLICATION_JSON_TYPE).get(PiLightService.Status.class);
+        PiLightService.Status serverStatus = target(PATH_PREFIX + "/status").request(MediaType.APPLICATION_JSON_TYPE).get(PiLightService.Status.class);
         Assert.assertNotNull("Server status must not be null", serverStatus);
         Assert.assertThat("Status must know one family", serverStatus.getFamiliesCount(), IsEqual.equalTo(1));
         Assert.assertThat("Status must know one lamp", serverStatus.getLightsCount(), IsEqual.equalTo(1));
     }
 
+    /**
+     * Search status off families.
+     */
+    @Test
+    public void testStatusFamiliesAndLamps() {
+        final String FAMILY = "testFamily";
+        final String LIGHT = "testLight";
+        String jsonTRUE = Boolean.TRUE.toString();
+        final Entity<String> LIGHT_ON = Entity.json(jsonTRUE);
+        String jsonFALSE = Boolean.FALSE.toString();
+        final Entity<String> LIGHT_OFF = Entity.json(jsonFALSE);
+
+        {
+            // Create light
+            String path = PATH_PREFIX + "/families/" + FAMILY + "/lights/" + LIGHT + "/status/";
+            target(path).request().put(LIGHT_ON);
+
+            String lightMustBeOn = target(path).request().get(String.class);
+            Assert.assertTrue("Light must be on.", Boolean.valueOf(lightMustBeOn));
+        }
+
+        // Test existence
+        {
+            String path = PATH_PREFIX + "/info/families";
+            String statusFamilies = target(path).request().get(String.class);
+            Assert.assertTrue("Status must know " + FAMILY, statusFamilies.contains(FAMILY));
+        }
+        {
+            String path = PATH_PREFIX + "/" + "families/{family}/info/lights".replace("{family}", FAMILY);
+            String statusLights = target(path).request().get(String.class);
+            Assert.assertTrue("Status must know " + LIGHT, statusLights.contains(LIGHT));
+        }
+
+    }
 }
