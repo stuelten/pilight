@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<?import java.net.URL?>
+<!--
+  ~ Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ckc.agwa.pilight.config.FXMLKonfigurationsfensterController"
+          alignment="center" hgap="10" vgap="10" styleClass="root">
+    <padding>
+        <Insets top="5" right="25" bottom="5" left="25"/>
+    </padding>
+    <!--<gridLinesVisible>true</gridLinesVisible>  -->
+
+    <Text id="welcome-text" text="WLAN Zugangsdaten für pilight"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="0"
+          GridPane.columnSpan="2"/>
+
+    <Label text="WLAN Name: "
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="1"/>
+
+    <TextField fx:id="wlanName"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="1"/>
+
+    <Label text="WLAN Passwort: "
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="2"/>
+
+    <PasswordField fx:id="wlanPasswd"
+                   GridPane.columnIndex="1"
+                   GridPane.rowIndex="2"/>
+
+    <HBox spacing="10" alignment="BOTTOM_LEFT" GridPane.columnIndex="0"
+          GridPane.rowIndex="6" prefWidth="255">
+        <Button text="Abbrechen" prefWidth="230"
+                onAction="#handleAbbrechenButtonAction"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="BOTTOM_RIGHT" GridPane.columnIndex="1"
+          GridPane.rowIndex="6" prefWidth="255">
+        <Button text="Konfiguration speichern" prefWidth="230"
+                onAction="#handleSubmitButtonAction"/>
+    </HBox>
+
+    <Text fx:id="actiontarget"
+          GridPane.columnIndex="1"
+          GridPane.rowIndex="8"/>
+
+    <stylesheets>
+        <URL value="@Login.css"/>
+    </stylesheets>
+
+</GridPane>
