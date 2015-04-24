@@ -23,8 +23,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 
-public class Konfigurationsfenster extends Application {
+public class PiLightConfigMain extends Application {
 
     public static final File FILENAME = new File("pilight-wlan-config.txt");
 
@@ -37,11 +41,20 @@ public class Konfigurationsfenster extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("FXML_Konfigurationsfenster.fxml"));
 
-        Scene scene = new Scene(root, 600, 375);
+        // UI laden und starten
+        InputStream inputStream = getClass().getResource("WlanConfig.properties").openStream();
+        ResourceBundle wlanConfigI18nResource = new PropertyResourceBundle(inputStream);
+        URL wlanConfigFxml = getClass().getResource("WlanConfig.fxml");
+        Parent wlanConfigParent = FXMLLoader.load(wlanConfigFxml, wlanConfigI18nResource);
 
-        stage.setTitle("WLAN Zugangsdaten für pilight");
+        Scene scene = new Scene(wlanConfigParent, 600, 375);
+
+        String i18nPropFile = getClass().getSimpleName() + ".properties";
+        inputStream = getClass().getResource(i18nPropFile).openStream();
+        ResourceBundle piLightConfigI18nResource = new PropertyResourceBundle(inputStream);
+        String wlanConfigStageTitle = piLightConfigI18nResource.getString("stage.title");
+        stage.setTitle(wlanConfigStageTitle);
         stage.setScene(scene);
         stage.show();
     }

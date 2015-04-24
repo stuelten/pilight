@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Text?>
-<?import java.net.URL?>
 <!--
   ~ Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
   ~
@@ -25,20 +15,28 @@
   ~ limitations under the License.
   -->
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<?import java.net.URL?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.ckc.agwa.pilight.config.FXMLKonfigurationsfensterController"
+          fx:controller="de.ckc.agwa.pilight.config.WlanConfigUIController"
           alignment="center" hgap="10" vgap="10" styleClass="root">
     <padding>
         <Insets top="5" right="25" bottom="5" left="25"/>
     </padding>
-    <!--<gridLinesVisible>true</gridLinesVisible>  -->
 
-    <Text id="welcome-text" text="WLAN Zugangsdaten für pilight"
+    <Text id="welcome-text" text="%welcome-text.text"
           GridPane.columnIndex="0"
           GridPane.rowIndex="0"
           GridPane.columnSpan="2"/>
 
-    <Label text="WLAN Name: "
+    <Label text="%wlanName.label"
            GridPane.columnIndex="0"
            GridPane.rowIndex="1"/>
 
@@ -46,7 +44,7 @@
                GridPane.columnIndex="1"
                GridPane.rowIndex="1"/>
 
-    <Label text="WLAN Passwort: "
+    <Label text="%wlanPasswd.label"
            GridPane.columnIndex="0"
            GridPane.rowIndex="2"/>
 
@@ -56,22 +54,23 @@
 
     <HBox spacing="10" alignment="BOTTOM_LEFT" GridPane.columnIndex="0"
           GridPane.rowIndex="6" prefWidth="255">
-        <Button text="Abbrechen" prefWidth="230"
-                onAction="#handleAbbrechenButtonAction"/>
+        <Button id="actionCancel" text="%actionCancel.text" prefWidth="230"
+                onAction="#handleCancel"/>
     </HBox>
 
     <HBox spacing="10" alignment="BOTTOM_RIGHT" GridPane.columnIndex="1"
           GridPane.rowIndex="6" prefWidth="255">
-        <Button text="Konfiguration speichern" prefWidth="230"
-                onAction="#handleSubmitButtonAction"/>
+        <Button id="actionSaveConfig" text="%actionSaveConfig.text" prefWidth="230"
+                onAction="#handleSaveConfig"/>
     </HBox>
 
-    <Text fx:id="actiontarget"
-          GridPane.columnIndex="1"
-          GridPane.rowIndex="8"/>
+    <Text fx:id="statusText"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="7"
+          GridPane.columnSpan="2"/>
 
     <stylesheets>
-        <URL value="@Login.css"/>
+        <URL value="@PiLightConfig.css"/>
     </stylesheets>
 
 </GridPane>
