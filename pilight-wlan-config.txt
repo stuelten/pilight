@@ -1,0 +1,2 @@
+ssid:TestSSID
+pw:Testpasswort
