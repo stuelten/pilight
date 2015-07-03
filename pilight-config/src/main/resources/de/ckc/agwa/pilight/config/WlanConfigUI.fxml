@@ -53,14 +53,16 @@
                    GridPane.rowIndex="2"/>
 
     <HBox spacing="10" alignment="BOTTOM_LEFT" GridPane.columnIndex="0"
-          GridPane.rowIndex="6" prefWidth="255">
-        <Button id="actionCancel" text="%actionCancel.text" prefWidth="230"
+          GridPane.rowIndex="6" ><!-- prefWidth="255" -->
+        <Button id="actionCancel"
+                text="%actionCancel.text" prefWidth="%actionCancel.prefWidth"
                 onAction="#handleCancel"/>
     </HBox>
 
     <HBox spacing="10" alignment="BOTTOM_RIGHT" GridPane.columnIndex="1"
-          GridPane.rowIndex="6" prefWidth="255">
-        <Button id="actionSaveConfig" text="%actionSaveConfig.text" prefWidth="230"
+          GridPane.rowIndex="6" >
+        <Button id="actionSaveConfig"
+                text="%actionSaveConfig.text" prefWidth="%actionSaveConfig.prefWidth"
                 onAction="#handleSaveConfig"/>
     </HBox>
 

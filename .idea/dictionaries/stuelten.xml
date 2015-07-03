@@ -2,14 +2,20 @@
   <dictionary name="stuelten">
     <words>
       <w>abbrechen</w>
+      <w>anzeigen</w>
+      <w>datei</w>
+      <w>eingaben</w>
+      <w>ersetzen</w>
       <w>gedrückt</w>
       <w>gespeichert</w>
       <w>konfiguration</w>
+      <w>konkreten</w>
       <w>lese</w>
       <w>passwd</w>
       <w>passwort</w>
       <w>speichere</w>
       <w>speichern</w>
+      <w>vorbereiten</w>
       <w>wlan</w>
       <w>zugangsdaten</w>
     </words>

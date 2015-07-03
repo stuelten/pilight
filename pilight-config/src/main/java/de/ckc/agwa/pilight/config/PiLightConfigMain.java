@@ -43,17 +43,23 @@ public class PiLightConfigMain extends Application {
     public void start(Stage stage) throws Exception {
 
         // UI laden und starten
-        InputStream inputStream = getClass().getResource("WlanConfig.properties").openStream();
-        ResourceBundle wlanConfigI18nResource = new PropertyResourceBundle(inputStream);
-        URL wlanConfigFxml = getClass().getResource("WlanConfig.fxml");
-        Parent wlanConfigParent = FXMLLoader.load(wlanConfigFxml, wlanConfigI18nResource);
+        InputStream wlanConfigUIPropertiesInputStream = getClass().getResource("WlanConfigUI.properties").openStream();
+        ResourceBundle wlanConfigUII18nResource = new PropertyResourceBundle(wlanConfigUIPropertiesInputStream);
+        URL wlanConfigUIFxml = getClass().getResource("WlanConfigUI.fxml");
 
-        Scene scene = new Scene(wlanConfigParent, 600, 375);
+        Parent wlanConfigUIParent = FXMLLoader.load(wlanConfigUIFxml, wlanConfigUII18nResource);
 
-        String i18nPropFile = getClass().getSimpleName() + ".properties";
-        inputStream = getClass().getResource(i18nPropFile).openStream();
-        ResourceBundle piLightConfigI18nResource = new PropertyResourceBundle(inputStream);
-        String wlanConfigStageTitle = piLightConfigI18nResource.getString("stage.title");
+        // Stage vorbereiten und anzeigen
+        String piLightConfigMainI18nPropertiesFile = getClass().getSimpleName() + ".properties";
+        InputStream piLightConfigMainPropertiesInputStream = getClass().getResource(piLightConfigMainI18nPropertiesFile).openStream();
+        ResourceBundle piLightConfigMainI18nResource = new PropertyResourceBundle(piLightConfigMainPropertiesInputStream);
+
+        double sceneWidth = Double.valueOf(piLightConfigMainI18nResource.getString("scene.width"));
+        double sceneHeight= Double.valueOf(piLightConfigMainI18nResource.getString("scene.height"));
+
+        Scene scene = new Scene(wlanConfigUIParent, sceneWidth, sceneHeight);
+
+        String wlanConfigStageTitle = piLightConfigMainI18nResource.getString("stage.title");
         stage.setTitle(wlanConfigStageTitle);
         stage.setScene(scene);
         stage.show();

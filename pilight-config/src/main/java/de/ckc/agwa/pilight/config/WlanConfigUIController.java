@@ -25,6 +25,7 @@ import javafx.scene.text.Text;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -122,12 +123,26 @@ public class WlanConfigUIController implements Initializable {
     }
 
     private void saveConfig() {
-        try (FileWriter fileWriter = new FileWriter(
-                PiLightConfigMain.FILENAME);
-             BufferedWriter writer = new BufferedWriter(fileWriter);
-        ) {
-            writer.write(KEY_SSID + wlanName.getText() + "\n");
-            writer.write(KEY_PW + wlanPasswd.getText() + "\n");
+        URL template = getClass().getResource("interfaces");
+        createFileFromTemplate(template, PiLightConfigMain.FILENAME);
+    }
+
+    protected void createFileFromTemplate(URL template, File targetFile) {
+        try (FileReader templateReader = new FileReader(template.getFile());
+             BufferedReader templateBR = new BufferedReader(templateReader);
+             FileWriter fileWriter = new FileWriter(targetFile);
+             BufferedWriter writer = new BufferedWriter(fileWriter)) {
+
+            String line = null;
+            do {
+                line = templateBR.readLine();
+                if (line != null) {
+                    // Templates mit konkreten Eingaben ersetzen
+                    line = line.replaceAll("#SSID#", wlanName.getText());
+                    line = line.replaceAll("#PASSWD#", wlanPasswd.getText());
+                    writer.write(line + "\n");
+                }
+            } while (line != null);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
