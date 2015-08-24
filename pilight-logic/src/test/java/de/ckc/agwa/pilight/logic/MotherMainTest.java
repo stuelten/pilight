@@ -1,23 +1,23 @@
 /*
- * Copyright 2014 Timo Stülten <timo.stuelten@googlemail.com>
+ * Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package de.ckc.agwa.pilight.logic;
 
-import de.ckc.agwa.pilight.io.MockPiLightSensor;
+import de.ckc.agwa.pilight.io.MockPiLightLamp;
 import de.ckc.agwa.pilight.io.MockPiLightSwitch;
-import de.ckc.agwa.pilight.io.PiLightSensor;
+import de.ckc.agwa.pilight.io.PiLightLamp;
 import de.ckc.agwa.pilight.io.PiLightSwitch;
 import org.jglue.cdiunit.AdditionalPackages;
 import org.jglue.cdiunit.CdiRunner;
@@ -44,22 +44,22 @@ public class MotherMainTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotherMainTest.class);
 
     @Inject
-    List<PiLightSensor> sensors;
+    List<PiLightSwitch> switches;
 
     @Inject
-    List<PiLightSwitch> switches;
+    List<PiLightLamp> lamps;
 
     @Inject
     MotherMain motherMain;
 
     @Test
     public void testMother() {
-        LOGGER.info("Test sensors '{}'", sensors);
-        LOGGER.info("Test switches '{}'", switches);
+        LOGGER.info("Test lamps '{}'", switches);
+        LOGGER.info("Test lamps '{}'", lamps);
 
-        MockPiLightSensor mother = (MockPiLightSensor) sensors.get(0);
-        MockPiLightSwitch sister = (MockPiLightSwitch) switches.get(0);
-        MockPiLightSwitch brother = (MockPiLightSwitch) switches.get(1);
+        MockPiLightSwitch mother = (MockPiLightSwitch) switches.get(0);
+        MockPiLightLamp sister = (MockPiLightLamp) lamps.get(0);
+        MockPiLightLamp brother = (MockPiLightLamp) lamps.get(1);
 
         motherMain.run();
 

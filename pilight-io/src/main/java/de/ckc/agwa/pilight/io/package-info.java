@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Timo Stülten <timo@stuelten.de>
+ * Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,6 @@
  */
 
 /**
- * A facade of switches fo lamps and sensors to trigger some logic via event listeners.
+ * A facade of lamps fo lamps and sensors to trigger some logic via event listeners.
  */
 package de.ckc.agwa.pilight.io;

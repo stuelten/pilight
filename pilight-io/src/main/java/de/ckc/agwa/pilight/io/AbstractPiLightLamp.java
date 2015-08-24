@@ -15,42 +15,49 @@
  */
 package de.ckc.agwa.pilight.io;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
- * Mock implementation of a {@link PiLightSwitch}.
+ * Abstract implementation of a {@link PiLightLamp} with a name.
+ *
  * @author Timo Stülten
  */
-public class MockPiLightSwitch extends AbstractPiLightSwitch {
+public abstract class AbstractPiLightLamp implements PiLightLamp {
 
     /**
-     * Initially {@code false}.
+     * The name
      */
-    protected boolean state = false;
+    protected String name;
 
     // ----------------------------------------------------------------------
 
-    public MockPiLightSwitch() {
+    public AbstractPiLightLamp() {
         super();
     }
 
-    public MockPiLightSwitch(String name) {
-        super(name);
-    }
-
-    public MockPiLightSwitch(String name, boolean state) {
-        this(name);
-        this.state = state;
+    public AbstractPiLightLamp(String name) {
+        this();
+        this.name = name;
     }
 
     // ----------------------------------------------------------------------
 
     @Override
-    public boolean isOn() {
-        return state;
+    public String getName() {
+        return name;
     }
 
-    public void setOn(boolean on) {
-        this.state = on;
-        super.stateChanged(state);
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String toString() {
+        String ret = new ToStringBuilder(this)
+                .append("name", name)
+                .append("on", isOn())
+                .toString();
+        return ret;
     }
 
 }

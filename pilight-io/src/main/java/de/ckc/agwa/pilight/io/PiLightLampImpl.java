@@ -15,65 +15,55 @@
  */
 package de.ckc.agwa.pilight.io;
 
-import com.pi4j.io.gpio.GpioPinDigitalInput;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A switch listening on events on some {@link #pin}.
+ * A switch with a name and a state.
  *
  * @author Timo Stülten
  */
-public class PiLightSwitchImpl extends AbstractPiLightSwitch implements GpioPinListenerDigital {
-
+public class PiLightLampImpl extends AbstractPiLightLamp {
     /**
      * The logger for this class only.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightSwitchImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightLampImpl.class);
 
     // ----------------------------------------------------------------------
 
-    /**
-     * The pin to listen on.
-     */
-    protected GpioPinDigitalInput pin;
+    protected GpioPinDigitalOutput pin;
 
     // ----------------------------------------------------------------------
 
-    /**
-     * Called on every state change on the {@link #pin}.
-     */
     @Override
-    public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-        LOGGER.debug("state change event: '{}'", event);
-        stateChanged(event.getState().isHigh());
-    }
-
-    // ----------------------------------------------------------------------
-
     public boolean isOn() {
         return pin == null ? false : pin.getState().isHigh();
     }
 
-    // ----------------------------------------------------------------------
+    @Override
+    public void setOn(boolean on) {
+        pin.setState(on);
+    }
 
-    protected GpioPinDigitalInput getPin() {
+    /**
+     * Get this switch's technical pin.
+     *
+     * @return the pin
+     */
+    protected GpioPinDigitalOutput getPin() {
         return pin;
     }
 
-    protected void setPin(GpioPinDigitalInput pin) {
-        if (this.pin != null) {
-            LOGGER.info("{}: remove listener on old GPIO '{}'", this, this.pin);
-            this.pin.removeListener(this);
-        }
+    /**
+     * Set this switch's technical pin
+     *
+     * @param pin the new pin
+     */
+    protected void setPin(GpioPinDigitalOutput pin) {
         this.pin = pin;
-        if (this.pin != null) {
-            LOGGER.info("{}: add listener on new GPIO '{}'", this, this.pin);
-            this.pin.addListener(this);
-        }
+        LOGGER.info("{}: uses GPIO {}", this, this.pin);
     }
 
     // ----------------------------------------------------------------------

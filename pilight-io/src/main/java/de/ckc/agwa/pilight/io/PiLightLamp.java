@@ -16,28 +16,38 @@
 package de.ckc.agwa.pilight.io;
 
 /**
+ * A lamp with a name and a state.
+ *
  * @author Timo Stülten
  */
-public interface PiLightSwitch {
-
-    void addStateChangeListener(StateChangeListener stateChangeListener);
-
-    void removeStateChangeListener(StateChangeListener stateChangeListener);
-
-    boolean isOn();
-
-    String getName();
-
-    void setName(String name);
+public interface PiLightLamp {
 
     /**
-     * Called on every state change
+     * Is the lamp switched on?
+     *
+     * @return {@code true} if switched on.
      */
-    public interface StateChangeListener {
-        /**
-         * Called on every state change
-         */
-        void stateChanged(boolean state);
-    }
+    boolean isOn();
+
+    /**
+     * Switch the lamp on or off.
+     *
+     * @param on switch on if {@code true}
+     */
+    void setOn(boolean on);
+
+    /**
+     * Get this lamp's name
+     *
+     * @return the name
+     */
+    String getName();
+
+    /**
+     * Set this lamp's name
+     *
+     * @param name the new name
+     */
+    void setName(String name);
 
 }

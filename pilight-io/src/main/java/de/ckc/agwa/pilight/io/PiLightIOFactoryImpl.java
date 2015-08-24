@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2015 Timo Stülten <timo.stuelten@googlemail.com>
+ * Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
  *
- *     Licensed under the Apache License, Version 2.0 (the "License");
- *     you may not use this file except in compliance with the License.
- *     You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *     Unless required by applicable law or agreed to in writing, software
- *     distributed under the License is distributed on an "AS IS" BASIS,
- *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *     See the License for the specific language governing permissions and
- *     limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package de.ckc.agwa.pilight.io;
 
@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Sets up sensors and switches on raspi.
+ * Sets up lamps and switches on raspi.
  *
  * @author Timo Stülten
  */
@@ -48,12 +48,12 @@ public class PiLightIOFactoryImpl {
     /**
      * The list of sensors.
      */
-    protected List<PiLightSensor> lightSensors = new ArrayList<>();
+    protected List<PiLightSwitch> switches = new ArrayList<>();
 
     /**
-     * The list of switches
+     * The list of lamps
      */
-    protected List<PiLightSwitch> switches = new ArrayList<>();
+    protected List<PiLightLamp> lamps = new ArrayList<>();
 
     // ----------------------------------------------------------------------
 
@@ -68,33 +68,10 @@ public class PiLightIOFactoryImpl {
         // create gpio controller
         GpioController gpio = GpioFactory.getInstance();
 
-        initLightSensors(gpio);
         initSwitches(gpio);
+        initLamps(gpio);
 
         LOGGER.info("End init.");
-    }
-
-    // ----------------------------------------------------------------------
-
-    private void initLightSensors(GpioController gpio) {
-        // Lampe initialisieren
-        LOGGER.debug("Start initLightSensors...");
-
-        // Eigene Lampe
-        GpioPinDigitalInput sensorPin = gpio.provisionDigitalInputPin(RaspiPin.GPIO_01, PinPullResistance.PULL_DOWN);
-        PiLightSensor sensor = createSensor(sensorPin);
-        lightSensors.add(sensor);
-
-        LOGGER.debug("End initLightSensors: {}", lightSensors);
-    }
-
-    private PiLightSensor createSensor(GpioPinDigitalInput sensorPin) {
-        PiLightSensorImpl sensor = new PiLightSensorImpl();
-        sensor.setName("mother's light sensor");
-        sensor.setPin(sensorPin);
-
-        LOGGER.info("Created sensor '{}'", sensor);
-        return sensor;
     }
 
     // ----------------------------------------------------------------------
@@ -102,51 +79,100 @@ public class PiLightIOFactoryImpl {
     private void initSwitches(GpioController gpio) {
         LOGGER.debug("Start initSwitches...");
 
-        {
-            // 1st LED
-            GpioPinDigitalOutput led1Pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00, "sister", PinState.LOW);
-            PiLightSwitch sister = createSwitch("switched sister's lamp", led1Pin);
-            switches.add(sister);
-        }
-        {
-            // 2nd LED
-            GpioPinDigitalOutput led2Pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_02, "brother", PinState.LOW);
-            PiLightSwitch brother = createSwitch("switched brother's lamp", led2Pin);
-            switches.add(brother);
-        }
+        // only mother's switch exists
+        GpioPinDigitalInput sensorPin = gpio.provisionDigitalInputPin(RaspiPin.GPIO_00, PinPullResistance.PULL_DOWN);
+        PiLightSwitch aSwitch = createSwitch("mother's light switch", sensorPin);
+        switches.add(aSwitch);
 
         LOGGER.debug("End initSwitches: {}", switches);
     }
 
-    private PiLightSwitch createSwitch(String name, GpioPinDigitalOutput outputPin) {
+    private PiLightSwitch createSwitch(String name, GpioPinDigitalInput sensorPin) {
         PiLightSwitchImpl ret = new PiLightSwitchImpl();
+        ret.setName(name);
+        ret.setPin(sensorPin);
+
+        LOGGER.info("Created switch '{}'", ret);
+        return ret;
+    }
+
+    // ----------------------------------------------------------------------
+
+    private void initLamps(GpioController gpio) {
+        LOGGER.debug("Start initLamps...");
+
+        {
+            // 1st LED is mother's light
+            GpioPinDigitalOutput ledPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "mother", PinState.LOW);
+            PiLightLamp sister = createLamp("switched mother's lamp", ledPin);
+            lamps.add(sister);
+        }
+        {
+            // 2nd LED is sister's lamp
+            GpioPinDigitalOutput ledPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_02, "sister", PinState.LOW);
+            PiLightLamp sister = createLamp("switched sister's lamp", ledPin);
+            lamps.add(sister);
+        }
+        {
+            // 3rd LED is brother's lamp
+            GpioPinDigitalOutput ledPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_03, "brother", PinState.LOW);
+            PiLightLamp brother = createLamp("switched brother's lamp", ledPin);
+            lamps.add(brother);
+        }
+
+        LOGGER.debug("End initLamps: {}", lamps);
+    }
+
+    private PiLightLamp createLamp(String name, GpioPinDigitalOutput outputPin) {
+        PiLightLampImpl ret = new PiLightLampImpl();
         ret.setName(name);
         ret.setPin(outputPin);
 
+        outputPin.setShutdownOptions(true, PinState.LOW);
+
         // Light show!
-        LOGGER.info("Created switch '{}'", ret);
+        LOGGER.info("Created lamp '{}'", ret);
+        int blinks = outputPin.getPin().getAddress();
+
+        // one long blink for start
         ret.setOn(true);
         PiLightIOHelper.sleep(500);
         ret.setOn(false);
         PiLightIOHelper.sleep(500);
+
+        // count pin number with fast short blinks
+        while (blinks-- > 0) {
+            ret.setOn(true);
+            PiLightIOHelper.sleep(100);
+            ret.setOn(false);
+            PiLightIOHelper.sleep(100);
+        }
+
+        // one long blink for end
+        PiLightIOHelper.sleep(400);
         ret.setOn(true);
         PiLightIOHelper.sleep(500);
         ret.setOn(false);
-        PiLightIOHelper.sleep(500);
 
         return ret;
     }
 
     // ----------------------------------------------------------------------
 
-    @Produces
-    public List<PiLightSensor> getLightSensors() {
-        return Collections.unmodifiableList(lightSensors);
-    }
-
+    /**
+     * @return the only switch this factory supports, wrapped in a {@link Collections#unmodifiableList(List)}.
+     */
     @Produces
     public List<PiLightSwitch> getSwitches() {
         return Collections.unmodifiableList(switches);
+    }
+
+    /**
+     * @return the lamps this factory supports, wrapped in a {@link Collections#unmodifiableList(List)}.
+     */
+    @Produces
+    public List<PiLightLamp> getLamps() {
+        return Collections.unmodifiableList(lamps);
     }
 
 }
