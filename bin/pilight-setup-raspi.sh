@@ -72,7 +72,7 @@ then
     fi
 fi
 
-BASIC_PACKAGES=nano git screen mc wget bash-completion
+BASIC_PACKAGES="nano git screen mc wget bash-completion"
 if ( ask_proceed_step "Install basic packages ($BASIC_PACKAGES)" )
 then
     aptitude install -y $BASIC_PACKAGES
@@ -86,7 +86,7 @@ fi
 if ( ask_proceed_step "Get sources for pilight from git" )
 then
     read -p "Enter git username: " -er username
-    git clone "$((username))@schatzkammer.subluna.org:Dev/git/pilight"
+    git clone "$((username))@schatzkammer.subluna.org/Users/timo/Dev/git/pilight.git"
 fi
 
 if ( ask_proceed_step "Get sources for pilight from SVN" )
