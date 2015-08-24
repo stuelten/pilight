@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Sets maven environment
+# Set maven environment
 
 # directory with this script
 BASEDIR=$( dirname "$0" )
