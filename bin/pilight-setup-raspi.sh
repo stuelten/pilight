@@ -19,13 +19,17 @@ if [[ "$1" == "-y" ]]
 then
     shift
     AUTO_PROCEED=true
+else
+    echo "Unknown parameter \"$1\". Aborting."
+    exit 1
 fi
 
 ask_proceed_step() {
+    local proceed="n"
     echo
     if [[ $AUTO_PROCEED ]]
     then
-            echo "Proceed: $1"
+            echo "Auto-proceed: $1"
             return 0
     else
         read -p "$1 (y/n)? " -er proceed
@@ -41,7 +45,26 @@ ask_proceed_step() {
 }
 
 wait_for_enter() {
+    local dummy=""
+    echo "$1"
     read -p "Press Enter to proceed..." -er dummy
+}
+
+assert_file_readable() {
+    local file="$1"
+    if ( ! [[ -r "$file" ]] )
+    then
+        wait_for_enter "$file not readable. Aborting..."
+        exit 1
+    fi
+}
+assert_file_writable() {
+    local file="$1"
+    if ( ! [[ -w "$file" ]] )
+    then
+        wait_for_enter "$file not writable. Aborting..."
+        exit 1
+    fi
 }
 
 if ( ask_proceed_step "Create individual unique ssh keys for this host" )
@@ -55,6 +78,9 @@ then
     read -p "Enter WLAN passphrase: " -er passphrase
 
     echo "Create standard interface config..."
+    assert_file_readable "$BASEDIR/interfaces"
+    assert_file_writable "/etc/network/interfaces"
+
     cat $BASEDIR/interfaces | sed "s^#SSID#^$ssid^g" | sed "s^#PASSPHRASE#^$passphrase^g" > /etc/network/interfaces
     chmod 600 /etc/network/interfaces
     echo "New network config:"
@@ -67,8 +93,7 @@ then
     then
         echo "Network setup successful."
     else
-        echo "Error accessing network. Press Ctrl+C to abort"
-        wait_for_enter
+        wait_for_enter "Error accessing network. Press Ctrl+C to abort"
     fi
 fi
 
