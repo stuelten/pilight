@@ -36,36 +36,46 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Kontrolliert das UI und stößt Aktionen an.
+ * Controls the ui and starts any actions.
  */
 public class WlanConfigUIController implements Initializable {
-
-    public static final String KEY_SSID = "ssid:";
-    public static final String KEY_PW = "pw:";
     public static final Logger LOGGER = Logger.getLogger(WlanConfigUIController.class.getName());
+
     /**
-     * Das WLAN-Passwort.
+     * key for wlan name.
+     */
+    public static final String KEY_SSID = "ssid:";
+    /**
+     * key for wlan password
+     */
+    public static final String KEY_PW = "pw:";
+
+    /**
+     * WLAN password
      */
     @FXML
     public PasswordField wlanPasswd;
+
     /**
-     * Der Name des WLANs.
+     * WLAN name a.k.a. SSID
      */
     @FXML
     private TextField wlanName;
+
     /**
-     * Die Statusanzeige
+     * Display some status text
      */
     @FXML
     private Text statusText;
 
     /**
-     * Das {@link ResourceBundle} mit den i18n-Texten.
+     * {@link ResourceBundle} with i18n texts.
      */
     private ResourceBundle i18n;
 
     @Override
     public void initialize(URL url, ResourceBundle i18nResourceBundle) {
+        // set status text while reading config
         this.i18n = i18nResourceBundle;
         String statusI18n = MessageFormat.format(
                 this.i18n.getString("status.readWlanInfoFromFile.File"),
@@ -74,6 +84,7 @@ public class WlanConfigUIController implements Initializable {
 
         readConfig();
 
+        // set status text, what happens next
         statusI18n = MessageFormat.format(
                 i18n.getString("status.willSaveConfigInFile.File"),
                 PiLightConfigMain.FILENAME.getAbsolutePath());
@@ -101,13 +112,17 @@ public class WlanConfigUIController implements Initializable {
 
     // ----------------------------------------------------------------------
 
+    /**
+     * Reads configuration from wlan config file.
+     */
     private void readConfig() {
         try (FileReader fileReader = new FileReader(
                 PiLightConfigMain.FILENAME);
              BufferedReader reader = new BufferedReader(
-                     fileReader);) {
+                     fileReader)) {
             String line = reader.readLine();
             while (line != null) {
+                // search for config entries, ignore other lines
                 if (line.trim().startsWith(KEY_SSID)) {
                     String wlan = line.substring(KEY_SSID.length());
                     wlanName.setText(wlan);
@@ -122,6 +137,9 @@ public class WlanConfigUIController implements Initializable {
         }
     }
 
+    /**
+     * Writes back configuration into wlan config file.
+     */
     private void saveConfig() {
         URL template = getClass().getResource("interfaces");
         createFileFromTemplate(template, PiLightConfigMain.FILENAME);
@@ -133,13 +151,16 @@ public class WlanConfigUIController implements Initializable {
              FileWriter fileWriter = new FileWriter(targetFile);
              BufferedWriter writer = new BufferedWriter(fileWriter)) {
 
-            String line = null;
+            String line;
             do {
+                // read and write line by line
                 line = templateBR.readLine();
                 if (line != null) {
-                    // Templates mit konkreten Eingaben ersetzen
+                    // replace all templates with user's entries ...
                     line = line.replaceAll("#SSID#", wlanName.getText());
                     line = line.replaceAll("#PASSWD#", wlanPasswd.getText());
+
+                    // ... and write line to target file
                     writer.write(line + "\n");
                 }
             } while (line != null);

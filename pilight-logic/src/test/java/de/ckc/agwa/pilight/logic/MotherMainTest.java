@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ckc.agwa.pilight.logic;
 
 import de.ckc.agwa.pilight.io.MockPiLightLamp;
@@ -54,23 +55,26 @@ public class MotherMainTest {
 
     @Test
     public void testMother() {
-        LOGGER.info("Test lamps '{}'", switches);
+        LOGGER.info("Test switches '{}'", switches);
         LOGGER.info("Test lamps '{}'", lamps);
 
-        MockPiLightSwitch mother = (MockPiLightSwitch) switches.get(0);
-        MockPiLightLamp sister = (MockPiLightLamp) lamps.get(0);
-        MockPiLightLamp brother = (MockPiLightLamp) lamps.get(1);
+        MockPiLightSwitch mothersSwitch = (MockPiLightSwitch) switches.get(0);
+
+        MockPiLightLamp mothersLamp = (MockPiLightLamp) lamps.get(0);
+        MockPiLightLamp sistersLamp = (MockPiLightLamp) lamps.get(1);
+        MockPiLightLamp brothersLamp = (MockPiLightLamp) lamps.get(2);
 
         motherMain.run();
 
-        Assert.assertTrue("sister is dark.", !sister.isOn());
-        Assert.assertTrue("brother is dark.", !brother.isOn());
+        Assert.assertTrue("mother is dark.", !mothersLamp.isOn());
+        Assert.assertTrue("sister is dark.", !sistersLamp.isOn());
+        Assert.assertTrue("brother is dark.", !brothersLamp.isOn());
 
-        mother.setOn(true);
+        mothersSwitch.setOn(true);
 
-        Assert.assertTrue("sister must shine.", sister.isOn());
-        Assert.assertTrue("brother must shine.", brother.isOn());
-
+        Assert.assertTrue("mother must shine.", mothersLamp.isOn());
+        Assert.assertTrue("sister must shine.", sistersLamp.isOn());
+        Assert.assertTrue("brother must shine.", brothersLamp.isOn());
     }
 
 }

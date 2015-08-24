@@ -28,8 +28,14 @@ import java.net.URL;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+/**
+ * Entry class for UI.
+ */
 public class PiLightConfigMain extends Application {
 
+    /**
+     * The file with the wlan configuration.
+     */
     public static final File FILENAME = new File("pilight-wlan-config.txt");
 
     /**
@@ -39,17 +45,21 @@ public class PiLightConfigMain extends Application {
         launch(args);
     }
 
+    /**
+     * Get properties and create ui.
+     */
     @Override
     public void start(Stage stage) throws Exception {
 
-        // UI laden und starten
+        // get i18n properties
         InputStream wlanConfigUIPropertiesInputStream = getClass().getResource("WlanConfigUI.properties").openStream();
         ResourceBundle wlanConfigUII18nResource = new PropertyResourceBundle(wlanConfigUIPropertiesInputStream);
         URL wlanConfigUIFxml = getClass().getResource("WlanConfigUI.fxml");
 
+        // create ui with i18n properties
         Parent wlanConfigUIParent = FXMLLoader.load(wlanConfigUIFxml, wlanConfigUII18nResource);
 
-        // Stage vorbereiten und anzeigen
+        // populate and configure ui
         String piLightConfigMainI18nPropertiesFile = getClass().getSimpleName() + ".properties";
         InputStream piLightConfigMainPropertiesInputStream = getClass().getResource(piLightConfigMainI18nPropertiesFile).openStream();
         ResourceBundle piLightConfigMainI18nResource = new PropertyResourceBundle(piLightConfigMainPropertiesInputStream);

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ckc.agwa.pilight.logic;
 
 import de.ckc.agwa.pilight.io.MockPiLightLamp;
@@ -26,35 +27,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A mock factory producing {@link MockPiLightSwitch}s
- * and {@link MockPiLightLamp}es.
+ * A mock factory producing {@link MockPiLightSwitch}es
+ * and {@link MockPiLightLamp}s.
  *
  * @author Timo Stülten
  */
 @Singleton
 public class PiLightMockFactory {
 
-    private List<PiLightSwitch> sensors = new ArrayList<>();
-    private List<PiLightLamp> switches = new ArrayList<>();
+    private List<PiLightSwitch> switches = new ArrayList<>();
+    private List<PiLightLamp> lamps = new ArrayList<>();
 
     public PiLightMockFactory() {
-        PiLightSwitch mother = new MockPiLightSwitch("mother's lamp sensor");
-        sensors.add(mother);
+        PiLightSwitch mother = new MockPiLightSwitch("mother's switch");
+        switches.add(mother);
 
-        PiLightLamp sister = new MockPiLightLamp("sister's lamp switch");
-        PiLightLamp brother = new MockPiLightLamp("brother's lamp switch");
-        switches.add(sister);
-        switches.add(brother);
+        PiLightLamp mothersLamp = new MockPiLightLamp("mother's lamp lamp");
+        PiLightLamp sister = new MockPiLightLamp("sister's lamp lamp");
+        PiLightLamp brother = new MockPiLightLamp("brother's lamp lamp");
+        lamps.add(mothersLamp);
+        lamps.add(sister);
+        lamps.add(brother);
     }
 
     @Produces
-    public List<PiLightSwitch> getLightSensors() {
-        return sensors;
-    }
-
-    @Produces
-    public List<PiLightLamp> getSwitches() {
+    public List<PiLightSwitch> getSwitches() {
         return switches;
+    }
+
+    @Produces
+    public List<PiLightLamp> getLamps() {
+        return lamps;
     }
 
 }

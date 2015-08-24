@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ckc.agwa.pilight.io;
 
 /**
@@ -37,7 +38,7 @@ public interface PiLightSwitch {
         /**
          * Called on every state change
          */
-        void stateChanged(boolean state);
+        void stateChanged(PiLightSwitch changedSwitch, boolean state);
     }
 
 }

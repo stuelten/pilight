@@ -47,7 +47,7 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
     List<PiLightSwitch> switches;
 
     /**
-     * The lamps are switches on and off.
+     * The lamps are switched on and off.
      */
     @Inject
     List<PiLightLamp> lamps;
@@ -75,12 +75,13 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
     }
 
     @Override
-    public void stateChanged(boolean state) {
-        LOGGER.info("Switch changed to '{}'", state);
+    public void stateChanged(PiLightSwitch changedSwitch, boolean state) {
+        boolean currentState = changedSwitch.isOn();
+        LOGGER.info("Switch changed to '{}'", currentState);
 
         for (PiLightLamp lamp : lamps) {
-            LOGGER.info("Switch '{}' to '{}'", lamp, state);
-            lamp.setOn(state);
+            LOGGER.info("Switch '{}' to '{}'", lamp, currentState);
+            lamp.setOn(currentState);
         }
 
     }
