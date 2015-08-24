@@ -90,6 +90,7 @@ then
 
     echo "Restart network services to join WLAN..."
     service networking restart
+    invoke-rc.d networking restart
     if ( ping -A -c 3 -w 5 www.heise.de )
     then
         echo "Network setup successful."
