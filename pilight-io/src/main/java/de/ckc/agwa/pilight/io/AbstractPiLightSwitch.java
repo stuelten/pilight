@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ckc.agwa.pilight.io;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -75,7 +76,7 @@ public abstract class AbstractPiLightSwitch implements PiLightSwitch {
 
         for (StateChangeListener stateChangeListener : listeners) {
             LOGGER.debug("{}: Fire new state: '{}' to '{}'", this, stateChangeListener);
-            stateChangeListener.stateChanged(state);
+            stateChangeListener.stateChanged(this, state);
         }
 
     }
