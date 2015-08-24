@@ -19,7 +19,8 @@ if [[ "$1" == "-y" ]]
 then
     shift
     AUTO_PROCEED=true
-else
+elif [[ ! -z "$1" ]]
+then
     echo "Unknown parameter \"$1\". Aborting."
     exit 1
 fi
