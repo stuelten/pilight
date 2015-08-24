@@ -44,7 +44,7 @@ public class PiLightIOFactoryImplTest {
 
     }
 
-    @Test
+    @Test(timeout = 60000)
     public void testSwitchAndBlink() throws Exception {
 
         factory.getLightSensors().get(0).addStateChangeListener(state -> {
