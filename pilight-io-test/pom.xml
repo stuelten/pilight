@@ -29,7 +29,7 @@
     <artifactId>pilight-io-test</artifactId>
 
     <description>
-        Utilities for testing with i/o.
+        Utilities for testing with mock i/o.
     </description>
 
     <dependencies>
@@ -39,6 +39,10 @@
         </dependency>
 
         <dependency>
+            <!--
+                This module is usually used in scope test. But whenever used it needs junit as
+                dependency. So the scope on junit is not test but compile.
+             -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>compile</scope>
