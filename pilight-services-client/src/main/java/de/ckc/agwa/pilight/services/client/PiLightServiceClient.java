@@ -19,35 +19,30 @@ package de.ckc.agwa.pilight.services.client;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import de.ckc.agwa.pilight.services.PiLightService;
+import de.ckc.agwa.pilight.services.PiLightServiceImpl;
+import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.MediaType;
 import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A client sending and receiving status updates for lights.
  *
  * @author Timo Stülten
  */
-public class PiLightServiceClient {
-    /**
-     * Base URI for Service
-     */
-    public static final String SERVICE_PREFIX = "pilight/";
-
-    // ----------------------------------------------------------------------
-    /**
-     * Base template for path for lamp status
-     */
-    public static final String LAMP_INFO_URI_TEMPLARE = SERVICE_PREFIX + "families/{family}/lights/{light}/status";
-    public static final String LAMP_INFO_URI_TEMPLARE_FAMILY = "{family}";
-    public static final String LAMP_INFO_URI_TEMPLARE_LIGHT = "{light}";
+public class PiLightServiceClient implements PiLightService {
     /**
      * The logger for this class only.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PiLightServiceClient.class);
 
     // ----------------------------------------------------------------------
+
     /**
      * Used by all methods
      */
@@ -82,24 +77,93 @@ public class PiLightServiceClient {
         return ret;
     }
 
-    /**
-     * GETs the status of some light of some family.
-     *
-     * @param family the family
-     * @param light  the light
-     * @return {@code true} if the light is shining.
-     */
-    public boolean getLightStatus(String family, String light) {
+    @Override
+    public String serviceStatusPlain() {
+        return "" + serviceStatus();
+    }
+
+    @Override
+    public PiLightServiceStatus serviceStatus() {
+        PiLightServiceStatus ret = null;
+        try {
+            String servicePath = PiLightServiceImpl.SERVICE_STATUS_PATH;
+            URI serviceUri = createServiceUri(servicePath);
+
+            WebResource webResource = client.resource(serviceUri);
+            ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+
+            if (200 == response.getStatus()) {
+                // get result
+                ret = response.getEntity(PiLightServiceStatus.class);
+            } else {
+                LOGGER.info("Response: '()'", response);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Ignoring exception for request '{}'", e);
+        }
+        return ret;
+    }
+
+    @Override
+    public Collection<String> serviceInfoFamilies() {
+        Collection<String> ret = Collections.emptyList();
+        try {
+            String servicePath = PiLightServiceImpl.SERVICE_INFO_FAMILIES_PATH;
+            URI serviceUri = createServiceUri(servicePath);
+
+            WebResource webResource = client.resource(serviceUri);
+            ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+
+            if (200 == response.getStatus()) {
+                // get result
+                ret = (Collection<String>) response.getEntity(Collection.class);
+            } else {
+                LOGGER.info("Response: '()'", response);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Ignoring exception for request '{}'", e);
+        }
+        return ret;
+    }
+
+    @Override
+    public Collection<String> serviceFamilyInfoLights(String family) {
+        Collection<String> ret = Collections.emptyList();
+        try {
+            String servicePath = PiLightServiceImpl.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
+                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_FAMILY, family);
+
+            URI serviceUri = createServiceUri(servicePath);
+
+            WebResource webResource = client.resource(serviceUri);
+            ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+
+            if (200 == response.getStatus()) {
+                // get result
+                ret = (Collection<String>) response.getEntity(Collection.class);
+            } else {
+                LOGGER.info("Response for '()': '()'", family, response);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Ignoring exception for request '{}'", e);
+        }
+        return ret;
+    }
+
+    @Override
+    public boolean serviceFamilyLightStatusGet(String family, String light) {
         boolean ret = false;
         try {
-            String getLampStatusPath = LAMP_INFO_URI_TEMPLARE //
-                    .replace(LAMP_INFO_URI_TEMPLARE_FAMILY, family) //
-                    .replace(LAMP_INFO_URI_TEMPLARE_LIGHT, light);
+            String servicePath = PiLightServiceImpl.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
+                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_FAMILY, family) //
+                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_LIGHT, light);
+            URI serviceUri = createServiceUri(servicePath);
 
-            URI getLampStatusUri = createServiceUri(getLampStatusPath);
-
-            WebResource webResource = client.resource(getLampStatusUri);
-            ClientResponse response = webResource.accept("application/json")
+            WebResource webResource = client.resource(serviceUri);
+            ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON)
                     .get(ClientResponse.class);
 
             if (200 == response.getStatus()) {
@@ -117,26 +181,19 @@ public class PiLightServiceClient {
         return ret;
     }
 
-    /**
-     * PUTs the status of some light of some family.
-     *
-     * @param family the family
-     * @param light  the light
-     * @param status {@code true} if the light is shining.
-     * @return {@code true} if the service was called successfully.
-     */
-    public boolean setLightStatus(String family, String light, boolean status) {
+    @Override
+    public boolean serviceFamilyLightStatusPut(String family, String light, boolean status) {
         boolean ret = false;
         try {
-            String getLampStatusPath = LAMP_INFO_URI_TEMPLARE //
-                    .replace(LAMP_INFO_URI_TEMPLARE_FAMILY, family) //
-                    .replace(LAMP_INFO_URI_TEMPLARE_LIGHT, light);
+            String servicePath = PiLightServiceImpl.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
+                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_FAMILY, family) //
+                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_LIGHT, light);
+            URI serviceUri = createServiceUri(servicePath);
 
-            URI getLampStatusUri = createServiceUri(getLampStatusPath);
             String input = "" + status;
 
-            WebResource webResource = client.resource(getLampStatusUri);
-            ClientResponse response = webResource.type("application/json")
+            WebResource webResource = client.resource(serviceUri);
+            ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
                     .put(ClientResponse.class, input);
 
             if (200 == response.getStatus() || 201 == response.getStatus()) {

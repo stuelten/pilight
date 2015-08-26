@@ -26,11 +26,11 @@
 
     <modules>
         <module>pilight-io</module>
-        <module>pilight-logic</module>
-        <module>pilight-webui</module>
         <module>pilight-io-test</module>
+        <module>pilight-light</module>
         <module>pilight-services</module>
         <module>pilight-services-client</module>
+        <module>pilight-webui</module>
         <module>pilight-config</module>
     </modules>
 
@@ -123,13 +123,30 @@
 
             <dependency>
                 <groupId>de.ckc.agwa</groupId>
-                <artifactId>pilight-logic</artifactId>
+                <artifactId>pilight-light</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.ckc.agwa</groupId>
+                <artifactId>pilight-services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.ckc.agwa</groupId>
+                <artifactId>pilight-services-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>de.ckc.agwa</groupId>
                 <artifactId>pilight-webui</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.ckc.agwa</groupId>
+                <artifactId>pilight-config</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -159,6 +176,11 @@
                 <version>2.13</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>1.8</version>
             </dependency>
 
             <!-- logging -->
