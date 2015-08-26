@@ -1,17 +1,17 @@
 /*
- * Copyright 2014 Timo Stülten <timo.stuelten@googlemail.com>
+ * Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package de.ckc.agwa.pilight.services;
 
@@ -37,13 +37,13 @@ public class PiLightMain {
      */
     public static final Package SERVICE_ROOT = PiLightMain.class.getPackage();
     /**
+     * Base URI for this app
+     */
+    public static final URI BASE_URI = URI.create("http://localhost:9998/");
+    /**
      * The logger for this class only.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PiLightMain.class);
-    /**
-     * Base URI for this app
-     */
-    private static final URI BASE_URI = URI.create("http://localhost:9998/");
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
@@ -53,9 +53,17 @@ public class PiLightMain {
         try {
             System.out.println("Start PiLightMain...");
 
-            final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, createApp());
+            URI baseUri;
+            if (args.length == 1) {
+                baseUri = URI.create(args[0]);
+            } else {
+                baseUri = BASE_URI;
+            }
 
-            System.out.println("Application started for URL " + BASE_URI);
+            System.out.println("Start application for URL " + baseUri);
+            final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, createApp());
+            System.out.println("Application running...");
+
             System.out.println("Hit enter to stop it...");
 
             //noinspection ResultOfMethodCallIgnored

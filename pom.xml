@@ -30,6 +30,7 @@
         <module>pilight-webui</module>
         <module>pilight-io-test</module>
         <module>pilight-services</module>
+        <module>pilight-services-client</module>
         <module>pilight-config</module>
     </modules>
 

@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2015 Timo Stülten <timo.stuelten@googlemail.com>
+ * Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
  *
- *     Licensed under the Apache License, Version 2.0 (the "License");
- *     you may not use this file except in compliance with the License.
- *     You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *     Unless required by applicable law or agreed to in writing, software
- *     distributed under the License is distributed on an "AS IS" BASIS,
- *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *     See the License for the specific language governing permissions and
- *     limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package de.ckc.agwa.pilight.services;
 
@@ -160,7 +160,7 @@ public class PiLightService {
             status = familyLights.get(light);
         }
 
-        LOGGER.info("serviceFamilyLightStatusGet('{}'): return '{}'", light, status);
+        LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", family, light, status);
         return "" + status;
     }
 
@@ -178,7 +178,7 @@ public class PiLightService {
     public String serviceFamilyLightStatusPut(@PathParam("family") String family,
                                               @PathParam("light") String light,
                                               String status) {
-        LOGGER.info("serviceFamilyLightStatusPut('{}'.'{}'): called", light, status);
+        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", family, light, status);
         Boolean checkedStatus = Boolean.valueOf(status);
 
         Map<String, Boolean> familyLights = lights.get(family);
