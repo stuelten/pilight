@@ -34,6 +34,7 @@ import javax.ws.rs.core.MediaType;
  * @author Timo Stülten
  */
 public class PiLightServiceTest extends JerseyTest {
+
     @Override
     protected Application configure() {
         enable(TestProperties.LOG_TRAFFIC);

@@ -154,8 +154,8 @@ public class PiLightServiceClient implements PiLightService {
     }
 
     @Override
-    public boolean serviceFamilyLightStatusGet(String family, String light) {
-        boolean ret = false;
+    public String serviceFamilyLightStatusGet(String family, String light) {
+        String ret = Boolean.FALSE.toString();
         try {
             String servicePath = PiLightServiceImpl.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightServiceImpl.TEMPLATE_PARAM_FAMILY, family) //
@@ -171,7 +171,7 @@ public class PiLightServiceClient implements PiLightService {
 
                 LOGGER.debug("Response for '()', '()': '()'", family, light, output);
 
-                ret = Boolean.valueOf(output);
+                ret = Boolean.valueOf(output).toString();
             } else {
                 LOGGER.info("Response for '()', '()': '()'", family, light, response);
             }
@@ -182,8 +182,8 @@ public class PiLightServiceClient implements PiLightService {
     }
 
     @Override
-    public boolean serviceFamilyLightStatusPut(String family, String light, boolean status) {
-        boolean ret = false;
+    public String serviceFamilyLightStatusPut(String family, String light, String status) {
+        String ret = Boolean.FALSE.toString();
         try {
             String servicePath = PiLightServiceImpl.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightServiceImpl.TEMPLATE_PARAM_FAMILY, family) //
@@ -198,7 +198,7 @@ public class PiLightServiceClient implements PiLightService {
 
             if (200 == response.getStatus() || 201 == response.getStatus()) {
                 // Could set new status
-                ret = true;
+                ret = Boolean.TRUE.toString();
             } else {
                 LOGGER.info("Response for '()', '()': '()'", family, light, response);
             }

@@ -23,9 +23,9 @@ package de.ckc.agwa.pilight.services;
  */
 public class PiLightServiceStatus {
 
-    private int familiesCount = 0;
+    int familiesCount = 0;
 
-    private int lightsCount = 0;
+    int lightsCount = 0;
 
     /**
      * @return Number of families

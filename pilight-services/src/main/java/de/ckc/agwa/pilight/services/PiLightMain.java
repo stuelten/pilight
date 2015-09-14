@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ckc.agwa.pilight.services;
 
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -33,17 +34,23 @@ import java.util.Map;
  */
 public class PiLightMain {
     /**
+     * The logger for this class only.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightMain.class);
+
+    // ----------------------------------------------------------------------
+
+    /**
      * Search for service classes below this package root.
      */
     public static final Package SERVICE_ROOT = PiLightMain.class.getPackage();
+
     /**
      * Base URI for this app
      */
     public static final URI BASE_URI = URI.create("http://localhost:9998/");
-    /**
-     * The logger for this class only.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightMain.class);
+
+    // ----------------------------------------------------------------------
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.

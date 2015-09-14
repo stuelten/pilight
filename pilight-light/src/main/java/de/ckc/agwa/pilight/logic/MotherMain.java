@@ -16,9 +16,9 @@
 
 package de.ckc.agwa.pilight.logic;
 
-import com.google.common.base.Strings;
 import de.ckc.agwa.pilight.io.PiLightLamp;
 import de.ckc.agwa.pilight.io.PiLightSwitch;
+import de.ckc.agwa.pilight.services.PiLightMain;
 import de.ckc.agwa.pilight.services.PiLightServiceImpl;
 import de.ckc.agwa.pilight.services.client.PiLightServiceClient;
 import org.slf4j.Logger;
@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Singleton
 public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
+
     /**
      * Environment variable to get service URL from
      */
@@ -107,8 +109,9 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
     @Override
     public void run() {
         serviceBaseUrl = System.getenv(PILIGHT_SERVICE_ENV);
-        if (Strings.isNullOrEmpty(serviceBaseUrl)) {
-            serviceBaseUrl = "http://kannkeule.de:9980/" + PiLightServiceImpl.SERVICE_PREFIX;
+        if (null == serviceBaseUrl || "".equals(serviceBaseUrl.trim())) {
+            serviceBaseUrl = URI.create(PiLightMain.BASE_URI.toString()
+                    + PiLightServiceImpl.SERVICE_PREFIX).normalize().toString();
         }
 
         serviceExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -119,7 +122,8 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
 
         // Call service asynchronously every 30s
         serviceExecutor.scheduleWithFixedDelay( //
-                () -> serviceClient.serviceFamilyLightStatusPut(family, light, mothersLight.isOn()), 3, 30, TimeUnit.SECONDS);
+                () -> serviceClient.serviceFamilyLightStatusPut(family, light, "" + mothersLight.isOn()),
+                3, 30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -133,7 +137,7 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
         }
 
         // Instantly and asynchronously call service
-        serviceExecutor.submit(() -> serviceClient.serviceFamilyLightStatusPut(family, light, currentState));
+        serviceExecutor.submit(() -> serviceClient.serviceFamilyLightStatusPut(family, light, "" + currentState));
     }
 
 }
