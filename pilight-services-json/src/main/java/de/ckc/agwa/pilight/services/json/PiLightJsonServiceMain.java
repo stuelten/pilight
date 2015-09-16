@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.ckc.agwa.pilight.services;
+package de.ckc.agwa.pilight.services.json;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -30,20 +30,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Main class.
+ * Startup logic for RESTful JSON service.
  */
-public class PiLightMain {
+public class PiLightJsonServiceMain {
     /**
      * The logger for this class only.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightJsonServiceMain.class);
 
     // ----------------------------------------------------------------------
 
     /**
      * Search for service classes below this package root.
      */
-    public static final Package SERVICE_ROOT = PiLightMain.class.getPackage();
+    private static final String SERVICE_ROOT = PiLightJsonServiceMain.class.getPackage().getName();
 
     /**
      * Base URI for this app
@@ -58,7 +58,7 @@ public class PiLightMain {
     @SuppressWarnings({"UseOfSystemOutOrSystemErr", "MethodCanBeVariableArityMethod"})
     public static void main(String[] args) {
         try {
-            System.out.println("Start PiLightMain...");
+            System.out.println("Start PiLightJsonServiceMain...");
 
             URI baseUri;
             if (args.length == 1) {
@@ -84,9 +84,8 @@ public class PiLightMain {
     // ----------------------------------------------------------------------
 
     public static ResourceConfig createApp() {
-        String SERVICE_ROOT_Name = SERVICE_ROOT.getName();
         return new ResourceConfig().
-                packages(SERVICE_ROOT_Name).
+                packages(SERVICE_ROOT).
                 register(createMoxyJsonResolver());
     }
 

@@ -15,6 +15,6 @@
  */
 
 /**
- * Some client code using pilight-services.
+ * Die Logik, die im EE Container läuft
  */
-package de.ckc.agwa.pilight.services.client;
+package de.ckc.agwa.pilight.services.json;

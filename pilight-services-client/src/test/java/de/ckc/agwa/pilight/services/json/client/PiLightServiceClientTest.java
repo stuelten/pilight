@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package de.ckc.agwa.pilight.services.client;
+package de.ckc.agwa.pilight.services.json.client;
 
-import de.ckc.agwa.pilight.services.PiLightMain;
-import de.ckc.agwa.pilight.services.PiLightServiceImpl;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
+import de.ckc.agwa.pilight.services.json.PiLightJsonService;
+import de.ckc.agwa.pilight.services.json.PiLightJsonServiceMain;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
+import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.core.Application;
 import java.net.URI;
+import java.util.Collection;
 
 /**
  * Tests the {@link PiLightServiceClient}.
@@ -41,12 +43,12 @@ public class PiLightServiceClientTest extends JerseyTest {
         enable(TestProperties.LOG_TRAFFIC);
         enable(TestProperties.DUMP_ENTITY);
 
-        return PiLightMain.createApp();
+        return PiLightJsonServiceMain.createApp();
     }
 
     @Override
     protected void configureClient(ClientConfig config) {
-        config.register(PiLightMain.createMoxyJsonResolver());
+        config.register(PiLightJsonServiceMain.createMoxyJsonResolver());
     }
 
     // ----------------------------------------------------------------------
@@ -55,8 +57,8 @@ public class PiLightServiceClientTest extends JerseyTest {
 
     @Before
     public void setup() {
-        String serviceBaseUrl = URI.create(PiLightMain.BASE_URI.toString()
-                + PiLightServiceImpl.SERVICE_PREFIX).normalize().toString();
+        String serviceBaseUrl = URI.create(PiLightJsonServiceMain.BASE_URI.toString()
+                + PiLightJsonService.SERVICE_PREFIX).normalize().toString();
         serviceClient = new PiLightServiceClient(serviceBaseUrl);
     }
 
@@ -77,21 +79,18 @@ public class PiLightServiceClientTest extends JerseyTest {
 
     @Test
     public void testServiceInfoFamilies() throws Exception {
+        final String FAMILY = "testFamily_" + System.nanoTime();
+        final String LIGHT1 = "testLight1_" + System.nanoTime();
+        final String LIGHT2 = "testLight2_" + System.nanoTime();
 
+        Collection<String> familyLights = serviceClient.serviceFamilyInfoLights(FAMILY);
+        Assert.assertTrue(familyLights.isEmpty());
+        serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
+        serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
+
+        familyLights = serviceClient.serviceFamilyInfoLights(FAMILY);
+        Assert.assertFalse(familyLights.isEmpty());
+        Assert.assertThat(familyLights.size(), IsEqual.equalTo(2));
     }
 
-    @Test
-    public void testServiceFamilyInfoLights() throws Exception {
-
-    }
-
-    @Test
-    public void testServiceFamilyLightStatusGet() throws Exception {
-
-    }
-
-    @Test
-    public void testServiceFamilyLightStatusPut() throws Exception {
-
-    }
 }

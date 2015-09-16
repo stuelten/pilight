@@ -60,7 +60,7 @@ public interface PiLightService {
      * @param light  the name of the light
      * @return {@code true} for a burning light, {@code false} otherwise
      */
-    String serviceFamilyLightStatusGet(String family, String light);
+    Boolean serviceFamilyLightStatusGet(String family, String light);
 
     /**
      * Set the status for some light.
@@ -69,6 +69,6 @@ public interface PiLightService {
      * @param light  the light
      * @param status {@code true} for a burning light, {@code false} otherwise
      */
-    String serviceFamilyLightStatusPut(String family, String light, String status);
+    Boolean serviceFamilyLightStatusPut(String family, String light, Boolean status);
 
 }

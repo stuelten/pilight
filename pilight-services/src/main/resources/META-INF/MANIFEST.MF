@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Created-By: hand
-Main-Class: de.ckc.agwa.pilight.services.PiLightMain

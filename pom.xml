@@ -29,6 +29,7 @@
         <module>pilight-io-test</module>
         <module>pilight-light</module>
         <module>pilight-services</module>
+        <module>pilight-services-json</module>
         <module>pilight-services-client</module>
         <module>pilight-webui</module>
         <module>pilight-config</module>
@@ -130,6 +131,11 @@
             <dependency>
                 <groupId>de.ckc.agwa</groupId>
                 <artifactId>pilight-services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.ckc.agwa</groupId>
+                <artifactId>pilight-services-json</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

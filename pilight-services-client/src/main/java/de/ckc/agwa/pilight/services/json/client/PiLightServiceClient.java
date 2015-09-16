@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package de.ckc.agwa.pilight.services.client;
+package de.ckc.agwa.pilight.services.json.client;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import de.ckc.agwa.pilight.services.PiLightService;
-import de.ckc.agwa.pilight.services.PiLightServiceImpl;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
+import de.ckc.agwa.pilight.services.json.PiLightJsonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +86,7 @@ public class PiLightServiceClient implements PiLightService {
     public PiLightServiceStatus serviceStatus() {
         PiLightServiceStatus ret = null;
         try {
-            String servicePath = PiLightServiceImpl.SERVICE_STATUS_PATH;
+            String servicePath = PiLightJsonService.SERVICE_STATUS_PATH;
             URI serviceUri = createServiceUri(servicePath);
 
             WebResource webResource = client.resource(serviceUri);
@@ -109,7 +109,7 @@ public class PiLightServiceClient implements PiLightService {
     public Collection<String> serviceInfoFamilies() {
         Collection<String> ret = Collections.emptyList();
         try {
-            String servicePath = PiLightServiceImpl.SERVICE_INFO_FAMILIES_PATH;
+            String servicePath = PiLightJsonService.SERVICE_INFO_FAMILIES_PATH;
             URI serviceUri = createServiceUri(servicePath);
 
             WebResource webResource = client.resource(serviceUri);
@@ -118,6 +118,7 @@ public class PiLightServiceClient implements PiLightService {
 
             if (200 == response.getStatus()) {
                 // get result
+                //noinspection unchecked
                 ret = (Collection<String>) response.getEntity(Collection.class);
             } else {
                 LOGGER.info("Response: '()'", response);
@@ -132,8 +133,8 @@ public class PiLightServiceClient implements PiLightService {
     public Collection<String> serviceFamilyInfoLights(String family) {
         Collection<String> ret = Collections.emptyList();
         try {
-            String servicePath = PiLightServiceImpl.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
-                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_FAMILY, family);
+            String servicePath = PiLightJsonService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
+                    .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, family);
 
             URI serviceUri = createServiceUri(servicePath);
 
@@ -143,6 +144,7 @@ public class PiLightServiceClient implements PiLightService {
 
             if (200 == response.getStatus()) {
                 // get result
+                //noinspection unchecked
                 ret = (Collection<String>) response.getEntity(Collection.class);
             } else {
                 LOGGER.info("Response for '()': '()'", family, response);
@@ -154,12 +156,12 @@ public class PiLightServiceClient implements PiLightService {
     }
 
     @Override
-    public String serviceFamilyLightStatusGet(String family, String light) {
-        String ret = Boolean.FALSE.toString();
+    public Boolean serviceFamilyLightStatusGet(String family, String light) {
+        Boolean ret = Boolean.FALSE;
         try {
-            String servicePath = PiLightServiceImpl.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
-                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_FAMILY, family) //
-                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_LIGHT, light);
+            String servicePath = PiLightJsonService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
+                    .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, family) //
+                    .replace(PiLightJsonService.TEMPLATE_PARAM_LIGHT, light);
             URI serviceUri = createServiceUri(servicePath);
 
             WebResource webResource = client.resource(serviceUri);
@@ -171,7 +173,7 @@ public class PiLightServiceClient implements PiLightService {
 
                 LOGGER.debug("Response for '()', '()': '()'", family, light, output);
 
-                ret = Boolean.valueOf(output).toString();
+                ret = Boolean.valueOf(output);
             } else {
                 LOGGER.info("Response for '()', '()': '()'", family, light, response);
             }
@@ -182,12 +184,12 @@ public class PiLightServiceClient implements PiLightService {
     }
 
     @Override
-    public String serviceFamilyLightStatusPut(String family, String light, String status) {
-        String ret = Boolean.FALSE.toString();
+    public Boolean serviceFamilyLightStatusPut(String family, String light, Boolean status) {
+        Boolean ret = Boolean.FALSE;
         try {
-            String servicePath = PiLightServiceImpl.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
-                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_FAMILY, family) //
-                    .replace(PiLightServiceImpl.TEMPLATE_PARAM_LIGHT, light);
+            String servicePath = PiLightJsonService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
+                    .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, family) //
+                    .replace(PiLightJsonService.TEMPLATE_PARAM_LIGHT, light);
             URI serviceUri = createServiceUri(servicePath);
 
             String input = "" + status;
@@ -198,7 +200,7 @@ public class PiLightServiceClient implements PiLightService {
 
             if (200 == response.getStatus() || 201 == response.getStatus()) {
                 // Could set new status
-                ret = Boolean.TRUE.toString();
+                ret = Boolean.TRUE;
             } else {
                 LOGGER.info("Response for '()', '()': '()'", family, light, response);
             }

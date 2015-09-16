@@ -18,9 +18,9 @@ package de.ckc.agwa.pilight.logic;
 
 import de.ckc.agwa.pilight.io.PiLightLamp;
 import de.ckc.agwa.pilight.io.PiLightSwitch;
-import de.ckc.agwa.pilight.services.PiLightMain;
-import de.ckc.agwa.pilight.services.PiLightServiceImpl;
-import de.ckc.agwa.pilight.services.client.PiLightServiceClient;
+import de.ckc.agwa.pilight.services.json.PiLightJsonService;
+import de.ckc.agwa.pilight.services.json.PiLightJsonServiceMain;
+import de.ckc.agwa.pilight.services.json.client.PiLightServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +40,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Singleton
 public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
+    /**
+     * The logger for this class only.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotherMain.class);
+
+    // ----------------------------------------------------------------------
 
     /**
      * Environment variable to get service URL from
@@ -47,12 +53,7 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
     public static final String PILIGHT_SERVICE_ENV = "PILIGHT_SERVICE";
 
     // ----------------------------------------------------------------------
-    /**
-     * The logger for this class only.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(MotherMain.class);
 
-    // ----------------------------------------------------------------------
     /**
      * The switches control the lamps
      */
@@ -110,8 +111,8 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
     public void run() {
         serviceBaseUrl = System.getenv(PILIGHT_SERVICE_ENV);
         if (null == serviceBaseUrl || "".equals(serviceBaseUrl.trim())) {
-            serviceBaseUrl = URI.create(PiLightMain.BASE_URI.toString()
-                    + PiLightServiceImpl.SERVICE_PREFIX).normalize().toString();
+            serviceBaseUrl = URI.create(PiLightJsonServiceMain.BASE_URI.toString()
+                    + PiLightJsonService.SERVICE_PREFIX).normalize().toString();
         }
 
         serviceExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -120,10 +121,10 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
         PiLightSwitch mothersLight = switches.iterator().next();
         mothersLight.addStateChangeListener(this);
 
-        // Call service asynchronously every 30s
+        // Call service asynchronously every 30s, initially waiting 15s
         serviceExecutor.scheduleWithFixedDelay( //
-                () -> serviceClient.serviceFamilyLightStatusPut(family, light, "" + mothersLight.isOn()),
-                3, 30, TimeUnit.SECONDS);
+                () -> serviceClient.serviceFamilyLightStatusPut(family, light, mothersLight.isOn()),
+                15, 30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -136,8 +137,8 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
             lamp.setOn(currentState);
         }
 
-        // Instantly and asynchronously call service
-        serviceExecutor.submit(() -> serviceClient.serviceFamilyLightStatusPut(family, light, "" + currentState));
+        // Immediately and asynchronously call service
+        serviceExecutor.submit(() -> serviceClient.serviceFamilyLightStatusPut(family, light, currentState));
     }
 
 }

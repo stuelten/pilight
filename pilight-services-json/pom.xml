@@ -15,9 +15,9 @@
   ~ limitations under the License.
   -->
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -26,36 +26,38 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pilight-light</artifactId>
+    <artifactId>pilight-services-json</artifactId>
 
     <description>
-        The main logic to control lamps and switches.
+        JSON service implementations for pilight.
     </description>
+
+    <properties>
+        <!-- The main class. Used  to start from über-Jar -->
+        <pilight-MainClass>de.ckc.agwa.pilight.services.json.PiLightJsonServiceMain</pilight-MainClass>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>de.ckc.agwa</groupId>
-            <artifactId>pilight-io</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>de.ckc.agwa</groupId>
             <artifactId>pilight-services</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>de.ckc.agwa</groupId>
-            <artifactId>pilight-services-client</artifactId>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-grizzly2-http</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>de.ckc.agwa</groupId>
-            <artifactId>pilight-io-test</artifactId>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.test-framework.providers</groupId>
+            <artifactId>jersey-test-framework-provider-bundle</artifactId>
+            <type>pom</type>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se-core</artifactId>
         </dependency>
 
         <dependency>

@@ -20,16 +20,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Timo Stülten
  */
-@Path("/pilight")
+@Singleton
 public class PiLightServiceImpl implements PiLightService {
     /**
      * The logger for this class only.
@@ -47,50 +42,14 @@ public class PiLightServiceImpl implements PiLightService {
     // ----------------------------------------------------------------------
 
     /**
-     * Template for family parameter
-     */
-    public static final String PATH_PARAM_FAMILY = "family";
-    public static final String TEMPLATE_PARAM_FAMILY = "{" + PATH_PARAM_FAMILY + "}";
-    /**
-     * Template for light parameter
-     */
-    public static final String PATH_PARAM_LIGHT = "light";
-    public static final String TEMPLATE_PARAM_LIGHT = "{" + PATH_PARAM_LIGHT + "}";
-
-    /**
-     * Base URI for Service
-     */
-    public static final String SERVICE_PREFIX = "pilight/";
-    /**
-     * Base template for path for lamp state service.
-     */
-    public static final String SERVICE_STATUS_PATH = "status";
-    /**
-     * Base template for path for families info service.
-     */
-    public static final String SERVICE_INFO_FAMILIES_PATH = "info/families";
-    /**
-     * Base template for path for "family info about lights" service.
-     */
-    public static final String SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE = "families/{family}/info/lights";
-    /**
-     * Base template for path for lamp state service.
-     */
-    public static final String SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE = "families/{family}/lights/{light}/status";
-
-    // ----------------------------------------------------------------------
-
-    /**
      * Contains all lights.
+     * The families' names are the key, the {@link Map} of { lamp's names -&gt; lamp } are the values.
      */
     protected static Map<String, Map<String, Boolean>> lights = new ConcurrentHashMap<>();
 
     // ----------------------------------------------------------------------
 
     @Override
-    @GET
-    @Path(SERVICE_STATUS_PATH)
-    @Produces(MediaType.TEXT_PLAIN)
     public String serviceStatusPlain() {
         LOGGER.debug("serviceStatusPlain(): Called");
 
@@ -103,9 +62,6 @@ public class PiLightServiceImpl implements PiLightService {
     }
 
     @Override
-    @GET
-    @Path(SERVICE_STATUS_PATH)
-    @Produces(MediaType.APPLICATION_JSON)
     public PiLightServiceStatus serviceStatus() {
         LOGGER.debug("serviceStatus(): Called");
 
@@ -123,9 +79,6 @@ public class PiLightServiceImpl implements PiLightService {
     }
 
     @Override
-    @GET
-    @Path(SERVICE_INFO_FAMILIES_PATH)
-    @Produces(MediaType.APPLICATION_JSON)
     public Collection<String> serviceInfoFamilies() {
         LOGGER.debug("serviceInfoFamilies(): Called");
         Collection<String> ret = lights.keySet();
@@ -137,10 +90,7 @@ public class PiLightServiceImpl implements PiLightService {
     // ----------------------------------------------------------------------
 
     @Override
-    @GET
-    @Path(SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Collection<String> serviceFamilyInfoLights(@PathParam(PATH_PARAM_FAMILY) String family) {
+    public Collection<String> serviceFamilyInfoLights(String family) {
         LOGGER.debug("serviceFamilyInfoLights('{}'): called", family);
 
         Map<String, Boolean> familyLights = lights.get(family);
@@ -154,20 +104,17 @@ public class PiLightServiceImpl implements PiLightService {
     }
 
     @Override
-    @GET
-    @Path(SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String serviceFamilyLightStatusGet(@PathParam(PATH_PARAM_FAMILY) String family,
-                                              @PathParam(PATH_PARAM_LIGHT) String light) {
+    public Boolean serviceFamilyLightStatusGet(String family,
+                                               String light) {
         LOGGER.debug("serviceFamilyLightStatusGet('{}','{}'): called", family, light);
-        String status;
+        Boolean status;
 
         Map<String, Boolean> familyLights = lights.get(family);
         if (null == familyLights) {
-            status = Boolean.FALSE.toString();
+            status = Boolean.FALSE;
         } else {
             Boolean maybeNull = familyLights.get(light);
-            status = "" + (maybeNull == null ? Boolean.FALSE : maybeNull);
+            status = (maybeNull == null ? Boolean.FALSE : maybeNull);
         }
 
         LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", family, light, status);
@@ -175,24 +122,22 @@ public class PiLightServiceImpl implements PiLightService {
     }
 
     @Override
-    @PUT
-    @Path(SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String serviceFamilyLightStatusPut(@PathParam(PATH_PARAM_FAMILY) String family,
-                                              @PathParam(PATH_PARAM_LIGHT) String light,
-                                              String status) {
+    public Boolean serviceFamilyLightStatusPut(String family,
+                                               String light,
+                                               Boolean status) {
         LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", family, light, status);
-        Boolean checkedStatus = Boolean.valueOf(status);
+        Objects.requireNonNull(family);
+        Objects.requireNonNull(light);
+        Objects.requireNonNull(status);
 
         Map<String, Boolean> familyLights = lights.get(family);
         if (null == familyLights) {
             familyLights = new ConcurrentHashMap<>();
             lights.put(family, familyLights);
         }
-        familyLights.put(light, checkedStatus);
+        familyLights.put(light, status);
 
-        return "" + checkedStatus;
+        return status;
     }
 
     // ----------------------------------------------------------------------
