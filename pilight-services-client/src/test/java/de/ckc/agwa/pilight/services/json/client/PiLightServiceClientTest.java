@@ -16,6 +16,7 @@
 
 package de.ckc.agwa.pilight.services.json.client;
 
+import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import de.ckc.agwa.pilight.services.json.PiLightJsonService;
 import de.ckc.agwa.pilight.services.json.PiLightJsonServiceMain;
@@ -29,7 +30,6 @@ import org.junit.Test;
 
 import javax.ws.rs.core.Application;
 import java.net.URI;
-import java.util.Collection;
 
 /**
  * Tests the {@link PiLightServiceClient}.
@@ -83,14 +83,17 @@ public class PiLightServiceClientTest extends JerseyTest {
         final String LIGHT1 = "testLight1_" + System.nanoTime();
         final String LIGHT2 = "testLight2_" + System.nanoTime();
 
-        Collection<String> familyLights = serviceClient.serviceFamilyInfoLights(FAMILY);
-        Assert.assertTrue(familyLights.isEmpty());
+        Family family = serviceClient.serviceFamilyInfo(FAMILY);
+        Assert.assertNull(family);
+
         serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
         serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
 
-        familyLights = serviceClient.serviceFamilyInfoLights(FAMILY);
-        Assert.assertFalse(familyLights.isEmpty());
-        Assert.assertThat(familyLights.size(), IsEqual.equalTo(2));
+        family = serviceClient.serviceFamilyInfo(FAMILY);
+        Assert.assertNotNull(family);
+
+        Assert.assertFalse(family.getLights().isEmpty());
+        Assert.assertThat(family.getLights().size(), IsEqual.equalTo(2));
     }
 
 }

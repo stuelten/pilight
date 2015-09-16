@@ -16,6 +16,9 @@
 
 package de.ckc.agwa.pilight.services;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * A bean for this service's status.
  *
@@ -23,9 +26,20 @@ package de.ckc.agwa.pilight.services;
  */
 public class PiLightServiceStatus {
 
-    int familiesCount = 0;
+    protected Collection<String> families;
 
-    int lightsCount = 0;
+    protected int familiesCount = -1;
+
+    protected int lightsCount = -1;
+
+
+    public Collection<String> getFamilies() {
+        return families;
+    }
+
+    public void setFamilies(Collection<String> families) {
+        this.families = Collections.unmodifiableCollection(families);
+    }
 
     /**
      * @return Number of families
@@ -51,7 +65,8 @@ public class PiLightServiceStatus {
 
     @Override
     public String toString() {
-        String ret = "Serving " + getFamiliesCount() + " families with " + getLightsCount() + " lights.";
+        String ret = "Serving " + getFamiliesCount() + " families with " + getLightsCount() + " lights."
+                + "\nKnown families: " + getFamilies();
         return ret;
     }
 

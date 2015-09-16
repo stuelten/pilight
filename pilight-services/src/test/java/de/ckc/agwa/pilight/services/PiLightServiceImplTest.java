@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * Tests the {@link PiLightServiceImpl}.
@@ -86,14 +85,15 @@ public class PiLightServiceImplTest {
         final String LIGHT1 = "testLight1_" + System.nanoTime();
         final String LIGHT2 = "testLight2_" + System.nanoTime();
 
-        Collection<String> familyLights = service.serviceFamilyInfoLights(FAMILY);
-        Assert.assertTrue(familyLights.isEmpty());
+        Family family = service.serviceFamilyInfo(FAMILY);
+        Assert.assertNull(family);
+
         service.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
         service.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
 
-        familyLights = service.serviceFamilyInfoLights(FAMILY);
-        Assert.assertFalse(familyLights.isEmpty());
-        Assert.assertThat(familyLights.size(), IsEqual.equalTo(2));
+        family = service.serviceFamilyInfo(FAMILY);
+        Assert.assertFalse(family.getLights().isEmpty());
+        Assert.assertThat(family.getLights().size(), IsEqual.equalTo(2));
     }
 
 }

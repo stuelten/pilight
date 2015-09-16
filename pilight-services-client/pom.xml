@@ -37,9 +37,14 @@
             <groupId>de.ckc.agwa</groupId>
             <artifactId>pilight-services-json</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
         </dependency>
 
         <dependency>

@@ -16,6 +16,7 @@
 
 package de.ckc.agwa.pilight.services.json;
 
+import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -28,7 +29,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.util.Collection;
 
 /**
  * Tests the {@link PiLightJsonService}.
@@ -109,7 +110,6 @@ public class PiLightJsonServiceTest extends JerseyTest {
                 + PiLightJsonService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE
                 .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, FAMILY)
                 .replace(PiLightJsonService.TEMPLATE_PARAM_LIGHT, LIGHT);
-        // + "/families/" + FAMILY + "/lights/" + LIGHT + "/status/";
         {
             /* Response responseLightOn = */
             target(path).request().put(LIGHT_ON);
@@ -147,8 +147,6 @@ public class PiLightJsonServiceTest extends JerseyTest {
 
         {
             // Create light 1
-            // String path = PiLightJsonService.SERVICE_PREFIX + "/families/" + FAMILY + "/lights/" + LIGHT1 +
-            // "/status/";
             String path = PiLightJsonService.SERVICE_PREFIX
                     + PiLightJsonService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE
                     .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, FAMILY)
@@ -161,8 +159,6 @@ public class PiLightJsonServiceTest extends JerseyTest {
 
         {
             // Create light 2
-            // String path = PiLightJsonService.SERVICE_PREFIX + "/families/" + FAMILY + "/lights/" + LIGHT2 +
-            // "/status/";
             String path = PiLightJsonService.SERVICE_PREFIX
                     + PiLightJsonService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE
                     .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, FAMILY)
@@ -172,37 +168,35 @@ public class PiLightJsonServiceTest extends JerseyTest {
             String lightMustBeOn = target(path).request().get(String.class);
             Assert.assertTrue("Light must be on.", Boolean.valueOf(lightMustBeOn));
         }
+        {
+            // Switch light 2 off
+            String path = PiLightJsonService.SERVICE_PREFIX
+                    + PiLightJsonService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE
+                    .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, FAMILY)
+                    .replace(PiLightJsonService.TEMPLATE_PARAM_LIGHT, LIGHT2);
+            target(path).request().put(LIGHT_OFF);
+
+            String lightMustBeOff = target(path).request().get(String.class);
+            Assert.assertFalse("Light must be off.", Boolean.valueOf(lightMustBeOff));
+        }
 
         // Test existence
         {
             String path = PiLightJsonService.SERVICE_PREFIX
                     + PiLightJsonService.SERVICE_INFO_FAMILIES_PATH;
-            @SuppressWarnings("unchecked")
-            Response res = target(path).request().get();
-            Assert.assertNotNull(res);
-            Object families = target(path).request().get(Object.class);
-            Assert.assertNotNull("Status must know " + FAMILY, families);
-            // Assert.assertTrue("Status must know " + FAMILY, families.contains(FAMILY));
+
+            PiLightServiceStatus status = target(path).request().get(PiLightServiceStatus.class);
+            Collection<String> familiesList = status.getFamilies();
+            Assert.assertTrue("Status must know " + FAMILY, familiesList.contains(FAMILY));
         }
         {
-            // String path = PiLightJsonService.SERVICE_PREFIX + "/" + "families/{family}/info/lights".replace
-            //    ("{family}", FAMILY);
             String path = PiLightJsonService.SERVICE_PREFIX
                     + PiLightJsonService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE
                     .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, FAMILY);
 
-            String statusLights = target(path).request().get(String.class);
-            Assert.assertTrue("Status must know " + LIGHT1, statusLights.contains(LIGHT1));
-        }
-        {
-            // String path = PiLightJsonService.SERVICE_PREFIX + "/" + "families/{family}/info/lights".replace
-            //    ("{family}", FAMILY);
-            String path = PiLightJsonService.SERVICE_PREFIX
-                    + PiLightJsonService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE
-                    .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, FAMILY);
-
-            String statusLights = target(path).request().get(String.class);
-            Assert.assertTrue("Status must know " + LIGHT2, statusLights.contains(LIGHT2));
+            Family family = target(path).request().get(Family.class);
+            Assert.assertNotNull("Family must know " + LIGHT1, family.getLight(LIGHT1));
+            Assert.assertNotNull("Family must know " + LIGHT2, family.getLight(LIGHT2));
         }
 
     }

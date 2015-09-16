@@ -16,6 +16,7 @@
 
 package de.ckc.agwa.pilight.services.json;
 
+import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceImpl;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -29,10 +30,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Collection;
 
 /**
  * This service receives and serves the status of lights for some families.
@@ -129,16 +127,13 @@ public class PiLightJsonService {
     @GET
     @Path(SERVICE_INFO_FAMILIES_PATH)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response serviceInfoFamilies() {
+    public PiLightServiceStatus serviceInfoFamilies() {
         LOGGER.debug("serviceInfoFamilies(): Called");
 
-        Collection<String> families = service.serviceInfoFamilies();
-
-        GenericEntity<Collection<String>> ret = new GenericEntity<Collection<String>>(families) {
-        };
+        PiLightServiceStatus ret = service.serviceInfoFamilies();
 
         LOGGER.info("serviceInfoFamilies(): return '{}'", ret);
-        return Response.ok(ret).build();
+        return ret;
     }
 
     // ----------------------------------------------------------------------
@@ -146,16 +141,13 @@ public class PiLightJsonService {
     @GET
     @Path(SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response serviceFamilyInfoLights(@PathParam(PATH_PARAM_FAMILY) String family) {
-        LOGGER.debug("serviceFamilyInfoLights('{}'): called", family);
+    public Family serviceFamilyInfoLights(@PathParam(PATH_PARAM_FAMILY) String family) {
+        LOGGER.debug("serviceFamilyInfo('{}'): called", family);
 
-        Collection<String> familyLights = service.serviceFamilyInfoLights(family);
+        Family ret = service.serviceFamilyInfo(family);
 
-        GenericEntity<Collection<String>> ret = new GenericEntity<Collection<String>>(familyLights) {
-        };
-
-        LOGGER.info("serviceFamilyInfoLights('{}'): return '{}'", family, ret);
-        return Response.ok(ret).build();
+        LOGGER.info("serviceFamilyInfo('{}'): return '{}'", family, ret);
+        return ret;
     }
 
     @GET

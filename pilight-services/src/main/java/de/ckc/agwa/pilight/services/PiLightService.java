@@ -16,8 +16,6 @@
 
 package de.ckc.agwa.pilight.services;
 
-import java.util.Collection;
-
 /**
  * The pilight services.
  *
@@ -44,14 +42,14 @@ public interface PiLightService {
      *
      * @return the collection of families.
      */
-    Collection<String> serviceInfoFamilies();
+    PiLightServiceStatus serviceInfoFamilies();
 
     /**
      * Get all known lights of a family.
      *
      * @return a Collection of Strings giving the light's names.
      */
-    Collection<String> serviceFamilyInfoLights(String family);
+    Family serviceFamilyInfo(String family);
 
     /**
      * Get the status for some light.

@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +44,9 @@ public class PiLightServiceImpl implements PiLightService {
      * Contains all lights.
      * The families' names are the key, the {@link Map} of { lamp's names -&gt; lamp } are the values.
      */
-    protected static Map<String, Map<String, Boolean>> lights = new ConcurrentHashMap<>();
+    // protected static Map<String, Map<String, Boolean>> lights = new ConcurrentHashMap<>();
+
+    protected Map<String, Family> familyMap = new ConcurrentHashMap<>();
 
     // ----------------------------------------------------------------------
 
@@ -65,9 +66,10 @@ public class PiLightServiceImpl implements PiLightService {
     public PiLightServiceStatus serviceStatus() {
         LOGGER.debug("serviceStatus(): Called");
 
-        int familiesCount = lights.size();
-        int lightsCount = lights.values().stream()
-                .mapToInt(Map::size)
+        int familiesCount = familyMap.size();
+        int lightsCount = familyMap.values().stream()
+                .map(Family::getLights)
+                .mapToInt(Collection::size)
                 .sum();
 
         PiLightServiceStatus ret = new PiLightServiceStatus();
@@ -79,9 +81,12 @@ public class PiLightServiceImpl implements PiLightService {
     }
 
     @Override
-    public Collection<String> serviceInfoFamilies() {
+    public PiLightServiceStatus serviceInfoFamilies() {
         LOGGER.debug("serviceInfoFamilies(): Called");
-        Collection<String> ret = lights.keySet();
+        Collection<String> families = familyMap.keySet();
+
+        PiLightServiceStatus ret = new PiLightServiceStatus();
+        ret.setFamilies(families);
 
         LOGGER.info("serviceInfoFamilies(): return '{}'", ret);
         return ret;
@@ -90,63 +95,61 @@ public class PiLightServiceImpl implements PiLightService {
     // ----------------------------------------------------------------------
 
     @Override
-    public Collection<String> serviceFamilyInfoLights(String family) {
-        LOGGER.debug("serviceFamilyInfoLights('{}'): called", family);
+    public Family serviceFamilyInfo(String family) {
+        LOGGER.debug("serviceFamilyInfo('{}'): called", family);
 
-        Map<String, Boolean> familyLights = lights.get(family);
-        Collection<String> ret = Collections.emptyList();
-        if (familyLights != null) {
-            ret = familyLights.keySet();
-        }
+        Family ret = familyMap.get(family);
 
-        LOGGER.info("serviceFamilyInfoLights('{}'): return '{}'", family, ret);
+        LOGGER.info("serviceFamilyInfo('{}'): return '{}'", family, ret);
         return ret;
     }
 
     @Override
-    public Boolean serviceFamilyLightStatusGet(String family,
-                                               String light) {
-        LOGGER.debug("serviceFamilyLightStatusGet('{}','{}'): called", family, light);
+    public Boolean serviceFamilyLightStatusGet(String familyName,
+                                               String lightName) {
+        LOGGER.debug("serviceFamilyLightStatusGet('{}','{}'): called", familyName, lightName);
         Boolean status;
 
-        Map<String, Boolean> familyLights = lights.get(family);
-        if (null == familyLights) {
+        Family family = familyMap.get(familyName);
+        if (null == family) {
             status = Boolean.FALSE;
         } else {
-            Boolean maybeNull = familyLights.get(light);
-            status = (maybeNull == null ? Boolean.FALSE : maybeNull);
+            Light light = family.getLight(lightName);
+            Boolean maybeNull = (light == null) ? Boolean.FALSE : light.getState();
+            status = (maybeNull == null) ? Boolean.FALSE : maybeNull;
         }
 
-        LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", family, light, status);
+        LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", familyName, lightName, status);
         return status;
     }
 
     @Override
-    public Boolean serviceFamilyLightStatusPut(String family,
-                                               String light,
-                                               Boolean status) {
-        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", family, light, status);
-        Objects.requireNonNull(family);
-        Objects.requireNonNull(light);
-        Objects.requireNonNull(status);
+    public Boolean serviceFamilyLightStatusPut(String familyName,
+                                               String lightName,
+                                               Boolean state) {
+        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", familyName, lightName, state);
+        Objects.requireNonNull(familyName);
+        Objects.requireNonNull(lightName);
+        Objects.requireNonNull(state);
 
-        Map<String, Boolean> familyLights = lights.get(family);
-        if (null == familyLights) {
-            familyLights = new ConcurrentHashMap<>();
-            lights.put(family, familyLights);
+        Light light = new Light(lightName, state);
+        Family family = familyMap.get(familyName);
+        if (null == family) {
+            family = new Family(familyName);
+            familyMap.put(familyName, family);
         }
-        familyLights.put(light, status);
+        family.putLight(light);
 
-        return status;
+        return state;
     }
 
     // ----------------------------------------------------------------------
 
+    @Override
     public String toString() {
-        String ret = new ToStringBuilder(this)
-                .append("lights", lights)
+        return new ToStringBuilder(this)
+                .append("familyMap", familyMap)
                 .toString();
-        return ret;
     }
 
 }

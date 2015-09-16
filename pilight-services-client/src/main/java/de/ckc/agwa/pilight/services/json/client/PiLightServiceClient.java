@@ -19,6 +19,7 @@ package de.ckc.agwa.pilight.services.json.client;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightService;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import de.ckc.agwa.pilight.services.json.PiLightJsonService;
@@ -27,8 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A client sending and receiving status updates for lights.
@@ -40,6 +39,11 @@ public class PiLightServiceClient implements PiLightService {
      * The logger for this class only.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PiLightServiceClient.class);
+
+    // ----------------------------------------------------------------------
+
+    public static final int HTTP_STATUS_200_OK = 200;
+    public static final int HTTP_STATUS_201_CREATED = 201;
 
     // ----------------------------------------------------------------------
 
@@ -79,7 +83,25 @@ public class PiLightServiceClient implements PiLightService {
 
     @Override
     public String serviceStatusPlain() {
-        return "" + serviceStatus();
+        String ret = null;
+        try {
+            String servicePath = PiLightJsonService.SERVICE_STATUS_PATH;
+            URI serviceUri = createServiceUri(servicePath);
+
+            WebResource webResource = client.resource(serviceUri);
+            ClientResponse response = webResource.type(MediaType.TEXT_PLAIN)
+                    .get(ClientResponse.class);
+
+            if (HTTP_STATUS_200_OK == response.getStatus()) {
+                // get result
+                ret = response.getEntity(String.class);
+            } else {
+                LOGGER.info("Response: '()'", response);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Ignoring exception for request '{}'", e);
+        }
+        return ret;
     }
 
     @Override
@@ -93,7 +115,7 @@ public class PiLightServiceClient implements PiLightService {
             ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
                     .get(ClientResponse.class);
 
-            if (200 == response.getStatus()) {
+            if (HTTP_STATUS_200_OK == response.getStatus()) {
                 // get result
                 ret = response.getEntity(PiLightServiceStatus.class);
             } else {
@@ -106,8 +128,8 @@ public class PiLightServiceClient implements PiLightService {
     }
 
     @Override
-    public Collection<String> serviceInfoFamilies() {
-        Collection<String> ret = Collections.emptyList();
+    public PiLightServiceStatus serviceInfoFamilies() {
+        PiLightServiceStatus ret = null;
         try {
             String servicePath = PiLightJsonService.SERVICE_INFO_FAMILIES_PATH;
             URI serviceUri = createServiceUri(servicePath);
@@ -116,10 +138,9 @@ public class PiLightServiceClient implements PiLightService {
             ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
                     .get(ClientResponse.class);
 
-            if (200 == response.getStatus()) {
+            if (HTTP_STATUS_200_OK == response.getStatus()) {
                 // get result
-                //noinspection unchecked
-                ret = (Collection<String>) response.getEntity(Collection.class);
+                ret = response.getEntity(PiLightServiceStatus.class);
             } else {
                 LOGGER.info("Response: '()'", response);
             }
@@ -130,8 +151,8 @@ public class PiLightServiceClient implements PiLightService {
     }
 
     @Override
-    public Collection<String> serviceFamilyInfoLights(String family) {
-        Collection<String> ret = Collections.emptyList();
+    public Family serviceFamilyInfo(String family) {
+        Family ret = null;
         try {
             String servicePath = PiLightJsonService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
                     .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, family);
@@ -142,10 +163,9 @@ public class PiLightServiceClient implements PiLightService {
             ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
                     .get(ClientResponse.class);
 
-            if (200 == response.getStatus()) {
+            if (HTTP_STATUS_200_OK == response.getStatus()) {
                 // get result
-                //noinspection unchecked
-                ret = (Collection<String>) response.getEntity(Collection.class);
+                ret = response.getEntity(Family.class);
             } else {
                 LOGGER.info("Response for '()': '()'", family, response);
             }
@@ -168,7 +188,7 @@ public class PiLightServiceClient implements PiLightService {
             ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON)
                     .get(ClientResponse.class);
 
-            if (200 == response.getStatus()) {
+            if (HTTP_STATUS_200_OK == response.getStatus()) {
                 String output = response.getEntity(String.class);
 
                 LOGGER.debug("Response for '()', '()': '()'", family, light, output);
@@ -198,7 +218,8 @@ public class PiLightServiceClient implements PiLightService {
             ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
                     .put(ClientResponse.class, input);
 
-            if (200 == response.getStatus() || 201 == response.getStatus()) {
+            if (HTTP_STATUS_200_OK == response.getStatus()
+                    || HTTP_STATUS_201_CREATED == response.getStatus()) {
                 // Could set new status
                 ret = Boolean.TRUE;
             } else {
