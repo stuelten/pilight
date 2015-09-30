@@ -18,7 +18,6 @@ package de.ckc.agwa.pilight.services.json;
 
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
-import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.hamcrest.core.IsEqual;
@@ -46,10 +45,11 @@ public class PiLightJsonServiceTest extends JerseyTest {
         return PiLightJsonServiceMain.createApp();
     }
 
-    @Override
+ /*   @Override
     protected void configureClient(ClientConfig config) {
         config.register(PiLightJsonServiceMain.createMoxyJsonResolver());
-    }
+        // config.register(Family.class);
+    }*/
 
     // ----------------------------------------------------------------------
 

@@ -68,7 +68,8 @@ public class PiLightJsonServiceMain {
             }
 
             System.out.println("Start application for URL " + baseUri);
-            final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, createApp());
+            ResourceConfig resourceConfig = createApp();
+            final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resourceConfig);
             System.out.println("Application running...");
 
             System.out.println("Hit enter to stop it...");
@@ -83,6 +84,13 @@ public class PiLightJsonServiceMain {
 
     // ----------------------------------------------------------------------
 
+    /**
+     * Configures Jackson/Jersey to use classes in package {@link #SERVICE_ROOT}
+     * and the {@link MoxyJsonConfig} from {@link #createMoxyJsonResolver()}
+     * for resource lookup.
+     *
+     * @return the config
+     */
     public static ResourceConfig createApp() {
         return new ResourceConfig().
                 packages(SERVICE_ROOT).
