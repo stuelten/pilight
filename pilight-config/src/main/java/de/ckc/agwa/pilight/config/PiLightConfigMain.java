@@ -42,6 +42,7 @@ public class PiLightConfigMain extends Application {
     protected static final File CONFIG_FILE;
 
     static {
+        // FIXME Use proper location for file lookup
         URL templateUrl = PiLightConfigMain.class.getResource("/" + CONFIG_FILENAME);
         String templateUrlFile = templateUrl.getFile();
         CONFIG_FILE = new File(templateUrlFile);
