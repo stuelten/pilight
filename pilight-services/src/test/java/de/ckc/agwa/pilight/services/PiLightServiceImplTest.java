@@ -92,8 +92,7 @@ public class PiLightServiceImplTest {
         service.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
 
         family = service.serviceFamilyInfo(FAMILY);
-        Assert.assertFalse(family.getLights().isEmpty());
-        Assert.assertThat(family.getLights().size(), IsEqual.equalTo(2));
+        Assert.assertThat(family.getLights().length, IsEqual.equalTo(2));
     }
 
 }

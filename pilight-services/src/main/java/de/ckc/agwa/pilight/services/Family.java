@@ -16,13 +16,16 @@
 
 package de.ckc.agwa.pilight.services;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Timo Stülten
  */
 @XmlRootElement
-public class Family {
+public class Family implements Serializable {
 
     /**
      * The family's name. It is used as key in service calls.
@@ -44,9 +47,8 @@ public class Family {
     /**
      * The lights of this family, mapped by the light's name.
      */
-    // Include all lights in the JSON response
-    @JsonInclude
-    protected Map<String, Light> lightsMap = new ConcurrentHashMap<>();
+    @JsonIgnore
+    private Map<String, Light> lightsMap = new ConcurrentHashMap<>();
 
     // ----------------------------------------------------------------------
 
@@ -64,40 +66,58 @@ public class Family {
         this.lightsMap = lightsMap;
     }
 
+    @JsonGetter
     public String getName() {
         return name;
     }
 
+    @JsonSetter
     public void setName(String name) {
         this.name = name;
     }
 
-    public Map<String, Light> getLightsMap() {
+    @JsonIgnore
+    protected Map<String, Light> getLightsMap() {
         return lightsMap;
     }
 
-    public void setLightsMap(Map<String, Light> lightsMap) {
+    @JsonIgnore
+    private void setLightsMap(Map<String, Light> lightsMap) {
         this.lightsMap = lightsMap;
     }
 
     // ----------------------------------------------------------------------
 
-    public Collection<Light> getLights() {
-        return lightsMap.values();
+    @JsonInclude
+    @JsonGetter
+    public Light[] getLights() {
+        return lightsMap.values().toArray(new Light[lightsMap.size()]);
     }
 
+    @JsonInclude
+    @JsonSetter
+    public void setLights(Light[] lights) {
+        lightsMap.clear();
+        for (Light light : lights) {
+            putLight(light);
+        }
+    }
+
+    @JsonIgnore
     public void putLight(Light light) {
         Objects.requireNonNull(light);
         Objects.requireNonNull(light.getName());
         lightsMap.put(light.getName(), light);
     }
 
+    @JsonIgnore
     public Light getLight(String name) {
         Objects.requireNonNull(name);
         Light ret = lightsMap.get(name);
         return ret;
     }
 
+    @JsonIgnore
     public boolean removeLight(Light light) {
         Objects.requireNonNull(light);
         Objects.requireNonNull(light.getName());

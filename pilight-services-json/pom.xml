@@ -34,7 +34,7 @@
 
     <properties>
         <!-- The main class. Used  to start from über-Jar -->
-        <pilight-MainClass>de.ckc.agwa.pilight.services.json.PiLightJsonServiceMain</pilight-MainClass>
+        <pilight-MainClass>de.ckc.agwa.pilight.services.json.PiLightRestfulServiceMain</pilight-MainClass>
     </properties>
 
     <dependencies>
@@ -43,16 +43,21 @@
             <artifactId>pilight-services</artifactId>
         </dependency>
 
+        <!-- Web and JSON stuff -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-grizzly2-http</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-moxy</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+        </dependency>
 
+        <!-- Test -->
         <dependency>
             <groupId>org.glassfish.jersey.test-framework.providers</groupId>
             <artifactId>jersey-test-framework-provider-bundle</artifactId>

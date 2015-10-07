@@ -16,25 +16,30 @@
 
 package de.ckc.agwa.pilight.services;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import java.io.Serializable;
 
 /**
  * A bean for a simple Light.
  *
  * @author Timo Stülten
  */
-public class Light {
+public class Light implements Serializable {
 
     /**
      * The light's name
      */
+    @JsonInclude
     protected String name;
 
     /**
      * Is the light on or off?
      */
+    @JsonInclude
     protected Boolean state;
 
     // ----------------------------------------------------------------------

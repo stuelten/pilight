@@ -18,8 +18,8 @@ package de.ckc.agwa.pilight.services.json.client;
 
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
-import de.ckc.agwa.pilight.services.json.PiLightJsonService;
-import de.ckc.agwa.pilight.services.json.PiLightJsonServiceMain;
+import de.ckc.agwa.pilight.services.json.PiLightRestfulService;
+import de.ckc.agwa.pilight.services.json.PiLightRestfulServiceMain;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
@@ -30,6 +30,7 @@ import org.junit.Test;
 
 import javax.ws.rs.core.Application;
 import java.net.URI;
+import java.util.Arrays;
 
 /**
  * Tests the {@link PiLightServiceClient}.
@@ -43,12 +44,12 @@ public class PiLightServiceClientTest extends JerseyTest {
         enable(TestProperties.LOG_TRAFFIC);
         enable(TestProperties.DUMP_ENTITY);
 
-        return PiLightJsonServiceMain.createApp();
+        return PiLightRestfulServiceMain.createApp();
     }
 
     @Override
     protected void configureClient(ClientConfig config) {
-        config.register(PiLightJsonServiceMain.createMoxyJsonResolver());
+        config.register(PiLightRestfulServiceMain.createMoxyJsonResolver());
     }
 
     // ----------------------------------------------------------------------
@@ -57,8 +58,8 @@ public class PiLightServiceClientTest extends JerseyTest {
 
     @Before
     public void setup() {
-        String serviceBaseUrl = URI.create(PiLightJsonServiceMain.BASE_URI.toString()
-                + PiLightJsonService.SERVICE_PREFIX).normalize().toString();
+        String serviceBaseUrl = URI.create(PiLightRestfulServiceMain.BASE_URI.toString()
+                + PiLightRestfulService.SERVICE_PREFIX).normalize().toString();
         serviceClient = new PiLightServiceClient(serviceBaseUrl);
     }
 
@@ -86,14 +87,23 @@ public class PiLightServiceClientTest extends JerseyTest {
         Family family = serviceClient.serviceFamilyInfo(FAMILY);
         Assert.assertNull(family);
 
+        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1));
+        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2));
+
         serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
+        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1));
+        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2));
         serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
+        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1));
+        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2));
 
         family = serviceClient.serviceFamilyInfo(FAMILY);
         Assert.assertNotNull(family);
+        Assert.assertThat(family.getLights().length, IsEqual.equalTo(2));
 
-        Assert.assertFalse(family.getLights().isEmpty());
-        Assert.assertThat(family.getLights().size(), IsEqual.equalTo(2));
+        String[] familyNames = serviceClient.serviceKnownFamilyNames();
+        Assert.assertNotNull(familyNames);
+        Assert.assertTrue(Arrays.asList(familyNames).contains(FAMILY));
     }
 
 }

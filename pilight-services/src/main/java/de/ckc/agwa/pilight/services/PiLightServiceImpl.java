@@ -66,13 +66,14 @@ public class PiLightServiceImpl implements PiLightService {
     public PiLightServiceStatus serviceStatus() {
         LOGGER.debug("serviceStatus(): Called");
 
+        PiLightServiceStatus ret = new PiLightServiceStatus();
+        ret.setFamilies(familyMap.keySet());
         int familiesCount = familyMap.size();
         int lightsCount = familyMap.values().stream()
-                .map(Family::getLights)
-                .mapToInt(Collection::size)
+                .map(Family::getLightsMap)
+                .mapToInt(Map::size)
                 .sum();
 
-        PiLightServiceStatus ret = new PiLightServiceStatus();
         ret.setFamiliesCount(familiesCount);
         ret.setLightsCount(lightsCount);
 
@@ -81,14 +82,13 @@ public class PiLightServiceImpl implements PiLightService {
     }
 
     @Override
-    public PiLightServiceStatus serviceInfoFamilies() {
-        LOGGER.debug("serviceInfoFamilies(): Called");
+    public String[] serviceKnownFamilyNames() {
+        LOGGER.debug("serviceKnownFamilyNames(): Called");
         Collection<String> families = familyMap.keySet();
 
-        PiLightServiceStatus ret = new PiLightServiceStatus();
-        ret.setFamilies(families);
+        String[] ret = families.toArray(new String[families.size()]);
 
-        LOGGER.info("serviceInfoFamilies(): return '{}'", ret);
+        LOGGER.info("serviceKnownFamilyNames(): return '{}'", ret);
         return ret;
     }
 

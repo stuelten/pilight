@@ -32,18 +32,18 @@ import java.util.Map;
 /**
  * Startup logic for RESTful JSON service.
  */
-public class PiLightJsonServiceMain {
+public class PiLightRestfulServiceMain {
     /**
      * The logger for this class only.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightJsonServiceMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightRestfulServiceMain.class);
 
     // ----------------------------------------------------------------------
 
     /**
      * Search for service classes below this package root.
      */
-    private static final String SERVICE_ROOT = PiLightJsonServiceMain.class.getPackage().getName();
+    private static final String SERVICE_ROOT = PiLightRestfulServiceMain.class.getPackage().getName();
 
     /**
      * Base URI for this app
@@ -58,7 +58,7 @@ public class PiLightJsonServiceMain {
     @SuppressWarnings({"UseOfSystemOutOrSystemErr", "MethodCanBeVariableArityMethod"})
     public static void main(String[] args) {
         try {
-            System.out.println("Start PiLightJsonServiceMain...");
+            System.out.println("Start PiLightRestfulServiceMain...");
 
             URI baseUri;
             if (args.length == 1) {

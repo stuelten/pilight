@@ -38,11 +38,11 @@ public interface PiLightService {
     PiLightServiceStatus serviceStatus();
 
     /**
-     * Get all known families.
+     * Get the names of all known families.
      *
      * @return the collection of families.
      */
-    PiLightServiceStatus serviceInfoFamilies();
+    String[] serviceKnownFamilyNames();
 
     /**
      * Get all known lights of a family.

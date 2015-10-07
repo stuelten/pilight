@@ -16,6 +16,7 @@
 
 package de.ckc.agwa.pilight.services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -26,7 +27,7 @@ import java.util.Collections;
  */
 public class PiLightServiceStatus {
 
-    protected Collection<String> families;
+    protected Collection<String> families = new ArrayList<>();
 
     protected int familiesCount = -1;
 
@@ -65,8 +66,8 @@ public class PiLightServiceStatus {
 
     @Override
     public String toString() {
-        String ret = "Serving " + getFamiliesCount() + " families with " + getLightsCount() + " lights."
-                + "\nKnown families: " + getFamilies();
+        String ret = "Serving " + getFamiliesCount() + " families with " + getLightsCount() + " lights. "
+                + "Known families: " + getFamilies();
         return ret;
     }
 

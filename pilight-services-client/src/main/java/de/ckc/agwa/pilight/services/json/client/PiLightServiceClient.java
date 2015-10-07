@@ -22,7 +22,8 @@ import com.sun.jersey.api.client.WebResource;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightService;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
-import de.ckc.agwa.pilight.services.json.PiLightJsonService;
+import de.ckc.agwa.pilight.services.json.PiLightRestfulService;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +86,7 @@ public class PiLightServiceClient implements PiLightService {
     public String serviceStatusPlain() {
         String ret = null;
         try {
-            String servicePath = PiLightJsonService.SERVICE_STATUS_PATH;
+            String servicePath = PiLightRestfulService.SERVICE_STATUS_PATH;
             URI serviceUri = createServiceUri(servicePath);
 
             WebResource webResource = client.resource(serviceUri);
@@ -108,7 +109,7 @@ public class PiLightServiceClient implements PiLightService {
     public PiLightServiceStatus serviceStatus() {
         PiLightServiceStatus ret = null;
         try {
-            String servicePath = PiLightJsonService.SERVICE_STATUS_PATH;
+            String servicePath = PiLightRestfulService.SERVICE_STATUS_PATH;
             URI serviceUri = createServiceUri(servicePath);
 
             WebResource webResource = client.resource(serviceUri);
@@ -117,7 +118,9 @@ public class PiLightServiceClient implements PiLightService {
 
             if (HTTP_STATUS_200_OK == response.getStatus()) {
                 // get result
-                ret = response.getEntity(PiLightServiceStatus.class);
+                String jsonResult = response.getEntity(String.class);
+                ObjectMapper objectMapper = new ObjectMapper();
+                ret = objectMapper.readValue(jsonResult, PiLightServiceStatus.class);
             } else {
                 LOGGER.info("Response: '()'", response);
             }
@@ -128,10 +131,10 @@ public class PiLightServiceClient implements PiLightService {
     }
 
     @Override
-    public PiLightServiceStatus serviceInfoFamilies() {
-        PiLightServiceStatus ret = null;
+    public String[] serviceKnownFamilyNames() {
+        String[] ret = null;
         try {
-            String servicePath = PiLightJsonService.SERVICE_INFO_FAMILIES_PATH;
+            String servicePath = PiLightRestfulService.SERVICE_KNOWN_FAMILY_NAMES_PATH;
             URI serviceUri = createServiceUri(servicePath);
 
             WebResource webResource = client.resource(serviceUri);
@@ -140,7 +143,9 @@ public class PiLightServiceClient implements PiLightService {
 
             if (HTTP_STATUS_200_OK == response.getStatus()) {
                 // get result
-                ret = response.getEntity(PiLightServiceStatus.class);
+                String jsonResult = response.getEntity(String.class);
+                ObjectMapper objectMapper = new ObjectMapper();
+                ret = objectMapper.readValue(jsonResult, String[].class);
             } else {
                 LOGGER.info("Response: '()'", response);
             }
@@ -154,8 +159,8 @@ public class PiLightServiceClient implements PiLightService {
     public Family serviceFamilyInfo(String family) {
         Family ret = null;
         try {
-            String servicePath = PiLightJsonService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
-                    .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, family);
+            String servicePath = PiLightRestfulService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family);
 
             URI serviceUri = createServiceUri(servicePath);
 
@@ -165,7 +170,10 @@ public class PiLightServiceClient implements PiLightService {
 
             if (HTTP_STATUS_200_OK == response.getStatus()) {
                 // get result
-                ret = response.getEntity(Family.class);
+                String jsonResult = response.getEntity(String.class);
+                ObjectMapper objectMapper = new ObjectMapper();
+                ret = objectMapper.readValue(jsonResult, Family.class);
+                // ret = response.getEntity(Family.class);
             } else {
                 LOGGER.info("Response for '()': '()'", family, response);
             }
@@ -179,9 +187,9 @@ public class PiLightServiceClient implements PiLightService {
     public Boolean serviceFamilyLightStatusGet(String family, String light) {
         Boolean ret = Boolean.FALSE;
         try {
-            String servicePath = PiLightJsonService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
-                    .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, family) //
-                    .replace(PiLightJsonService.TEMPLATE_PARAM_LIGHT, light);
+            String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family) //
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, light);
             URI serviceUri = createServiceUri(servicePath);
 
             WebResource webResource = client.resource(serviceUri);
@@ -207,9 +215,9 @@ public class PiLightServiceClient implements PiLightService {
     public Boolean serviceFamilyLightStatusPut(String family, String light, Boolean status) {
         Boolean ret = Boolean.FALSE;
         try {
-            String servicePath = PiLightJsonService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
-                    .replace(PiLightJsonService.TEMPLATE_PARAM_FAMILY, family) //
-                    .replace(PiLightJsonService.TEMPLATE_PARAM_LIGHT, light);
+            String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family) //
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, light);
             URI serviceUri = createServiceUri(servicePath);
 
             String input = "" + status;

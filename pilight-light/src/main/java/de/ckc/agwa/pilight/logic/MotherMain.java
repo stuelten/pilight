@@ -18,8 +18,8 @@ package de.ckc.agwa.pilight.logic;
 
 import de.ckc.agwa.pilight.io.PiLightLamp;
 import de.ckc.agwa.pilight.io.PiLightSwitch;
-import de.ckc.agwa.pilight.services.json.PiLightJsonService;
-import de.ckc.agwa.pilight.services.json.PiLightJsonServiceMain;
+import de.ckc.agwa.pilight.services.json.PiLightRestfulService;
+import de.ckc.agwa.pilight.services.json.PiLightRestfulServiceMain;
 import de.ckc.agwa.pilight.services.json.client.PiLightServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,8 +111,8 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
     public void run() {
         serviceBaseUrl = System.getenv(PILIGHT_SERVICE_ENV);
         if (null == serviceBaseUrl || "".equals(serviceBaseUrl.trim())) {
-            serviceBaseUrl = URI.create(PiLightJsonServiceMain.BASE_URI.toString()
-                    + PiLightJsonService.SERVICE_PREFIX).normalize().toString();
+            serviceBaseUrl = URI.create(PiLightRestfulServiceMain.BASE_URI.toString()
+                    + PiLightRestfulService.SERVICE_PREFIX).normalize().toString();
         }
 
         serviceExecutor = Executors.newSingleThreadScheduledExecutor();
