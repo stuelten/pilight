@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<?import java.net.URL?>
+<GridPane xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ckc.agwa.pilight.config.PiLightConfigUIController"
+          alignment="center" hgap="10" vgap="10" styleClass="root">
+    <padding>
+        <Insets top="5" right="25" bottom="5" left="25"/>
+    </padding>
+
+    <Text id="welcome-text" text="%welcome-text.text"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="0"
+          GridPane.columnSpan="3">
+        <GridPane.margin>
+            <Insets bottom="20"/>
+        </GridPane.margin>
+    </Text>
+
+    <Label text="%ssid.label"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="1"/>
+    <TextField fx:id="ssid"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="1"
+               GridPane.columnSpan="2"/>
+
+    <Label text="%passwd.label"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="2"/>
+    <PasswordField fx:id="passwd"
+                   GridPane.columnIndex="1"
+                   GridPane.rowIndex="2"/>
+
+    <Label text="%server.label"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="3"/>
+    <TextField fx:id="server"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="3"
+               GridPane.columnSpan="2"
+               onAction="#handleServerChanged"/>
+    <Button id="actionServerConnect"
+            text="%actionServerConnect.text"
+            GridPane.columnIndex="1"
+            GridPane.rowIndex="4"
+            prefWidth="%actionServerConnect.prefWidth"
+            onAction="#handleServerChanged"/>
+
+    <Label text="%family.label"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="5"/>
+    <ComboBox fx:id="family"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="5"
+              GridPane.columnSpan="2"
+              editable="false"
+              onAction="#handleFamilyChanged"/>
+
+
+    <Label text="%light.label"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="6"/>
+    <ComboBox fx:id="light"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="6"
+              GridPane.columnSpan="2"
+              editable="false"/>
+
+    <HBox spacing="10" alignment="BOTTOM_LEFT"
+          GridPane.columnIndex="1"
+          GridPane.rowIndex="7">
+        <Button id="actionCancel"
+                text="%actionCancel.text"
+                prefWidth="%actionCancel.prefWidth"
+                onAction="#handleCancel"/>
+        <GridPane.margin>
+            <Insets top="20" bottom="20"/>
+        </GridPane.margin>
+    </HBox>
+    <HBox spacing="10" alignment="BOTTOM_RIGHT"
+          GridPane.columnIndex="2"
+          GridPane.rowIndex="7">
+        <Button id="actionSaveConfig"
+                text="%actionSaveConfig.text"
+                prefWidth="%actionSaveConfig.prefWidth"
+                onAction="#handleSaveConfig"/>
+        <GridPane.margin>
+            <Insets top="20" bottom="20"/>
+        </GridPane.margin>
+    </HBox>
+
+    <Text fx:id="statusText"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="8"
+          GridPane.columnSpan="3"
+          GridPane.rowSpan="2"
+          GridPane.fillHeight="true"
+          GridPane.fillWidth="true"/>
+
+    <stylesheets>
+        <URL value="@PiLightConfig.css"/>
+    </stylesheets>
+
+</GridPane>

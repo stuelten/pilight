@@ -27,45 +27,77 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 /**
  * Entry class for UI.
  */
 public class PiLightConfigMain extends Application {
+    public static final Logger LOGGER = Logger.getLogger(PiLightConfigMain.class.getName());
 
     /**
-     * The file with the wlan configuration.
+     * The file with the configuration.
      */
-    public static final File FILENAME = new File("pilight-wlan-config.txt");
+    protected static final String CONFIG_FILENAME = "pilight.config";
+    protected static final File CONFIG_FILE;
+
+    static {
+        URL templateUrl = PiLightConfigMain.class.getResource("/" + CONFIG_FILENAME);
+        String templateUrlFile = templateUrl.getFile();
+        CONFIG_FILE = new File(templateUrlFile);
+        LOGGER.info("Use as config file: " + CONFIG_FILE);
+    }
 
     /**
+     * I18n properties file
+     */
+    protected static final String I18N_PROPERTIES_FILENAME = "PiLightConfigMain.properties";
+
+    /**
+     * GUI properties file
+     */
+    protected static final String WLAN_CONFIG_UI_PROPERTIES = "PiLightConfigUI.properties";
+
+    /**
+     * JavaFX UI
+     */
+    protected static final String CONFIG_UI_FXML = "PiLightConfigUI.fxml";
+
+    // ----------------------------------------------------------------------
+
+    /**
+     * Usually not called, as JavaFX apps start via {@link #start(Stage)}.
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         launch(args);
     }
 
+    // ----------------------------------------------------------------------
+
     /**
      * Get properties and create ui.
+     *
+     * @param stage the stage to use
      */
     @Override
     public void start(Stage stage) throws Exception {
 
         // get i18n properties
-        InputStream wlanConfigUIPropertiesInputStream = getClass().getResource("WlanConfigUI.properties").openStream();
+        InputStream wlanConfigUIPropertiesInputStream = getClass().getResource(WLAN_CONFIG_UI_PROPERTIES).openStream();
         ResourceBundle wlanConfigUII18nResource = new PropertyResourceBundle(wlanConfigUIPropertiesInputStream);
-        URL wlanConfigUIFxml = getClass().getResource("WlanConfigUI.fxml");
+        URL wlanConfigUIFxml = getClass().getResource(CONFIG_UI_FXML);
 
         // create ui with i18n properties
         Parent wlanConfigUIParent = FXMLLoader.load(wlanConfigUIFxml, wlanConfigUII18nResource);
 
         // populate and configure ui
-        String piLightConfigMainI18nPropertiesFile = getClass().getSimpleName() + ".properties";
-        InputStream piLightConfigMainPropertiesInputStream = getClass().getResource(piLightConfigMainI18nPropertiesFile).openStream();
+        InputStream piLightConfigMainPropertiesInputStream = getClass().getResource(I18N_PROPERTIES_FILENAME).openStream();
         ResourceBundle piLightConfigMainI18nResource = new PropertyResourceBundle(piLightConfigMainPropertiesInputStream);
 
         double sceneWidth = Double.valueOf(piLightConfigMainI18nResource.getString("scene.width"));
-        double sceneHeight= Double.valueOf(piLightConfigMainI18nResource.getString("scene.height"));
+        double sceneHeight = Double.valueOf(piLightConfigMainI18nResource.getString("scene.height"));
 
         Scene scene = new Scene(wlanConfigUIParent, sceneWidth, sceneHeight);
 

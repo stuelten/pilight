@@ -101,6 +101,7 @@ public class PiLightServiceClient implements PiLightService {
             }
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
+            ret = "Error: " + e.getLocalizedMessage();
         }
         return ret;
     }
