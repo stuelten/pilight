@@ -41,7 +41,7 @@ public class PiLightRestfulServiceTest extends JerseyTest {
         enable(TestProperties.LOG_TRAFFIC);
         enable(TestProperties.DUMP_ENTITY);
 
-        return PiLightRestfulServiceMain.createApp();
+        return PiLightRestfulServiceMain.createConfig();
     }
 
  /*   @Override

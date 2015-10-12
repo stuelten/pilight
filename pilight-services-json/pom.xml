@@ -93,6 +93,23 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- execute via mvn -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>${pilight-MainClass}</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

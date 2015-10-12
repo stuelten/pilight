@@ -17,6 +17,7 @@
 package de.ckc.agwa.pilight.services.json;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -46,7 +47,7 @@ public class PiLightRestfulServiceMain {
     private static final String SERVICE_ROOT = PiLightRestfulServiceMain.class.getPackage().getName();
 
     /**
-     * Base URI for this app
+     * Base URI for this app.
      */
     public static final URI BASE_URI = URI.create("http://localhost:9998/");
 
@@ -68,8 +69,14 @@ public class PiLightRestfulServiceMain {
             }
 
             System.out.println("Start application for URL " + baseUri);
-            ResourceConfig resourceConfig = createApp();
-            final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resourceConfig);
+            ResourceConfig resourceConfig = createConfig();
+            HttpServer server = createServer(baseUri, resourceConfig);
+
+            // Additionally listen on all interfaces
+            NetworkListener listenToAll = new NetworkListener("all", "0.0.0.0", 9998);
+            server.addListener(listenToAll);
+            server.start();
+
             System.out.println("Application running...");
 
             System.out.println("Hit enter to stop it...");
@@ -85,13 +92,26 @@ public class PiLightRestfulServiceMain {
     // ----------------------------------------------------------------------
 
     /**
+     * Creates a grizzly http server listening not only on the
+     * given uri but on all interfaces.
+     *
+     * @param baseUri        the URI to listen on.
+     * @param resourceConfig the grizzly configuration
+     * @return the configured server
+     */
+    public static HttpServer createServer(URI baseUri, ResourceConfig resourceConfig) {
+        HttpServer httpServer = GrizzlyHttpServerFactory.createHttpServer(baseUri, resourceConfig);
+        return httpServer;
+    }
+
+    /**
      * Configures Jackson/Jersey to use classes in package {@link #SERVICE_ROOT}
      * and the {@link MoxyJsonConfig} from {@link #createMoxyJsonResolver()}
      * for resource lookup.
      *
      * @return the config
      */
-    public static ResourceConfig createApp() {
+    public static ResourceConfig createConfig() {
         return new ResourceConfig().
                 packages(SERVICE_ROOT).
                 register(createMoxyJsonResolver());
@@ -99,7 +119,7 @@ public class PiLightRestfulServiceMain {
 
     public static ContextResolver<MoxyJsonConfig> createMoxyJsonResolver() {
         final MoxyJsonConfig moxyJsonConfig = new MoxyJsonConfig();
-        Map<String, String> namespacePrefixMapper = new HashMap<String, String>(1);
+        Map<String, String> namespacePrefixMapper = new HashMap<>(1);
         namespacePrefixMapper.put("http://www.w3.org/2001/XMLSchema-instance", "xsi");
         moxyJsonConfig.setNamespacePrefixMapper(namespacePrefixMapper).setNamespaceSeparator(':');
         return moxyJsonConfig.resolver();
