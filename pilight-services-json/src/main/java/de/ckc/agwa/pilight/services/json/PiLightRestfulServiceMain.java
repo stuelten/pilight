@@ -73,7 +73,7 @@ public class PiLightRestfulServiceMain {
             HttpServer server = createServer(baseUri, resourceConfig);
 
             // Additionally listen on all interfaces
-            NetworkListener listenToAll = new NetworkListener("all", "0.0.0.0", 9998);
+            NetworkListener listenToAll = new NetworkListener("all", "0.0.0.0", 9997);
             server.addListener(listenToAll);
             server.start();
 
