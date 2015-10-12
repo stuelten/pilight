@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Queries a light's status
+# Set a light's status
 #
 
 if [ "$1" == "-b" -o "$1" == "---baseurl" ]
@@ -15,7 +15,11 @@ fi
 # build service path
 family=$1
 light=$2
+state=$3
 url="${BASE_URL}/families/${family}/lights/${light}/status"
 
-curl -v --header "Accept: application/json" \
+curl -v --header "Accept:application/json" \
+    --header "Content-Type:application/json" \
+    --request PUT \
+    --data "${state}" \
     "$url"

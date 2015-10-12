@@ -13,5 +13,5 @@ else
 fi
 
 url="${BASE_URL}/status"
-curl -v --header "Accept:application/json" \
-    "$url"
+curl -i  --header "Accept: text/plain" \
+    "${url}"
