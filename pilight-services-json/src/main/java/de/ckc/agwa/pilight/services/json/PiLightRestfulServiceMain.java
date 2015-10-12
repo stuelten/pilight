@@ -16,6 +16,9 @@
 
 package de.ckc.agwa.pilight.services.json;
 
+import de.ckc.agwa.pilight.services.Family;
+import de.ckc.agwa.pilight.services.Light;
+import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -42,9 +45,9 @@ public class PiLightRestfulServiceMain {
     // ----------------------------------------------------------------------
 
     /**
-     * Search for service classes below this package root.
+     * Search for service classes in the service package and below.
      */
-    private static final String SERVICE_ROOT = PiLightRestfulServiceMain.class.getPackage().getName();
+    private static final String SERVICE_ROOT = PiLightServiceStatus.class.getPackage().getName();
 
     /**
      * Base URI for this app.
@@ -112,9 +115,12 @@ public class PiLightRestfulServiceMain {
      * @return the config
      */
     public static ResourceConfig createConfig() {
-        return new ResourceConfig().
-                packages(SERVICE_ROOT).
-                register(createMoxyJsonResolver());
+        return new ResourceConfig()
+                .packages(SERVICE_ROOT)
+                .register(PiLightServiceStatus.class)
+                .register(Family.class)
+                .register(Light.class)
+                .register(createMoxyJsonResolver());
     }
 
     public static ContextResolver<MoxyJsonConfig> createMoxyJsonResolver() {
