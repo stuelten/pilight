@@ -18,8 +18,8 @@ light=$2
 state=$3
 url="${BASE_URL}/families/${family}/lights/${light}/status"
 
-curl -v --header "Accept:application/json" \
-    --header "Content-Type:application/json" \
+curl -v --header "Accept:application/de.ckc.agwa.pilight.services.json.json" \
+    --header "Content-Type:application/de.ckc.agwa.pilight.services.json.json" \
     --request PUT \
     --data "${state}" \
     "$url"

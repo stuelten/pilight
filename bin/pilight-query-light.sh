@@ -17,5 +17,5 @@ family=$1
 light=$2
 url="${BASE_URL}/families/${family}/lights/${light}/status"
 
-curl -v --header "Accept: application/json" \
+curl -v --header "Accept: application/de.ckc.agwa.pilight.services.json.json" \
     "$url"

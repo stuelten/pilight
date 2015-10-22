@@ -13,5 +13,5 @@ else
 fi
 
 url="${BASE_URL}/status"
-curl -v --header "Accept:application/json" \
+curl -v --header "Accept:application/de.ckc.agwa.pilight.services.json.json" \
     "$url"
