@@ -15,6 +15,6 @@
  */
 
 /**
- * Some client code using pilight-services.
+ * Some de.ckc.agwa.pilight.services.client code using pilight-services.
  */
-package de.ckc.agwa.pilight.services.json.client;
+package de.ckc.agwa.pilight.services.client;

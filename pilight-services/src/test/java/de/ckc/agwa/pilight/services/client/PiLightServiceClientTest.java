@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package de.ckc.agwa.pilight.services.json.client;
+package de.ckc.agwa.pilight.services.client;
 
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
-import de.ckc.agwa.pilight.services.json.PiLightRestfulService;
-import de.ckc.agwa.pilight.services.json.PiLightRestfulServiceMain;
+import de.ckc.agwa.pilight.services.rest.PiLightRestfulService;
+import de.ckc.agwa.pilight.services.rest.PiLightRestfulServiceMain;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
@@ -71,18 +71,13 @@ public class PiLightServiceClientTest extends JerseyTest {
     }
 
     @Test
-    public void testServiceStatus() throws Exception {
-        PiLightServiceStatus res = serviceClient.serviceStatus();
-        Assert.assertNotNull(res);
-        Assert.assertEquals(0, res.getFamiliesCount());
-        Assert.assertEquals(0, res.getLightsCount());
-    }
-
-    @Test
     public void testServiceInfoFamilies() throws Exception {
         final String FAMILY = "testFamily_" + System.nanoTime();
         final String LIGHT1 = "testLight1_" + System.nanoTime();
         final String LIGHT2 = "testLight2_" + System.nanoTime();
+
+        final PiLightServiceStatus previousStatus = serviceClient.serviceStatus();
+        Assert.assertNotNull(previousStatus);
 
         Family family = serviceClient.serviceFamilyInfo(FAMILY);
         Assert.assertNull(family);
@@ -104,6 +99,11 @@ public class PiLightServiceClientTest extends JerseyTest {
         String[] familyNames = serviceClient.serviceKnownFamilyNames();
         Assert.assertNotNull(familyNames);
         Assert.assertTrue(Arrays.asList(familyNames).contains(FAMILY));
+
+        PiLightServiceStatus res = serviceClient.serviceStatus();
+        Assert.assertNotNull(res);
+        Assert.assertTrue(previousStatus.getFamiliesCount() < res.getFamiliesCount());
+        Assert.assertTrue(previousStatus.getLightsCount() < res.getLightsCount());
     }
 
 }

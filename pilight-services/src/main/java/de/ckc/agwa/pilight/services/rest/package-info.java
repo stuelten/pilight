@@ -17,4 +17,4 @@
 /**
  * Die Logik, die im EE Container läuft
  */
-package de.ckc.agwa.pilight.services.json;
+package de.ckc.agwa.pilight.services.rest;

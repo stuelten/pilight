@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.ckc.agwa.pilight.services.json.client;
+package de.ckc.agwa.pilight.services.client;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -22,7 +22,7 @@ import com.sun.jersey.api.client.WebResource;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightService;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
-import de.ckc.agwa.pilight.services.json.PiLightRestfulService;
+import de.ckc.agwa.pilight.services.rest.PiLightRestfulService;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 import java.net.URI;
 
 /**
- * A client sending and receiving status updates for lights.
+ * A de.ckc.agwa.pilight.services.client sending and receiving status updates for lights.
  *
  * @author Timo Stülten
  */
@@ -61,7 +61,7 @@ public class PiLightServiceClient implements PiLightService {
     // ----------------------------------------------------------------------
 
     /**
-     * Creates a simple client.
+     * Creates a simple de.ckc.agwa.pilight.services.client.
      *
      * @param baseUri Base URI prefix for all services.
      */

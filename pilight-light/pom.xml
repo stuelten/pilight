@@ -42,10 +42,6 @@
             <groupId>de.ckc.agwa</groupId>
             <artifactId>pilight-services</artifactId>
         </dependency>
-        <dependency>
-            <groupId>de.ckc.agwa</groupId>
-            <artifactId>pilight-services-client</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>de.ckc.agwa</groupId>

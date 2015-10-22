@@ -18,7 +18,7 @@ package de.ckc.agwa.pilight.config;
 
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.Light;
-import de.ckc.agwa.pilight.services.json.client.PiLightServiceClient;
+import de.ckc.agwa.pilight.services.client.PiLightServiceClient;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -291,11 +291,9 @@ public class PiLightConfigUIController implements Initializable {
                 if (line != null) {
                     String key = new StringTokenizer(line).nextToken();
 
-                    // search for config entries, other lines must not be changed
+                    // search for config entries, leave other lines unchanged
                     if (null != key && key.length() > 0) {
-                        // String value;
                         switch (key) {
-                            // prepend delimiter to known config entries to avoid changing other lines
                             case KEY_FAMILY:
                                 line = key + "  " + family.getValue();
                                 break;
@@ -312,7 +310,7 @@ public class PiLightConfigUIController implements Initializable {
                                 line = key + "    " + ssid.getText();
                                 break;
                             default:
-                                // use line as it is
+                                // other line: use it as it is
                         }
                     }
                     // collect lines

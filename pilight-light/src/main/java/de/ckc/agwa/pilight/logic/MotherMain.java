@@ -18,9 +18,9 @@ package de.ckc.agwa.pilight.logic;
 
 import de.ckc.agwa.pilight.io.PiLightLamp;
 import de.ckc.agwa.pilight.io.PiLightSwitch;
-import de.ckc.agwa.pilight.services.json.PiLightRestfulService;
-import de.ckc.agwa.pilight.services.json.PiLightRestfulServiceMain;
-import de.ckc.agwa.pilight.services.json.client.PiLightServiceClient;
+import de.ckc.agwa.pilight.services.client.PiLightServiceClient;
+import de.ckc.agwa.pilight.services.rest.PiLightRestfulService;
+import de.ckc.agwa.pilight.services.rest.PiLightRestfulServiceMain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public class MotherMain implements Runnable, PiLightSwitch.StateChangeListener {
     private ScheduledExecutorService serviceExecutor;
 
     /**
-     * The Service client API
+     * The Service de.ckc.agwa.pilight.services.client API
      */
     private PiLightServiceClient serviceClient;
 

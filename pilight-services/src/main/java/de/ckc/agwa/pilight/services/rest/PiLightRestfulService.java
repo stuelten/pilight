@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.ckc.agwa.pilight.services.json;
+package de.ckc.agwa.pilight.services.rest;
 
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceImpl;

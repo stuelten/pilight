@@ -35,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>de.ckc.agwa</groupId>
-            <artifactId>pilight-services-client</artifactId>
+            <artifactId>pilight-services</artifactId>
         </dependency>
     </dependencies>
 
