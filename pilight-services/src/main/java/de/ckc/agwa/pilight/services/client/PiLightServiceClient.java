@@ -16,19 +16,19 @@
 
 package de.ckc.agwa.pilight.services.client;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightService;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import de.ckc.agwa.pilight.services.rest.PiLightRestfulService;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import java.net.URI;
+import javax.ws.rs.core.Response;
 
 /**
  * A de.ckc.agwa.pilight.services.client sending and receiving status updates for lights.
@@ -51,7 +51,7 @@ public class PiLightServiceClient implements PiLightService {
     /**
      * Used by all methods
      */
-    private Client client = Client.create();
+    private WebTarget webTarget;
 
     /**
      * Base URI prefix for all services.
@@ -61,44 +61,58 @@ public class PiLightServiceClient implements PiLightService {
     // ----------------------------------------------------------------------
 
     /**
+     * Creates a simple service client.
+     * The {@link #baseUri} has to be set, to be usable.
+     */
+    public PiLightServiceClient() {
+    }
+
+    /**
      * Creates a simple de.ckc.agwa.pilight.services.client.
      *
      * @param baseUri Base URI prefix for all services.
      */
     public PiLightServiceClient(String baseUri) {
+        setBaseUri(baseUri);
+    }
+
+    public String getBaseUri() {
+        return baseUri;
+    }
+
+    /**
+     * Sets the base URI for all service calls.
+     *
+     * @param baseUri Base URI prefix for all services.
+     */
+    public void setBaseUri(String baseUri) {
         this.baseUri = baseUri;
+        if (null == baseUri) {
+            reset();
+        } else {
+            init();
+        }
+    }
+
+    private void reset() {
+        webTarget = null;
+    }
+
+    private void init() {
+        Client client = ClientBuilder.newClient();
+        webTarget = client.target(baseUri);
     }
 
     // ----------------------------------------------------------------------
 
-    /**
-     * Creates the absolute URI to call for the given service URI.
-     *
-     * @param serviceUriRelative the relative URI for some service
-     * @return the absolute URI to call
-     */
-    private URI createServiceUri(String serviceUriRelative) {
-        URI ret = URI.create(baseUri + "/" + serviceUriRelative).normalize();
-        return ret;
-    }
-
     @Override
     public String serviceStatusPlain() {
-        String ret = null;
+        String ret;
         try {
-            String servicePath = PiLightRestfulService.SERVICE_STATUS_PATH;
-            URI serviceUri = createServiceUri(servicePath);
-
-            WebResource webResource = client.resource(serviceUri);
-            ClientResponse response = webResource.type(MediaType.TEXT_PLAIN)
-                    .get(ClientResponse.class);
-
-            if (HTTP_STATUS_200_OK == response.getStatus()) {
-                // get result
-                ret = response.getEntity(String.class);
-            } else {
-                LOGGER.info("Response: '()'", response);
-            }
+            ret = webTarget
+                    .path(PiLightRestfulService.SERVICE_STATUS_PATH)
+                    .request(MediaType.TEXT_PLAIN)
+                    .get(String.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
             ret = "Error: " + e.getLocalizedMessage();
@@ -108,106 +122,68 @@ public class PiLightServiceClient implements PiLightService {
 
     @Override
     public PiLightServiceStatus serviceStatus() {
-        PiLightServiceStatus ret = null;
+        PiLightServiceStatus ret;
         try {
-            String servicePath = PiLightRestfulService.SERVICE_STATUS_PATH;
-            URI serviceUri = createServiceUri(servicePath);
-
-            WebResource webResource = client.resource(serviceUri);
-            ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
-                    .get(ClientResponse.class);
-
-            if (HTTP_STATUS_200_OK == response.getStatus()) {
-                // get result
-                String jsonResult = response.getEntity(String.class);
-                ObjectMapper objectMapper = new ObjectMapper();
-                ret = objectMapper.readValue(jsonResult, PiLightServiceStatus.class);
-            } else {
-                LOGGER.info("Response: '()'", response);
-            }
+            ret = webTarget
+                    .path(PiLightRestfulService.SERVICE_STATUS_PATH)
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(PiLightServiceStatus.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
+            ret = null;
         }
         return ret;
     }
 
     @Override
     public String[] serviceKnownFamilyNames() {
-        String[] ret = null;
+        String[] ret;
         try {
-            String servicePath = PiLightRestfulService.SERVICE_KNOWN_FAMILY_NAMES_PATH;
-            URI serviceUri = createServiceUri(servicePath);
-
-            WebResource webResource = client.resource(serviceUri);
-            ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
-                    .get(ClientResponse.class);
-
-            if (HTTP_STATUS_200_OK == response.getStatus()) {
-                // get result
-                String jsonResult = response.getEntity(String.class);
-                ObjectMapper objectMapper = new ObjectMapper();
-                ret = objectMapper.readValue(jsonResult, String[].class);
-            } else {
-                LOGGER.info("Response: '()'", response);
-            }
+            ret = webTarget
+                    .path(PiLightRestfulService.SERVICE_KNOWN_FAMILY_NAMES_PATH)
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(String[].class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
+            ret = null;
         }
         return ret;
     }
 
     @Override
     public Family serviceFamilyInfo(String family) {
-        Family ret = null;
+        Family ret;
         try {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family);
 
-            URI serviceUri = createServiceUri(servicePath);
-
-            WebResource webResource = client.resource(serviceUri);
-            ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
-                    .get(ClientResponse.class);
-
-            if (HTTP_STATUS_200_OK == response.getStatus()) {
-                // get result
-                String jsonResult = response.getEntity(String.class);
-                ObjectMapper objectMapper = new ObjectMapper();
-                ret = objectMapper.readValue(jsonResult, Family.class);
-                // ret = response.getEntity(Family.class);
-            } else {
-                LOGGER.info("Response for '()': '()'", family, response);
-            }
+            ret = webTarget
+                    .path(servicePath)
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(Family.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
+            ret = null;
         }
         return ret;
     }
 
     @Override
     public Boolean serviceFamilyLightStatusGet(String family, String light) {
-        Boolean ret = Boolean.FALSE;
+        Boolean ret;
         try {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family) //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, light);
-            URI serviceUri = createServiceUri(servicePath);
 
-            WebResource webResource = client.resource(serviceUri);
-            ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON)
-                    .get(ClientResponse.class);
-
-            if (HTTP_STATUS_200_OK == response.getStatus()) {
-                String output = response.getEntity(String.class);
-
-                LOGGER.debug("Response for '()', '()': '()'", family, light, output);
-
-                ret = Boolean.valueOf(output);
-            } else {
-                LOGGER.info("Response for '()', '()': '()'", family, light, response);
-            }
+            ret = webTarget
+                    .path(servicePath)
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(Boolean.class);
+            // ret = Boolean.valueOf(output);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
+            ret = Boolean.FALSE;
         }
         return ret;
     }
@@ -219,13 +195,11 @@ public class PiLightServiceClient implements PiLightService {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family) //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, light);
-            URI serviceUri = createServiceUri(servicePath);
 
-            String input = "" + status;
-
-            WebResource webResource = client.resource(serviceUri);
-            ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
-                    .put(ClientResponse.class, input);
+            Response response = webTarget
+                    .path(servicePath)
+                    .request(MediaType.APPLICATION_JSON)
+                    .put(Entity.entity(status, MediaType.APPLICATION_JSON_TYPE));
 
             if (HTTP_STATUS_200_OK == response.getStatus()
                     || HTTP_STATUS_201_CREATED == response.getStatus()) {

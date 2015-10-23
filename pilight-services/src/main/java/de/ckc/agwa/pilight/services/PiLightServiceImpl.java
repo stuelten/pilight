@@ -88,7 +88,7 @@ public class PiLightServiceImpl implements PiLightService {
 
         String[] ret = families.toArray(new String[families.size()]);
 
-        LOGGER.info("serviceKnownFamilyNames(): return '{}'", ret);
+        LOGGER.info("serviceKnownFamilyNames(): return '{}'", (Object) ret);
         return ret;
     }
 

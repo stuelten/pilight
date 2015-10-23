@@ -16,14 +16,12 @@
 
 package de.ckc.agwa.pilight.services;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Map;
@@ -36,18 +34,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Timo Stülten
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Family implements Serializable {
 
     /**
      * The family's name. It is used as key in service calls.
      */
-    @JsonInclude
     protected String name;
 
     /**
      * The lights of this family, mapped by the light's name.
      */
-    @JsonIgnore
     private Map<String, Light> lightsMap = new ConcurrentHashMap<>();
 
     // ----------------------------------------------------------------------
@@ -66,36 +63,28 @@ public class Family implements Serializable {
         this.lightsMap = lightsMap;
     }
 
-    @JsonGetter
     public String getName() {
         return name;
     }
 
-    @JsonSetter
     public void setName(String name) {
         this.name = name;
     }
 
-    @JsonIgnore
     protected Map<String, Light> getLightsMap() {
         return lightsMap;
     }
 
-    @JsonIgnore
     private void setLightsMap(Map<String, Light> lightsMap) {
         this.lightsMap = lightsMap;
     }
 
     // ----------------------------------------------------------------------
 
-    @JsonInclude
-    @JsonGetter
     public Light[] getLights() {
         return lightsMap.values().toArray(new Light[lightsMap.size()]);
     }
 
-    @JsonInclude
-    @JsonSetter
     public void setLights(Light[] lights) {
         lightsMap.clear();
         for (Light light : lights) {
@@ -103,21 +92,18 @@ public class Family implements Serializable {
         }
     }
 
-    @JsonIgnore
     public void putLight(Light light) {
         Objects.requireNonNull(light);
         Objects.requireNonNull(light.getName());
         lightsMap.put(light.getName(), light);
     }
 
-    @JsonIgnore
     public Light getLight(String name) {
         Objects.requireNonNull(name);
         Light ret = lightsMap.get(name);
         return ret;
     }
 
-    @JsonIgnore
     public boolean removeLight(Light light) {
         Objects.requireNonNull(light);
         Objects.requireNonNull(light.getName());

@@ -54,7 +54,7 @@ public class PiLightServiceClientTest extends JerseyTest {
 
     // ----------------------------------------------------------------------
 
-    PiLightServiceClient serviceClient;
+    protected PiLightServiceClient serviceClient;
 
     @Before
     public void setup() {

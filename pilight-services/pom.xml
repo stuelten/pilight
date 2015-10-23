@@ -58,21 +58,6 @@
             <artifactId>jackson-mapper-asl</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.6.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-        </dependency>
-
         <!-- Test -->
         <dependency>
             <groupId>org.glassfish.jersey.test-framework.providers</groupId>
@@ -91,7 +76,6 @@
             <artifactId>cdi-unit</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>

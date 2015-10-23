@@ -20,7 +20,6 @@ import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceImpl;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 
 /**
  * This service receives and serves the status of lights for some families.
@@ -129,21 +127,12 @@ public class PiLightRestfulService {
     @GET
     @Path(SERVICE_KNOWN_FAMILY_NAMES_PATH)
     @Produces(MediaType.APPLICATION_JSON)
-    public String serviceKnownFamilyNames() {
+    public String[] serviceKnownFamilyNames() {
         LOGGER.debug("serviceKnownFamilyNames(): Called");
-        String ret;
 
-        String[] names = service.serviceKnownFamilyNames();
+        String[] ret = service.serviceKnownFamilyNames();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            ret = objectMapper.writeValueAsString(names);
-        } catch (IOException e) {
-            LOGGER.info("serviceKnownFamilyNames(): Ignore '{}'", e);
-            ret = "";
-        }
-
-        LOGGER.info("serviceKnownFamilyNames(): return '{}'", ret);
+        LOGGER.info("serviceKnownFamilyNames(): return '{}'", (Object) ret);
         return ret;
     }
 

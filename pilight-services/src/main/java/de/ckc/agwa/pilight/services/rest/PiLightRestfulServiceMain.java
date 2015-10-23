@@ -16,8 +16,6 @@
 
 package de.ckc.agwa.pilight.services.rest;
 
-import de.ckc.agwa.pilight.services.Family;
-import de.ckc.agwa.pilight.services.Light;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
@@ -81,7 +79,6 @@ public class PiLightRestfulServiceMain {
             server.start();
 
             System.out.println("Application running...");
-
             System.out.println("Hit enter to stop it...");
 
             //noinspection ResultOfMethodCallIgnored
@@ -117,9 +114,6 @@ public class PiLightRestfulServiceMain {
     public static ResourceConfig createConfig() {
         return new ResourceConfig()
                 .packages(SERVICE_ROOT)
-                .register(PiLightServiceStatus.class)
-                .register(Family.class)
-                .register(Light.class)
                 .register(createMoxyJsonResolver());
     }
 
