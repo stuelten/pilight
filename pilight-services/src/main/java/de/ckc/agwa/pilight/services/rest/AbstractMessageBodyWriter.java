@@ -17,6 +17,7 @@
 package de.ckc.agwa.pilight.services.rest;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,8 +153,9 @@ public abstract class AbstractMessageBodyWriter<T>
     public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                       MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
         T ret;
-
-
+        ObjectMapper mapper = new ObjectMapper();
+        ret = mapper.readValue(entityStream, new TypeReference<T>() {
+        });
         return ret;
     }
 
