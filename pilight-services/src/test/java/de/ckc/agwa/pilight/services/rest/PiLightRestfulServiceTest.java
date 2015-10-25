@@ -139,6 +139,7 @@ public class PiLightRestfulServiceTest extends JerseyTest {
         String path = PiLightRestfulService.SERVICE_PREFIX
                 + PiLightRestfulService.SERVICE_KNOWN_FAMILY_NAMES_PATH;
 
+
         return target(path).request(MediaType.APPLICATION_JSON_TYPE).get(String[].class);
     }
 
@@ -151,7 +152,9 @@ public class PiLightRestfulServiceTest extends JerseyTest {
                 .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName)
                 .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, lightName);
 
-        ret = target(path).request(MediaType.APPLICATION_JSON_TYPE).get(Boolean.class);
+        // FIXME use Boolean instead of String!
+        String output = target(path).request(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+        ret = Boolean.valueOf(output);
 
         return ret;
     }
@@ -163,7 +166,8 @@ public class PiLightRestfulServiceTest extends JerseyTest {
                 .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName)
                 .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, lightName);
 
-        Entity<Boolean> entity = Entity.entity(state, MediaType.APPLICATION_JSON_TYPE);
+        // FIXME use Boolean instead of String!
+        Entity<String> entity = Entity.entity(state.toString(), MediaType.APPLICATION_JSON_TYPE);
         target(path).request(MediaType.APPLICATION_JSON_TYPE).put(entity);
 
         Boolean lightMustBeSet = getLightState(familyName, lightName);

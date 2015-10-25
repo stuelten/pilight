@@ -16,7 +16,7 @@
 
 package de.ckc.agwa.pilight.services.rest;
 
-import de.ckc.agwa.pilight.services.Family;
+import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,20 +24,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.ext.Provider;
 
 /**
- * A converter for {@link Family}.
+ * A converter for {@link PiLightServiceStatus}.
  *
  * @author Timo Stülten
  */
 @Provider
 @Produces({"text/plain", "application/json"})
-public class FamilyConverter extends AbstractMessageBodyWriter<Family> {
+public class PiLightServiceStatusConverter extends AbstractMessageBodyWriter<PiLightServiceStatus> {
     /**
      * The {@link Logger}
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(FamilyConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightServiceStatusConverter.class);
 
-    public FamilyConverter() {
-        super(Family.class);
+    public PiLightServiceStatusConverter() {
+        super(PiLightServiceStatus.class);
         LOGGER.info("Instance created.");
     }
 }

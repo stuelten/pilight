@@ -16,6 +16,8 @@
 
 package de.ckc.agwa.pilight.services.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightService;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
@@ -36,18 +38,16 @@ import javax.ws.rs.core.Response;
  * @author Timo Stülten
  */
 public class PiLightServiceClient implements PiLightService {
+    public static final int HTTP_STATUS_200_OK = 200;
+
+    // ----------------------------------------------------------------------
+    public static final int HTTP_STATUS_201_CREATED = 201;
     /**
      * The logger for this class only.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PiLightServiceClient.class);
 
     // ----------------------------------------------------------------------
-
-    public static final int HTTP_STATUS_200_OK = 200;
-    public static final int HTTP_STATUS_201_CREATED = 201;
-
-    // ----------------------------------------------------------------------
-
     /**
      * Used by all methods
      */
@@ -111,7 +111,7 @@ public class PiLightServiceClient implements PiLightService {
         try {
             ret = webTarget
                     .path(PiLightRestfulService.SERVICE_STATUS_PATH)
-                    .request(MediaType.TEXT_PLAIN)
+                    .request(MediaType.TEXT_PLAIN_TYPE)
                     .get(String.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
@@ -126,7 +126,7 @@ public class PiLightServiceClient implements PiLightService {
         try {
             ret = webTarget
                     .path(PiLightRestfulService.SERVICE_STATUS_PATH)
-                    .request(MediaType.APPLICATION_JSON)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
                     .get(PiLightServiceStatus.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
@@ -139,10 +139,14 @@ public class PiLightServiceClient implements PiLightService {
     public String[] serviceKnownFamilyNames() {
         String[] ret;
         try {
-            ret = webTarget
+            String familyNames = webTarget
                     .path(PiLightRestfulService.SERVICE_KNOWN_FAMILY_NAMES_PATH)
-                    .request(MediaType.APPLICATION_JSON)
-                    .get(String[].class);
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .get(String.class);
+
+            ObjectMapper mapper = new ObjectMapper();
+            ret = mapper.readValue(familyNames, new TypeReference() {
+            });
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
             ret = null;
@@ -159,7 +163,7 @@ public class PiLightServiceClient implements PiLightService {
 
             ret = webTarget
                     .path(servicePath)
-                    .request(MediaType.APPLICATION_JSON)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
                     .get(Family.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
@@ -175,12 +179,12 @@ public class PiLightServiceClient implements PiLightService {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family) //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, light);
-
-            ret = webTarget
+            // FIXME use Boolean instead of String!
+            String output = webTarget
                     .path(servicePath)
-                    .request(MediaType.APPLICATION_JSON)
-                    .get(Boolean.class);
-            // ret = Boolean.valueOf(output);
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .get(String.class);
+            ret = Boolean.valueOf(output);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e);
             ret = Boolean.FALSE;
@@ -195,11 +199,11 @@ public class PiLightServiceClient implements PiLightService {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family) //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, light);
-
+            // FIXME use Boolean instead of String!
             Response response = webTarget
                     .path(servicePath)
-                    .request(MediaType.APPLICATION_JSON)
-                    .put(Entity.entity(status, MediaType.APPLICATION_JSON_TYPE));
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .put(Entity.entity(status.toString(), MediaType.APPLICATION_JSON_TYPE));
 
             if (HTTP_STATUS_200_OK == response.getStatus()
                     || HTTP_STATUS_201_CREATED == response.getStatus()) {

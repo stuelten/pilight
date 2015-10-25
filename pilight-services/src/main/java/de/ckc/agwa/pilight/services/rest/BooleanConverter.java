@@ -16,7 +16,6 @@
 
 package de.ckc.agwa.pilight.services.rest;
 
-import de.ckc.agwa.pilight.services.Family;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,20 +23,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.ext.Provider;
 
 /**
- * A converter for {@link Family}.
+ * A converter for {@link Boolean}.
  *
  * @author Timo Stülten
  */
 @Provider
 @Produces({"text/plain", "application/json"})
-public class FamilyConverter extends AbstractMessageBodyWriter<Family> {
+public class BooleanConverter extends AbstractMessageBodyWriter<Boolean> {
     /**
      * The {@link Logger}
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(FamilyConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BooleanConverter.class);
 
-    public FamilyConverter() {
-        super(Family.class);
+    public BooleanConverter() {
+        super(Boolean.class);
         LOGGER.info("Instance created.");
     }
 }

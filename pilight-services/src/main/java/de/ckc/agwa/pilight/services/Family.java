@@ -16,6 +16,8 @@
 
 package de.ckc.agwa.pilight.services;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -45,6 +47,7 @@ public class Family implements Serializable {
     /**
      * The lights of this family, mapped by the light's name.
      */
+    @JsonIgnore
     private Map<String, Light> lightsMap = new ConcurrentHashMap<>();
 
     // ----------------------------------------------------------------------
@@ -71,6 +74,7 @@ public class Family implements Serializable {
         this.name = name;
     }
 
+    @JsonIgnore
     protected Map<String, Light> getLightsMap() {
         return lightsMap;
     }
@@ -81,6 +85,7 @@ public class Family implements Serializable {
 
     // ----------------------------------------------------------------------
 
+    @JsonProperty
     public Light[] getLights() {
         return lightsMap.values().toArray(new Light[lightsMap.size()]);
     }

@@ -16,40 +16,39 @@
 
 package de.ckc.agwa.pilight.services.rest;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NoContentException;
-import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
- * Creates message bodies for {@link de.ckc.agwa.pilight.services.Family}.
+ * An abstract implementation for JAX-RS {@link MessageBodyReader} and {@link MessageBodyWriter}.
+ * <p>
+ * Sub-classes must extend this abstract class, add a default constructor calling
+ * {@link #AbstractMessageBodyWriter(Class)} with the pojo's class as argument.
+ * Additionally the sub-class must have the annotations
+ * {@code @javax.ws.rs.Provider} and
+ * {@code @javax.ws.rs.ext.Produces({"text/plain", "application/json"})}.
+ * </p>
  *
- * @author stuelten
+ * @param <T> the type (of the pojo) the real converter converts
+ * @author Timo Stülten
  */
-@Provider
-@Produces({"text/plain", "application/json"})
 public abstract class AbstractMessageBodyWriter<T>
         implements MessageBodyReader<T>, MessageBodyWriter<T> {
-
     /**
      * The {@link Logger}
      */
@@ -69,101 +68,42 @@ public abstract class AbstractMessageBodyWriter<T>
 
     // ----------------------------------------------------------------------
 
-    private boolean isSupported(Class<?> type, MediaType mediaType) {
-        return clazz.isAssignableFrom(type) && isSupportedMediaType(mediaType);
-    }
-
-    private boolean isSupportedMediaType(MediaType mediaType) {
-        return MediaType.APPLICATION_JSON_TYPE.equals(mediaType)
-                || MediaType.TEXT_PLAIN_TYPE.equals(mediaType);
+    private boolean isSupportedClass(Class<?> type, MediaType mediaType) {
+        return clazz.isAssignableFrom(type);
     }
 
     // ----------------------------------------------------------------------
+    // Reader
+    // ----------------------------------------------------------------------
 
-    /**
-     * Ascertain if the MessageBodyReader can produce an instance of a
-     * particular type. The {@code type} parameter gives the
-     * class of the instance that should be produced, the {@code genericType} parameter
-     * gives the {@link Type java.lang.reflect.Type} of the instance
-     * that should be produced.
-     * E.g. if the instance to be produced is {@code List<String>}, the {@code type} parameter
-     * will be {@code java.util.List} and the {@code genericType} parameter will be
-     * {@link ParameterizedType java.lang.reflect.ParameterizedType}.
-     *
-     * @param type        the class of instance to be produced.
-     * @param genericType the type of instance to be produced. E.g. if the
-     *                    message body is to be converted into a method parameter, this will be
-     *                    the formal type of the method parameter as returned by
-     *                    {@code Method.getGenericParameterTypes}.
-     * @param annotations an array of the annotations on the declaration of the
-     *                    artifact that will be initialized with the produced instance. E.g. if the
-     *                    message body is to be converted into a method parameter, this will be
-     *                    the annotations on that parameter returned by
-     *                    {@code Method.getParameterAnnotations}.
-     * @param mediaType   the media type of the HTTP entity, if one is not
-     *                    specified in the request then {@code application/octet-stream} is
-     *                    used.
-     * @return {@code true} if the type is supported, otherwise {@code false}.
-     */
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return isSupported(type, mediaType);
+        return isSupportedClass(type, mediaType) && MediaType.APPLICATION_JSON_TYPE.equals(mediaType);
     }
 
-    /**
-     * Read a type from the {@link InputStream}.
-     * <p>
-     * In case the entity input stream is empty, the reader is expected to either return a
-     * Java representation of a zero-length entity or throw a {@link NoContentException}
-     * in case no zero-length entity representation is defined for the supported Java type.
-     * A {@code NoContentException}, if thrown by a message body reader while reading a server
-     * request entity, is automatically translated by JAX-RS server runtime into a {@link BadRequestException}
-     * wrapping the original {@code NoContentException} and rethrown for a standard processing by
-     * the registered {@link ExceptionMapper exception mappers}.
-     * </p>
-     *
-     * @param type         the type that is to be read from the entity stream.
-     * @param genericType  the type of instance to be produced. E.g. if the
-     *                     message body is to be converted into a method parameter, this will be
-     *                     the formal type of the method parameter as returned by
-     *                     {@code Method.getGenericParameterTypes}.
-     * @param annotations  an array of the annotations on the declaration of the
-     *                     artifact that will be initialized with the produced instance. E.g.
-     *                     if the message body is to be converted into a method parameter, this
-     *                     will be the annotations on that parameter returned by
-     *                     {@code Method.getParameterAnnotations}.
-     * @param mediaType    the media type of the HTTP entity.
-     * @param httpHeaders  the read-only HTTP headers associated with HTTP entity.
-     * @param entityStream the {@link InputStream} of the HTTP entity. The
-     *                     caller is responsible for ensuring that the input stream ends when the
-     *                     entity has been consumed. The implementation should not close the input
-     *                     stream.
-     * @return the type that was read from the stream. In case the entity input stream is empty, the reader
-     * is expected to either return an instance representing a zero-length entity or throw
-     * a {@link NoContentException} in case no zero-length entity representation is
-     * defined for the supported Java type.
-     * @throws IOException             if an IO error arises. In case the entity input stream is empty
-     *                                 and the reader is not able to produce a Java representation for
-     *                                 a zero-length entity, {@code NoContentException} is expected to
-     *                                 be thrown.
-     * @throws WebApplicationException if a specific HTTP error response needs to be produced.
-     *                                 Only effective if thrown prior to the response being committed.
-     */
     @Override
     public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                       MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
         T ret;
-        ObjectMapper mapper = new ObjectMapper();
-        ret = mapper.readValue(entityStream, new TypeReference<T>() {
-        });
+        if (MediaType.APPLICATION_JSON_TYPE.equals(mediaType)) {
+            ObjectMapper mapper = new ObjectMapper();
+            ret = mapper.readValue(entityStream, new TypeReference() {
+            });
+        } else {
+            LOGGER.warn("Unsupported MediaType: '{}'", mediaType);
+            throw new UnsupportedOperationException("Unsupported MediaType: " + mediaType);
+        }
         return ret;
     }
 
     // ----------------------------------------------------------------------
+    // Writer
+    // ----------------------------------------------------------------------
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return isSupported(type, mediaType);
+        return isSupportedClass(type, mediaType)
+                && (MediaType.APPLICATION_JSON_TYPE.equals(mediaType) || MediaType.TEXT_PLAIN_TYPE.equals(mediaType));
     }
 
     @Override
@@ -177,8 +117,9 @@ public abstract class AbstractMessageBodyWriter<T>
         String buffer;
         if (MediaType.APPLICATION_JSON_TYPE.equals(mediaType)) {
             ObjectMapper objectMapper = new ObjectMapper();
+
             try {
-                buffer = objectMapper.writeValueAsString(type);
+                buffer = objectMapper.writeValueAsString(object);
             } catch (IOException e) {
                 LOGGER.info("writeTo(): Ignore '{}'", e);
                 buffer = "";
@@ -186,6 +127,7 @@ public abstract class AbstractMessageBodyWriter<T>
         } else if (MediaType.TEXT_PLAIN_TYPE.equals(mediaType)) {
             buffer = "" + object;
         } else {
+            LOGGER.warn("Unsupported MediaType: '{}'", mediaType);
             throw new UnsupportedOperationException("Unsupported MediaType: " + mediaType);
         }
         try (PrintStream printStream = new PrintStream(out)) {

@@ -15,6 +15,6 @@
  */
 
 /**
- * Die Logik, die im EE Container läuft
+ * A JSON RestFul service implementation using JAX-RS.
  */
 package de.ckc.agwa.pilight.services.rest;

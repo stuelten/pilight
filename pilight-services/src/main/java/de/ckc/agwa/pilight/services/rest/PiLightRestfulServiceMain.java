@@ -43,14 +43,14 @@ public class PiLightRestfulServiceMain {
     // ----------------------------------------------------------------------
 
     /**
-     * Search for service classes in the service package and below.
-     */
-    private static final String SERVICE_ROOT = PiLightServiceStatus.class.getPackage().getName();
-
-    /**
      * Base URI for this app.
      */
     public static final URI BASE_URI = URI.create("http://localhost:9998/");
+
+    /**
+     * Search for service classes in the service package and below.
+     */
+    private static final String SERVICE_ROOT = PiLightServiceStatus.class.getPackage().getName();
 
     // ----------------------------------------------------------------------
 
@@ -112,9 +112,13 @@ public class PiLightRestfulServiceMain {
      * @return the config
      */
     public static ResourceConfig createConfig() {
-        return new ResourceConfig()
+        ResourceConfig ret = new ResourceConfig()
                 .packages(SERVICE_ROOT)
-                .register(createMoxyJsonResolver());
+                .register(createMoxyJsonResolver())
+                .registerClasses(BooleanConverter.class, FamilyConverter.class, LightConverter.class,
+                        PiLightServiceStatusConverter.class);
+        LOGGER.info("createConfig(): '{}'", ret);
+        return ret;
     }
 
     public static ContextResolver<MoxyJsonConfig> createMoxyJsonResolver() {

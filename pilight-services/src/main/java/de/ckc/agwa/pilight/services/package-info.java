@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Timo Stülten <timo@stuelten.de>
+ * Copyright (c) 2015 Timo Stülten <timo@stuelten.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,6 @@
  */
 
 /**
- * Die Logik, die im EE Container läuft
+ * The business logic with all business objects.
  */
 package de.ckc.agwa.pilight.services;

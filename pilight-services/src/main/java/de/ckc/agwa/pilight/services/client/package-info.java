@@ -15,6 +15,6 @@
  */
 
 /**
- * Some de.ckc.agwa.pilight.services.client code using pilight-services.
+ * A client side API to use the JSON RestFull service from {@link de.ckc.agwa.pilight.services.rest.PiLightRestfulService}.
  */
 package de.ckc.agwa.pilight.services.client;

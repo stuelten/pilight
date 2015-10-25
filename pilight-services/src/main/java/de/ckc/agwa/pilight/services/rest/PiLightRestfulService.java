@@ -16,6 +16,7 @@
 
 package de.ckc.agwa.pilight.services.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceImpl;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
@@ -31,6 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 
 /**
  * This service receives and serves the status of lights for some families.
@@ -41,22 +43,15 @@ import javax.ws.rs.core.MediaType;
 @Path("/pilight")
 public class PiLightRestfulService {
     /**
-     * The logger for this class only.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightRestfulService.class);
-
-    // ----------------------------------------------------------------------
-
-    /**
      * Base URI for Service
      */
     public static final String SERVICE_PREFIX = "pilight/";
 
+    // ----------------------------------------------------------------------
     /**
      * Base template for path for lamp state service.
      */
     public static final String SERVICE_STATUS_PATH = "status";
-
     /**
      * Template for family parameter
      */
@@ -67,7 +62,6 @@ public class PiLightRestfulService {
      */
     public static final String PATH_PARAM_LIGHT = "light";
     public static final String TEMPLATE_PARAM_LIGHT = "{" + PATH_PARAM_LIGHT + "}";
-
     /**
      * Base template for path for families info service.
      */
@@ -82,9 +76,12 @@ public class PiLightRestfulService {
      */
     public static final String SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE = "families/" + TEMPLATE_PARAM_FAMILY +
             "/lights/" + TEMPLATE_PARAM_LIGHT + "/status";
+    /**
+     * The logger for this class only.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(PiLightRestfulService.class);
 
     // ----------------------------------------------------------------------
-
     /**
      * The service delegate.
      */
@@ -102,18 +99,6 @@ public class PiLightRestfulService {
 
     @GET
     @Path(SERVICE_STATUS_PATH)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String serviceStatusPlain() {
-        LOGGER.debug("serviceStatusPlain(): Called");
-
-        String ret = service.serviceStatusPlain();
-
-        LOGGER.info("serviceStatusPlain(): return '{}'", ret);
-        return ret;
-    }
-
-    @GET
-    @Path(SERVICE_STATUS_PATH)
     @Produces(MediaType.APPLICATION_JSON)
     public PiLightServiceStatus serviceStatus() {
         LOGGER.debug("serviceStatus(): Called");
@@ -125,12 +110,33 @@ public class PiLightRestfulService {
     }
 
     @GET
+    @Path(SERVICE_STATUS_PATH)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String serviceStatusPlain() {
+        LOGGER.debug("serviceStatusPlain(): Called");
+
+        String ret = service.serviceStatusPlain();
+
+        LOGGER.info("serviceStatusPlain(): return '{}'", ret);
+        return ret;
+    }
+
+    // ----------------------------------------------------------------------
+
+    @GET
     @Path(SERVICE_KNOWN_FAMILY_NAMES_PATH)
     @Produces(MediaType.APPLICATION_JSON)
-    public String[] serviceKnownFamilyNames() {
+    public String serviceKnownFamilyNames() {
         LOGGER.debug("serviceKnownFamilyNames(): Called");
+        String ret;
 
-        String[] ret = service.serviceKnownFamilyNames();
+        String[] familyNames = service.serviceKnownFamilyNames();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            ret = objectMapper.writeValueAsString(familyNames);
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
 
         LOGGER.info("serviceKnownFamilyNames(): return '{}'", (Object) ret);
         return ret;
@@ -158,9 +164,12 @@ public class PiLightRestfulService {
         LOGGER.debug("serviceFamilyLightStatusGet('{}','{}'): called", family, light);
 
         Boolean status = service.serviceFamilyLightStatusGet(family, light);
+        if (null == status) {
+            status = false;
+        }
 
         LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", family, light, status);
-        return "" + status;
+        return status.toString();
     }
 
     @PUT
@@ -174,9 +183,13 @@ public class PiLightRestfulService {
 
         LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", family, light, status);
         Boolean checkedStatus = Boolean.valueOf(status);
-        Boolean serviceResponse = service.serviceFamilyLightStatusPut(family, light, checkedStatus);
 
-        ret = "" + serviceResponse;
+        Boolean serviceResponse = service.serviceFamilyLightStatusPut(family, light, checkedStatus);
+        if (null == serviceResponse) {
+            serviceResponse = false;
+        }
+        ret = serviceResponse.toString();
+
         LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): return '{}'", family, light, status, ret);
         return ret;
     }
