@@ -52,8 +52,8 @@ public class PiLightServiceImplTest {
      */
     @Test
     public void testUnknownLightIsOff() {
-        Boolean status = service.serviceFamilyLightStatusGet("UnknownFamily", "UnknownLamp_" + System.nanoTime());
-        Assert.assertFalse(status);
+        LightState lightState = service.serviceFamilyLightStatusGet("UnknownFamily", "UnknownLamp_" + System.nanoTime());
+        Assert.assertFalse(lightState.isOn());
     }
 
     /**
@@ -64,16 +64,20 @@ public class PiLightServiceImplTest {
         final String FAMILY = "testFamily_" + System.nanoTime();
         final String LIGHT = "testLight_" + System.nanoTime();
 
-        Boolean status = service.serviceFamilyLightStatusGet(FAMILY, LIGHT);
-        Assert.assertFalse(status);
-
-        service.serviceFamilyLightStatusPut(FAMILY, LIGHT, true);
-        status = service.serviceFamilyLightStatusGet(FAMILY, LIGHT);
-        Assert.assertTrue(status);
-
-        service.serviceFamilyLightStatusPut(FAMILY, LIGHT, false);
-        status = service.serviceFamilyLightStatusGet(FAMILY, LIGHT);
-        Assert.assertFalse(status);
+        {
+            LightState lightState = service.serviceFamilyLightStatusGet(FAMILY, LIGHT);
+            Assert.assertFalse(lightState.isOn());
+        }
+        {
+            service.serviceFamilyLightStatusPut(FAMILY, LIGHT, true);
+            LightState lightState = service.serviceFamilyLightStatusGet(FAMILY, LIGHT);
+            Assert.assertTrue(lightState.isOn());
+        }
+        {
+            service.serviceFamilyLightStatusPut(FAMILY, LIGHT, false);
+            LightState lightState = service.serviceFamilyLightStatusGet(FAMILY, LIGHT);
+            Assert.assertFalse(lightState.isOn());
+        }
     }
 
     /**
@@ -85,14 +89,17 @@ public class PiLightServiceImplTest {
         final String LIGHT1 = "testLight1_" + System.nanoTime();
         final String LIGHT2 = "testLight2_" + System.nanoTime();
 
-        Family family = service.serviceFamilyInfo(FAMILY);
-        Assert.assertNull(family);
+        {
+            Family family = service.serviceFamilyInfo(FAMILY);
+            Assert.assertNull(family);
+        }
+        {
+            service.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
+            service.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
 
-        service.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
-        service.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
-
-        family = service.serviceFamilyInfo(FAMILY);
-        Assert.assertThat(family.getLights().length, IsEqual.equalTo(2));
+            Family family = service.serviceFamilyInfo(FAMILY);
+            Assert.assertThat(family.getLights().length, IsEqual.equalTo(2));
+        }
     }
 
 }

@@ -82,11 +82,11 @@ public class PiLightServiceImpl implements PiLightService {
     }
 
     @Override
-    public String[] serviceKnownFamilyNames() {
-        LOGGER.debug("serviceKnownFamilyNames(): Called");
+    public Families serviceKnownFamilies() {
+        LOGGER.debug("serviceKnownFamilies(): Called");
         Collection<String> families = familyMap.keySet();
 
-        String[] ret = families.toArray(new String[families.size()]);
+        Families ret = new Families(families);
 
         LOGGER.info("serviceKnownFamilyNames(): return '{}'", (Object) ret);
         return ret;
@@ -95,38 +95,38 @@ public class PiLightServiceImpl implements PiLightService {
     // ----------------------------------------------------------------------
 
     @Override
-    public Family serviceFamilyInfo(String family) {
-        LOGGER.debug("serviceFamilyInfo('{}'): called", family);
+    public Family serviceFamilyInfo(String familyName) {
+        LOGGER.debug("serviceFamilyInfo('{}'): called", familyName);
 
-        Family ret = familyMap.get(family);
+        Family ret = familyMap.get(familyName);
 
-        LOGGER.info("serviceFamilyInfo('{}'): return '{}'", family, ret);
+        LOGGER.info("serviceFamilyInfo('{}'): return '{}'", familyName, ret);
         return ret;
     }
 
     @Override
-    public Boolean serviceFamilyLightStatusGet(String familyName,
-                                               String lightName) {
+    public LightState serviceFamilyLightStatusGet(String familyName,
+                                                  String lightName) {
         LOGGER.debug("serviceFamilyLightStatusGet('{}','{}'): called", familyName, lightName);
-        Boolean status;
+        LightState ret;
 
         Family family = familyMap.get(familyName);
         if (null == family) {
-            status = Boolean.FALSE;
+            ret = new LightState(false);
         } else {
             Light light = family.getLight(lightName);
-            Boolean maybeNull = (light == null) ? Boolean.FALSE : light.getState();
-            status = (maybeNull == null) ? Boolean.FALSE : maybeNull;
+            boolean maybeNull = (light != null) && light.getState();
+            ret = new LightState(maybeNull);
         }
 
-        LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", familyName, lightName, status);
-        return status;
+        LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", familyName, lightName, ret);
+        return ret;
     }
 
     @Override
-    public Boolean serviceFamilyLightStatusPut(String familyName,
-                                               String lightName,
-                                               Boolean state) {
+    public void serviceFamilyLightStatusPut(String familyName,
+                                            String lightName,
+                                            Boolean state) {
         LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", familyName, lightName, state);
         Objects.requireNonNull(familyName);
         Objects.requireNonNull(lightName);
@@ -139,8 +139,6 @@ public class PiLightServiceImpl implements PiLightService {
             familyMap.put(familyName, family);
         }
         family.putLight(light);
-
-        return state;
     }
 
     // ----------------------------------------------------------------------

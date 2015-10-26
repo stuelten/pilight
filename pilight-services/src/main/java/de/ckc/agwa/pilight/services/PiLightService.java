@@ -42,31 +42,31 @@ public interface PiLightService {
      *
      * @return the collection of families.
      */
-    String[] serviceKnownFamilyNames();
+    Families serviceKnownFamilies();
 
     /**
      * Get all known lights of a family.
      *
      * @return a Collection of Strings giving the light's names.
      */
-    Family serviceFamilyInfo(String family);
+    Family serviceFamilyInfo(String familyName);
 
     /**
      * Get the status for some light.
      *
-     * @param family the name of the family
-     * @param light  the name of the light
+     * @param familyName the name of the family
+     * @param lightName  the name of the light
      * @return {@code true} for a burning light, {@code false} otherwise
      */
-    Boolean serviceFamilyLightStatusGet(String family, String light);
+    LightState serviceFamilyLightStatusGet(String familyName, String lightName);
 
     /**
      * Set the status for some light.
      *
-     * @param family the name of the family
-     * @param light  the light
-     * @param status {@code true} for a burning light, {@code false} otherwise
+     * @param familyName the name of the family
+     * @param lightName  the light
+     * @param state {@code true} for a burning light, {@code false} otherwise
      */
-    Boolean serviceFamilyLightStatusPut(String family, String light, Boolean status);
+    void serviceFamilyLightStatusPut(String familyName, String lightName, Boolean state);
 
 }

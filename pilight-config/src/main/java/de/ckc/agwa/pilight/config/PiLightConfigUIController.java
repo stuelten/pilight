@@ -16,6 +16,7 @@
 
 package de.ckc.agwa.pilight.config;
 
+import de.ckc.agwa.pilight.services.Families;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.Light;
 import de.ckc.agwa.pilight.services.client.PiLightServiceClient;
@@ -113,38 +114,41 @@ public class PiLightConfigUIController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle i18nResourceBundle) {
-        // set status text while reading config
         this.i18n = i18nResourceBundle;
-        String statusI18n = MessageFormat.format(
-                this.i18n.getString("status.readWlanInfoFromFile.File"),
-                PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
-        statusText.setText(statusI18n);
+        {
+            // set status text while reading config
+            String statusI18n = MessageFormat.format(this.i18n.getString("status.readWlanInfoFromFile.File"),
+                    PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
+            statusText.setText(statusI18n);
+        }
 
         // FIXME: I/O should be done in a background thread.
         readConfig();
 
-        // set status text, what happens next
-        statusI18n = MessageFormat.format(
-                i18n.getString("status.willSaveConfigInFile.File"),
-                PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
-        statusText.setText(statusI18n);
+        {
+            // set status text, what happens next
+            String statusI18n = MessageFormat.format(i18n.getString("status.willSaveConfigInFile.File"),
+                    PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
+            statusText.setText(statusI18n);
+        }
     }
 
     @FXML
     protected void handleSaveConfig(ActionEvent event) {
         statusText.setText(i18n.getString("status.saveConfig"));
-        String statusI18n = MessageFormat.format(
-                i18n.getString("status.saveConfigInFile.File"),
-                PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
-        statusText.setText(statusI18n);
-
+        {
+            String statusI18n = MessageFormat.format(i18n.getString("status.saveConfigInFile.File"),
+                    PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
+            statusText.setText(statusI18n);
+        }
         // FIXME: I/O should be done in a background thread.
         saveConfig();
 
-        statusI18n = MessageFormat.format(
-                i18n.getString("status.configSaved"),
-                PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
-        statusText.setText(statusI18n);
+        {
+            String statusI18n = MessageFormat.format(i18n.getString("status.configSaved"),
+                    PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
+            statusText.setText(statusI18n);
+        }
     }
 
     @FXML
@@ -164,28 +168,30 @@ public class PiLightConfigUIController implements Initializable {
     protected void handleServerChanged(ActionEvent event) {
         String serverURL = server.getText();
 
-        String statusI18n = MessageFormat.format(i18n.getString("status.server.connect"), serverURL);
-        statusText.setText(statusI18n);
-
+        {
+            String statusI18n = MessageFormat.format(i18n.getString("status.server.connect"), serverURL);
+            statusText.setText(statusI18n);
+        }
         PiLightServiceClient serviceClient = new PiLightServiceClient(serverURL);
         String serverStatus = serviceClient.serviceStatusPlain();
+        {
+            String statusI18n = MessageFormat.format(this.i18n.getString("status.server.status"), serverStatus);
+            statusText.setText(statusI18n);
+        }
 
-        statusI18n = MessageFormat.format(this.i18n.getString("status.server.status"), serverStatus);
-        statusText.setText(statusI18n);
-
-        String[] familyNames = serviceClient.serviceKnownFamilyNames();
+        Families familyNames = serviceClient.serviceKnownFamilies();
         if (null != familyNames) {
-            ObservableList<String> familyItems = FXCollections.observableArrayList(familyNames);
+            ObservableList<String> familyItems = FXCollections.observableArrayList(familyNames.getNames());
             family.setItems(familyItems);
             family.setValue(null);
         }
 
         light.setValue(null);
         if (null == serverStatus || "".equals(serverStatus) || null == familyNames) {
-            statusI18n = MessageFormat.format(i18n.getString("status.server.error"), serverStatus);
+            String statusI18n = MessageFormat.format(i18n.getString("status.server.error"), serverStatus);
             statusText.setText(statusI18n);
         } else {
-            statusI18n = MessageFormat.format(i18n.getString("status.server.connected"), serverStatus);
+            String statusI18n = MessageFormat.format(i18n.getString("status.server.connected"), serverStatus);
             statusText.setText(statusI18n);
         }
     }
@@ -202,9 +208,11 @@ public class PiLightConfigUIController implements Initializable {
         String familyName = family.getValue();
         String serverURL = server.getText();
 
-        // Status
-        String statusI18n = MessageFormat.format(i18n.getString("status.server.family.info"), familyName, serverURL);
-        statusText.setText(statusI18n);
+        {
+            // Status
+            String statusI18n = MessageFormat.format(i18n.getString("status.server.family.info"), familyName, serverURL);
+            statusText.setText(statusI18n);
+        }
 
         PiLightServiceClient serviceClient = new PiLightServiceClient(serverURL);
 
@@ -220,8 +228,10 @@ public class PiLightConfigUIController implements Initializable {
         }
 
         light.setValue(null);
-        statusI18n = MessageFormat.format(i18n.getString("status.server.connected"), serverURL);
-        statusText.setText(statusI18n);
+        {
+            String statusI18n = MessageFormat.format(i18n.getString("status.server.connected"), serverURL);
+            statusText.setText(statusI18n);
+        }
     }
 
     // ----------------------------------------------------------------------

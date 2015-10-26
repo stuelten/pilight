@@ -22,8 +22,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Map;
@@ -36,8 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Timo Stülten
  */
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Family implements Serializable {
+
+    private static final long serialVersionUID = 936693668016015564L;
 
     /**
      * The family's name. It is used as key in service calls.
@@ -60,6 +59,7 @@ public class Family implements Serializable {
         this.name = name;
     }
 
+    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
     public Family(String name, Map<String, Light> lightsMap) {
         this.name = name;
         Objects.requireNonNull(lightsMap);
@@ -90,7 +90,7 @@ public class Family implements Serializable {
         return lightsMap.values().toArray(new Light[lightsMap.size()]);
     }
 
-    public void setLights(Light[] lights) {
+    public void setLights(Iterable<Light> lights) {
         lightsMap.clear();
         for (Light light : lights) {
             putLight(light);
@@ -103,9 +103,9 @@ public class Family implements Serializable {
         lightsMap.put(light.getName(), light);
     }
 
-    public Light getLight(String name) {
-        Objects.requireNonNull(name);
-        Light ret = lightsMap.get(name);
+    public Light getLight(String lightName) {
+        Objects.requireNonNull(lightName);
+        Light ret = lightsMap.get(lightName);
         return ret;
     }
 

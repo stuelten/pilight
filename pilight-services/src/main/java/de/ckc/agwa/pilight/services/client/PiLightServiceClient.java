@@ -16,9 +16,9 @@
 
 package de.ckc.agwa.pilight.services.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.ckc.agwa.pilight.services.Families;
 import de.ckc.agwa.pilight.services.Family;
+import de.ckc.agwa.pilight.services.LightState;
 import de.ckc.agwa.pilight.services.PiLightService;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import de.ckc.agwa.pilight.services.rest.PiLightRestfulService;
@@ -86,21 +86,12 @@ public class PiLightServiceClient implements PiLightService {
      * @param baseUri Base URI prefix for all services.
      */
     public void setBaseUri(String baseUri) {
+        LOGGER.info("setBaseUri('{}'): called", baseUri);
         this.baseUri = baseUri;
-        if (null == baseUri) {
-            reset();
-        } else {
-            init();
+        if (null != baseUri) {
+            Client client = ClientBuilder.newClient();
+            webTarget = client.target(baseUri);
         }
-    }
-
-    private void reset() {
-        webTarget = null;
-    }
-
-    private void init() {
-        Client client = ClientBuilder.newClient();
-        webTarget = client.target(baseUri);
     }
 
     // ----------------------------------------------------------------------
@@ -114,7 +105,7 @@ public class PiLightServiceClient implements PiLightService {
                     .request(MediaType.TEXT_PLAIN_TYPE)
                     .get(String.class);
         } catch (Exception e) {
-            LOGGER.warn("Ignoring exception for request '{}'", e);
+            LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
             ret = "Error: " + e.getLocalizedMessage();
         }
         return ret;
@@ -129,93 +120,83 @@ public class PiLightServiceClient implements PiLightService {
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get(PiLightServiceStatus.class);
         } catch (Exception e) {
-            LOGGER.warn("Ignoring exception for request '{}'", e);
+            LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
             ret = null;
         }
         return ret;
     }
 
     @Override
-    public String[] serviceKnownFamilyNames() {
-        String[] ret;
+    public Families serviceKnownFamilies() {
+        Families ret;
         try {
-            String familyNames = webTarget
+            ret = webTarget
                     .path(PiLightRestfulService.SERVICE_KNOWN_FAMILY_NAMES_PATH)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .get(String.class);
-
-            ObjectMapper mapper = new ObjectMapper();
-            ret = mapper.readValue(familyNames, new TypeReference() {
-            });
+                    .get(Families.class);
         } catch (Exception e) {
-            LOGGER.warn("Ignoring exception for request '{}'", e);
+            LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
             ret = null;
         }
         return ret;
     }
 
     @Override
-    public Family serviceFamilyInfo(String family) {
+    public Family serviceFamilyInfo(String familyName) {
         Family ret;
         try {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
-                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family);
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName);
 
             ret = webTarget
                     .path(servicePath)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get(Family.class);
         } catch (Exception e) {
-            LOGGER.warn("Ignoring exception for request '{}'", e);
+            LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
             ret = null;
         }
         return ret;
     }
 
     @Override
-    public Boolean serviceFamilyLightStatusGet(String family, String light) {
-        Boolean ret;
+    public LightState serviceFamilyLightStatusGet(String familyName, String lightName) {
+        LightState ret;
         try {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
-                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family) //
-                    .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, light);
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName) //
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, lightName);
             // FIXME use Boolean instead of String!
-            String output = webTarget
+            ret = webTarget
                     .path(servicePath)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .get(String.class);
-            ret = Boolean.valueOf(output);
+                    .get(LightState.class);
         } catch (Exception e) {
-            LOGGER.warn("Ignoring exception for request '{}'", e);
-            ret = Boolean.FALSE;
+            LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
+            ret = new LightState(false);
         }
         return ret;
     }
 
     @Override
-    public Boolean serviceFamilyLightStatusPut(String family, String light, Boolean status) {
-        Boolean ret = Boolean.FALSE;
+    public void serviceFamilyLightStatusPut(String familyName, String lightName, Boolean state) {
         try {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
-                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, family) //
-                    .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, light);
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName) //
+                    .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, lightName);
             // FIXME use Boolean instead of String!
             Response response = webTarget
                     .path(servicePath)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .put(Entity.entity(status.toString(), MediaType.APPLICATION_JSON_TYPE));
+                    .put(Entity.entity(state.toString(), MediaType.APPLICATION_JSON_TYPE));
 
-            if (HTTP_STATUS_200_OK == response.getStatus()
-                    || HTTP_STATUS_201_CREATED == response.getStatus()) {
-                // Could set new status
-                ret = Boolean.TRUE;
-            } else {
-                LOGGER.info("Response for '()', '()': '()'", family, light, response);
+            int responseStatus = response.getStatus();
+            if (HTTP_STATUS_200_OK != responseStatus && HTTP_STATUS_201_CREATED != responseStatus) {
+                LOGGER.info("Response for '{}', '{}': '{}'", familyName, lightName, response);
             }
         } catch (Exception e) {
-            LOGGER.warn("Ignoring exception for request '{}'", e);
+            LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
         }
-        return ret;
     }
 
 }

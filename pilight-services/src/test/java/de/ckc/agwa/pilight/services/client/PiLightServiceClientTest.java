@@ -16,6 +16,7 @@
 
 package de.ckc.agwa.pilight.services.client;
 
+import de.ckc.agwa.pilight.services.Families;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import de.ckc.agwa.pilight.services.rest.PiLightRestfulService;
@@ -30,7 +31,6 @@ import org.junit.Test;
 
 import javax.ws.rs.core.Application;
 import java.net.URI;
-import java.util.Arrays;
 
 /**
  * Tests the {@link PiLightServiceClient}.
@@ -82,23 +82,23 @@ public class PiLightServiceClientTest extends JerseyTest {
         Family family = serviceClient.serviceFamilyInfo(FAMILY);
         Assert.assertNull(family);
 
-        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1));
-        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2));
+        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
+        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
 
         serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
-        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1));
-        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2));
+        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
+        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
         serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
-        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1));
-        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2));
+        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
+        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
 
         family = serviceClient.serviceFamilyInfo(FAMILY);
         Assert.assertNotNull(family);
         Assert.assertThat(family.getLights().length, IsEqual.equalTo(2));
 
-        String[] familyNames = serviceClient.serviceKnownFamilyNames();
-        Assert.assertNotNull(familyNames);
-        Assert.assertTrue(Arrays.asList(familyNames).contains(FAMILY));
+        Families families = serviceClient.serviceKnownFamilies();
+        Assert.assertNotNull(families);
+        Assert.assertTrue(families.getNames().contains(FAMILY));
 
         PiLightServiceStatus res = serviceClient.serviceStatus();
         Assert.assertNotNull(res);

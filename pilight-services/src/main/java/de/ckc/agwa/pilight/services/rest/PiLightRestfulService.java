@@ -16,8 +16,9 @@
 
 package de.ckc.agwa.pilight.services.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.ckc.agwa.pilight.services.Families;
 import de.ckc.agwa.pilight.services.Family;
+import de.ckc.agwa.pilight.services.LightState;
 import de.ckc.agwa.pilight.services.PiLightServiceImpl;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -32,7 +33,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 
 /**
  * This service receives and serves the status of lights for some families.
@@ -126,17 +126,10 @@ public class PiLightRestfulService {
     @GET
     @Path(SERVICE_KNOWN_FAMILY_NAMES_PATH)
     @Produces(MediaType.APPLICATION_JSON)
-    public String serviceKnownFamilyNames() {
-        LOGGER.debug("serviceKnownFamilyNames(): Called");
-        String ret;
+    public Families serviceKnownFamilies() {
+        LOGGER.debug("serviceKnownFamilies(): Called");
 
-        String[] familyNames = service.serviceKnownFamilyNames();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            ret = objectMapper.writeValueAsString(familyNames);
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
+        Families ret = service.serviceKnownFamilies();
 
         LOGGER.info("serviceKnownFamilyNames(): return '{}'", (Object) ret);
         return ret;
@@ -159,39 +152,27 @@ public class PiLightRestfulService {
     @GET
     @Path(SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE)
     @Produces(MediaType.APPLICATION_JSON)
-    public String serviceFamilyLightStatusGet(@PathParam(PATH_PARAM_FAMILY) String family,
+    public LightState serviceFamilyLightStatusGet(@PathParam(PATH_PARAM_FAMILY) String family,
                                               @PathParam(PATH_PARAM_LIGHT) String light) {
         LOGGER.debug("serviceFamilyLightStatusGet('{}','{}'): called", family, light);
 
-        Boolean status = service.serviceFamilyLightStatusGet(family, light);
-        if (null == status) {
-            status = false;
-        }
+        LightState status = service.serviceFamilyLightStatusGet(family, light);
 
         LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", family, light, status);
-        return status.toString();
+        return status;
     }
 
     @PUT
     @Path(SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE)
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String serviceFamilyLightStatusPut(@PathParam(PATH_PARAM_FAMILY) String family,
+    public void serviceFamilyLightStatusPut(@PathParam(PATH_PARAM_FAMILY) String family,
                                               @PathParam(PATH_PARAM_LIGHT) String light,
-                                              String status) {
-        String ret;
+                                              String state) {
+        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", family, light, state);
 
-        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", family, light, status);
-        Boolean checkedStatus = Boolean.valueOf(status);
+        Boolean checkedStatus = Boolean.valueOf(state);
+        service.serviceFamilyLightStatusPut(family, light, checkedStatus);
 
-        Boolean serviceResponse = service.serviceFamilyLightStatusPut(family, light, checkedStatus);
-        if (null == serviceResponse) {
-            serviceResponse = false;
-        }
-        ret = serviceResponse.toString();
-
-        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): return '{}'", family, light, status, ret);
-        return ret;
     }
 
     // ----------------------------------------------------------------------

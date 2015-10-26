@@ -20,54 +20,35 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
- * A bean for a simple Light.
+ * A bean for the state of a light.
  *
  * @author Timo Stülten
  */
-public class Light implements Serializable {
+@XmlRootElement
+public class LightState implements Serializable {
 
-    private static final long serialVersionUID = 6299429549357599430L;
+    private static final long serialVersionUID = 2384268438359298216L;
 
-    /**
-     * The light's name
-     */
-    protected String name;
+    /** The state of the light */
+    protected boolean on;
 
-    /**
-     * Is the light on or off?
-     */
-    protected boolean state;
-
-    // ----------------------------------------------------------------------
-
-    public Light() {
-        // nothing to do
+    public LightState() {
     }
 
-    public Light(String name, boolean state) {
-        this.name = name;
-        this.state = state;
+    public LightState(boolean on) {
+        this.on = on;
     }
 
-    // ----------------------------------------------------------------------
-
-    public String getName() {
-        return name;
+    public boolean isOn() {
+        return on;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean getState() {
-        return state;
-    }
-
-    public void setState(boolean state) {
-        this.state = state;
+    public void setOn(boolean on) {
+        this.on = on;
     }
 
     // ----------------------------------------------------------------------
@@ -76,29 +57,26 @@ public class Light implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
 
-        if (!(o instanceof Light)) return false;
+        if (!(o instanceof LightState)) return false;
 
-        Light light = (Light) o;
+        LightState that = (LightState) o;
 
         return new EqualsBuilder()
-                .append(name, light.name)
-                .append(state, light.state)
+                .append(on, that.on)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(47, 97)
-                .append(name)
-                .append(state)
+        return new HashCodeBuilder(17, 37)
+                .append(on)
                 .toHashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("name", name)
-                .append("state", state)
+                .append("on", on)
                 .toString();
     }
 

@@ -20,54 +20,39 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
- * A bean for a simple Light.
- *
+ * A bean for information about all {@link Family families}.
  * @author Timo Stülten
  */
-public class Light implements Serializable {
+@XmlRootElement
+public class Families implements Serializable {
 
-    private static final long serialVersionUID = 6299429549357599430L;
-
-    /**
-     * The light's name
-     */
-    protected String name;
+    private static final long serialVersionUID = -774582554636102673L;
 
     /**
-     * Is the light on or off?
+     * The names of the families.
      */
-    protected boolean state;
+    protected Collection<String> names;
 
-    // ----------------------------------------------------------------------
-
-    public Light() {
-        // nothing to do
+    public Families() {
     }
 
-    public Light(String name, boolean state) {
-        this.name = name;
-        this.state = state;
+    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
+    protected Families(Collection<String> names) {
+        this.names = names;
     }
 
-    // ----------------------------------------------------------------------
-
-    public String getName() {
-        return name;
+    public Collection<String> getNames() {
+        return names;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean getState() {
-        return state;
-    }
-
-    public void setState(boolean state) {
-        this.state = state;
+    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
+    protected void setNames(Collection<String> names) {
+        this.names = names;
     }
 
     // ----------------------------------------------------------------------
@@ -76,29 +61,26 @@ public class Light implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
 
-        if (!(o instanceof Light)) return false;
+        if (!(o instanceof Families)) return false;
 
-        Light light = (Light) o;
+        Families families = (Families) o;
 
         return new EqualsBuilder()
-                .append(name, light.name)
-                .append(state, light.state)
+                .append(names, families.names)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(47, 97)
-                .append(name)
-                .append(state)
+        return new HashCodeBuilder(17, 37)
+                .append(names)
                 .toHashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("name", name)
-                .append("state", state)
+                .append("names", names)
                 .toString();
     }
 
