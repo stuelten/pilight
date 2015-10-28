@@ -99,6 +99,7 @@ public class PiLightServiceImplTest {
 
             Family family = service.serviceFamilyInfo(FAMILY);
             Assert.assertThat(family.getLights().length, IsEqual.equalTo(2));
+            Assert.assertThat(family.getLightsMap().values().size(), IsEqual.equalTo(2));
         }
     }
 

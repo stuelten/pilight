@@ -136,9 +136,9 @@ public class PiLightServiceImpl implements PiLightService {
         Family family = familyMap.get(familyName);
         if (null == family) {
             family = new Family(familyName);
-            familyMap.put(familyName, family);
         }
         family.putLight(light);
+        familyMap.put(familyName, family);
     }
 
     // ----------------------------------------------------------------------

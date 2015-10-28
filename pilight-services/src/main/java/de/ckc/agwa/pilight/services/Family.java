@@ -90,7 +90,7 @@ public class Family implements Serializable {
         return lightsMap.values().toArray(new Light[lightsMap.size()]);
     }
 
-    public void setLights(Iterable<Light> lights) {
+    public void setLights(Light[] lights) {
         lightsMap.clear();
         for (Light light : lights) {
             putLight(light);
