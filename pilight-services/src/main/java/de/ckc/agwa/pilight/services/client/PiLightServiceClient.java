@@ -38,16 +38,18 @@ import javax.ws.rs.core.Response;
  * @author Timo Stülten
  */
 public class PiLightServiceClient implements PiLightService {
-    public static final int HTTP_STATUS_200_OK = 200;
-
-    // ----------------------------------------------------------------------
-    public static final int HTTP_STATUS_201_CREATED = 201;
     /**
      * The logger for this class only.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PiLightServiceClient.class);
+    // ----------------------------------------------------------------------
+
+    public static final int HTTP_STATUS_200_OK = 200;
+    public static final int HTTP_STATUS_201_CREATED = 201;
+    public static final int HTTP_STATUS_204_NO_CONTENT = 204;
 
     // ----------------------------------------------------------------------
+
     /**
      * Used by all methods
      */
@@ -166,7 +168,7 @@ public class PiLightServiceClient implements PiLightService {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName) //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, lightName);
-            // FIXME use Boolean instead of String!
+
             ret = webTarget
                     .path(servicePath)
                     .request(MediaType.APPLICATION_JSON_TYPE)
@@ -184,14 +186,17 @@ public class PiLightServiceClient implements PiLightService {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName) //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, lightName);
-            // FIXME use Boolean instead of String!
+
+            LightState lightState = new LightState(state);
             Response response = webTarget
                     .path(servicePath)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .put(Entity.entity(state.toString(), MediaType.APPLICATION_JSON_TYPE));
+                    .put(Entity.entity(lightState, MediaType.APPLICATION_JSON_TYPE));
 
             int responseStatus = response.getStatus();
-            if (HTTP_STATUS_200_OK != responseStatus && HTTP_STATUS_201_CREATED != responseStatus) {
+            if (HTTP_STATUS_200_OK != responseStatus
+                    && HTTP_STATUS_201_CREATED != responseStatus
+                    && HTTP_STATUS_204_NO_CONTENT != responseStatus) {
                 LOGGER.info("Response for '{}', '{}': '{}'", familyName, lightName, response);
             }
         } catch (Exception e) {

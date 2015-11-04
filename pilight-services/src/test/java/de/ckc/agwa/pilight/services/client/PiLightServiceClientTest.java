@@ -54,10 +54,13 @@ public class PiLightServiceClientTest extends JerseyTest {
 
     // ----------------------------------------------------------------------
 
+    /**
+     * The service client to be tested.
+     */
     protected PiLightServiceClient serviceClient;
 
     @Before
-    public void setup() {
+    public void setupServiceClient() {
         String serviceBaseUrl = URI.create(PiLightRestfulServiceMain.BASE_URI.toString()
                 + PiLightRestfulService.SERVICE_PREFIX).normalize().toString();
         serviceClient = new PiLightServiceClient(serviceBaseUrl);
@@ -79,31 +82,38 @@ public class PiLightServiceClientTest extends JerseyTest {
         final PiLightServiceStatus previousStatus = serviceClient.serviceStatus();
         Assert.assertNotNull(previousStatus);
 
-        Family family = serviceClient.serviceFamilyInfo(FAMILY);
-        Assert.assertNull(family);
-
-        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
-        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
-
-        serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
-        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
-        Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
-        serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
-        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
-        Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
-
-        family = serviceClient.serviceFamilyInfo(FAMILY);
-        Assert.assertNotNull(family);
-        Assert.assertThat(family.getLights().length, IsEqual.equalTo(2));
-
-        Families families = serviceClient.serviceKnownFamilies();
-        Assert.assertNotNull(families);
-        Assert.assertTrue(families.getNames().contains(FAMILY));
-
-        PiLightServiceStatus res = serviceClient.serviceStatus();
-        Assert.assertNotNull(res);
-        Assert.assertTrue(previousStatus.getFamiliesCount() < res.getFamiliesCount());
-        Assert.assertTrue(previousStatus.getLightsCount() < res.getLightsCount());
+        {
+            Family family = serviceClient.serviceFamilyInfo(FAMILY);
+            Assert.assertNull(family);
+        }
+        {
+            Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
+            Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
+        }
+        {
+            serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
+            Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
+            Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
+            serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT2, true);
+            Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
+            Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
+        }
+        {
+            Family family = serviceClient.serviceFamilyInfo(FAMILY);
+            Assert.assertNotNull(family);
+            Assert.assertThat(family.getLights().length, IsEqual.equalTo(2));
+        }
+        {
+            Families families = serviceClient.serviceKnownFamilies();
+            Assert.assertNotNull(families);
+            Assert.assertTrue(families.getNames().contains(FAMILY));
+        }
+        {
+            PiLightServiceStatus res = serviceClient.serviceStatus();
+            Assert.assertNotNull(res);
+            Assert.assertTrue(previousStatus.getFamiliesCount() < res.getFamiliesCount());
+            Assert.assertTrue(previousStatus.getLightsCount() < res.getLightsCount());
+        }
     }
 
 }

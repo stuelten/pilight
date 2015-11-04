@@ -19,6 +19,7 @@ package de.ckc.agwa.pilight.services.rest;
 import de.ckc.agwa.pilight.services.Families;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.LightState;
+import de.ckc.agwa.pilight.services.PiLightService;
 import de.ckc.agwa.pilight.services.PiLightServiceImpl;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -43,55 +44,64 @@ import javax.ws.rs.core.MediaType;
 @Path("/pilight")
 public class PiLightRestfulService {
     /**
-     * Base URI for Service
-     */
-    public static final String SERVICE_PREFIX = "pilight/";
-
-    // ----------------------------------------------------------------------
-    /**
-     * Base template for path for lamp state service.
-     */
-    public static final String SERVICE_STATUS_PATH = "status";
-    /**
-     * Template for family parameter
-     */
-    public static final String PATH_PARAM_FAMILY = "family";
-    public static final String TEMPLATE_PARAM_FAMILY = "{" + PATH_PARAM_FAMILY + "}";
-    /**
-     * Template for light parameter
-     */
-    public static final String PATH_PARAM_LIGHT = "light";
-    public static final String TEMPLATE_PARAM_LIGHT = "{" + PATH_PARAM_LIGHT + "}";
-    /**
-     * Base template for path for families info service.
-     */
-    public static final String SERVICE_KNOWN_FAMILY_NAMES_PATH = "info/families";
-    /**
-     * Base template for path for "family info about lights" service.
-     */
-    public static final String SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE = "families/" + TEMPLATE_PARAM_FAMILY +
-            "/info/lights";
-    /**
-     * Base template for path for lamp state service.
-     */
-    public static final String SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE = "families/" + TEMPLATE_PARAM_FAMILY +
-            "/lights/" + TEMPLATE_PARAM_LIGHT + "/status";
-    /**
      * The logger for this class only.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PiLightRestfulService.class);
 
     // ----------------------------------------------------------------------
+
+    /**
+     * Base URI for Service
+     */
+    public static final String SERVICE_PREFIX = "pilight/";
+
+    /**
+     * Base template for path for lamp state service.
+     */
+    public static final String SERVICE_STATUS_PATH = "status";
+
+    /**
+     * Template for family parameter
+     */
+    public static final String PATH_PARAM_FAMILY = "family";
+    public static final String TEMPLATE_PARAM_FAMILY = "{" + PATH_PARAM_FAMILY + "}";
+
+    /**
+     * Template for light parameter
+     */
+    public static final String PATH_PARAM_LIGHT = "light";
+    public static final String TEMPLATE_PARAM_LIGHT = "{" + PATH_PARAM_LIGHT + "}";
+
+    /**
+     * Base template for path for families info service.
+     */
+    public static final String SERVICE_KNOWN_FAMILY_NAMES_PATH = "info/families";
+
+    /**
+     * Base template for path for "family info about lights" service.
+     */
+    public static final String SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE = "families/" + TEMPLATE_PARAM_FAMILY +
+            "/info/lights";
+
+    /**
+     * Base template for path for lamp state service.
+     */
+    public static final String SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE = "families/" + TEMPLATE_PARAM_FAMILY +
+            "/lights/" + TEMPLATE_PARAM_LIGHT + "/status";
+
+    // ----------------------------------------------------------------------
+
     /**
      * The service delegate.
      */
+    // TODO CDI does not work with JerseyTest based test classes
     // @Inject
-    protected PiLightServiceImpl service;
+    protected PiLightService service;
 
     // ----------------------------------------------------------------------
 
     public PiLightRestfulService() {
-        // FIXME
+        // TODO CDI does not work with JerseyTest based test classes
         service = new PiLightServiceImpl();
     }
 
@@ -167,10 +177,10 @@ public class PiLightRestfulService {
     @Consumes(MediaType.APPLICATION_JSON)
     public void serviceFamilyLightStatusPut(@PathParam(PATH_PARAM_FAMILY) String family,
                                               @PathParam(PATH_PARAM_LIGHT) String light,
-                                              String state) {
+                                            LightState state) {
         LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", family, light, state);
 
-        Boolean checkedStatus = Boolean.valueOf(state);
+        Boolean checkedStatus = state.isOn();
         service.serviceFamilyLightStatusPut(family, light, checkedStatus);
 
     }
