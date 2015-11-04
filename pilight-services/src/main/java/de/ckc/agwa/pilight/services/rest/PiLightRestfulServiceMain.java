@@ -114,9 +114,7 @@ public class PiLightRestfulServiceMain {
     public static ResourceConfig createConfig() {
         ResourceConfig ret = new ResourceConfig()
                 .packages(SERVICE_ROOT)
-                .register(createMoxyJsonResolver())
-                .registerClasses(BooleanConverter.class, FamilyConverter.class, LightConverter.class,
-                        PiLightServiceStatusConverter.class);
+                .register(createMoxyJsonResolver());
         LOGGER.info("createConfig(): '{}'", ret);
         return ret;
     }
