@@ -16,6 +16,7 @@
 
 package de.ckc.agwa.pilight.services;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.Collections;
  *
  * @author Timo Stülten
  */
+@XmlRootElement
 public class PiLightServiceStatus {
 
     protected Collection<String> families = new ArrayList<>();

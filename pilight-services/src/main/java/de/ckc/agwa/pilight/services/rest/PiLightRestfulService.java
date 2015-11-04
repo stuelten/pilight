@@ -182,7 +182,6 @@ public class PiLightRestfulService {
 
         Boolean checkedStatus = state.isOn();
         service.serviceFamilyLightStatusPut(family, light, checkedStatus);
-
     }
 
     // ----------------------------------------------------------------------

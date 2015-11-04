@@ -58,7 +58,7 @@ public class PiLightServiceImpl implements PiLightService {
 
         String ret = status.toString();
 
-        LOGGER.info("serviceStatusPlain(): return '{}'", ret);
+        LOGGER.debug("serviceStatusPlain(): return '{}'", ret);
         return ret;
     }
 
@@ -88,7 +88,7 @@ public class PiLightServiceImpl implements PiLightService {
 
         Families ret = new Families(families);
 
-        LOGGER.info("serviceKnownFamilyNames(): return '{}'", (Object) ret);
+        LOGGER.debug("serviceKnownFamilyNames(): return '{}'", ret);
         return ret;
     }
 
@@ -100,7 +100,7 @@ public class PiLightServiceImpl implements PiLightService {
 
         Family ret = familyMap.get(familyName);
 
-        LOGGER.info("serviceFamilyInfo('{}'): return '{}'", familyName, ret);
+        LOGGER.debug("serviceFamilyInfo('{}'): return '{}'", familyName, ret);
         return ret;
     }
 
@@ -119,7 +119,7 @@ public class PiLightServiceImpl implements PiLightService {
             ret = new LightState(maybeNull);
         }
 
-        LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", familyName, lightName, ret);
+        LOGGER.debug("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", familyName, lightName, ret);
         return ret;
     }
 
@@ -127,7 +127,7 @@ public class PiLightServiceImpl implements PiLightService {
     public void serviceFamilyLightStatusPut(String familyName,
                                             String lightName,
                                             Boolean state) {
-        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", familyName, lightName, state);
+        LOGGER.debug("serviceFamilyLightStatusPut('{}','{}','{}'): called", familyName, lightName, state);
         Objects.requireNonNull(familyName);
         Objects.requireNonNull(lightName);
         Objects.requireNonNull(state);

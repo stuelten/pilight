@@ -37,6 +37,7 @@ public class LightState implements Serializable {
     protected boolean on;
 
     public LightState() {
+        // nothing to do
     }
 
     public LightState(boolean on) {

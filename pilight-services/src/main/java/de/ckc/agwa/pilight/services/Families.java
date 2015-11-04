@@ -39,6 +39,7 @@ public class Families implements Serializable {
     protected Collection<String> names;
 
     public Families() {
+        // nothing to do
     }
 
     @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")

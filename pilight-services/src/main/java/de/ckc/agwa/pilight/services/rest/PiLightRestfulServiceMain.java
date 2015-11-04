@@ -74,15 +74,17 @@ public class PiLightRestfulServiceMain {
             HttpServer server = createServer(baseUri, resourceConfig);
 
             // Additionally listen on all interfaces
+            System.out.println("Additionally listen on all interfaces on port 9997.");
             NetworkListener listenToAll = new NetworkListener("all", "0.0.0.0", 9997);
             server.addListener(listenToAll);
             server.start();
 
-            System.out.println("Application running...");
-            System.out.println("Hit enter to stop it...");
+            System.out.println("Application is running...");
 
+            System.out.println("Hit enter to stop.");
             //noinspection ResultOfMethodCallIgnored
             System.in.read();
+
             server.shutdownNow();
         } catch (IOException ex) {
             LOGGER.error("" + ex, ex);
@@ -115,7 +117,7 @@ public class PiLightRestfulServiceMain {
         ResourceConfig ret = new ResourceConfig()
                 .packages(SERVICE_ROOT)
                 .register(createMoxyJsonResolver());
-        LOGGER.info("createConfig(): '{}'", ret);
+        LOGGER.debug("createConfig(): '{}'", ret);
         return ret;
     }
 
