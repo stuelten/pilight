@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Starts Restful service in embedded grizzly server
 
-LIBDIR=..
+LIB_DIR=..
+MAIN_CLASS=de.ckc.agwa.pilight.services.rest.PiLightRestfulServiceMain
 
-java -cp ${LIBDIR}/pilight-services-de.ckc.agwa.pilight.services.json.json-*-jar-with-dependencies.jar de.ckc.agwa.pilight.services.de.ckc.agwa.pilight.services.json.json.PiLightRestfulServiceMain
+java -cp ${LIB_DIR}/pilight-services-de.ckc.agwa.pilight.services.json.json-*-jar-with-dependencies.jar ${MAIN_CLASS}
