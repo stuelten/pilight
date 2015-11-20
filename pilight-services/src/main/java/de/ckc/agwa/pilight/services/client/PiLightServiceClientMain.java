@@ -45,7 +45,7 @@ public class PiLightServiceClientMain {
                 baseURI = PiLightRestfulServiceMain.BASE_URI;
             }
             String command = args[offset];
-            offset += 1;
+            offset++;
             String[] options = new String[args.length - offset];
             System.arraycopy(args, offset, options, 0, args.length - offset);
 
@@ -55,7 +55,9 @@ public class PiLightServiceClientMain {
     }
 
     private static String usage() {
-        String ret = "Usage:  ([--baseurl|-b] <URL>) <command> <params>* \n"
+        String ret = "A tool to call to pilight services from the command line.\n"
+                + "Usage: "+ PiLightServiceClientMain.class.getCanonicalName() + " ([--baseurl|-b] <URL>) <command> " +
+                "<params>* \n"
                 + "    [--baseurl|-b    <URL>   set base url\n";
         return ret;
     }
@@ -66,6 +68,7 @@ public class PiLightServiceClientMain {
     private PiLightServiceClient serviceClient;
 
     private PiLightServiceClientMain(URI baseURI) {
+        out("# use baseURI " + baseURI);
         this.baseURI = baseURI;
     }
 
@@ -133,7 +136,7 @@ public class PiLightServiceClientMain {
     private void executeStatus() {
         out("# querying status");
         PiLightServiceStatus piLightServiceStatus = serviceClient.serviceStatus();
-        out(piLightServiceStatus.toString());
+        out("" + piLightServiceStatus);
     }
 
     private void executeFamilies() {
