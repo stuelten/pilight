@@ -3,7 +3,7 @@
 # Queries a light's status
 #
 
-if [ "$1" == "-b" -o "$1" == "---baseurl" ]
+if [ "$1" == "-b" -o "$1" == "--baseurl" ]
 then
     BASE_URL="$2"
     shift
@@ -17,5 +17,6 @@ family=$1
 light=$2
 url="${BASE_URL}/families/${family}/lights/${light}/status"
 
-curl -v --header "Accept: application/de.ckc.agwa.pilight.services.json.json" \
+# call service
+curl -v --header "Accept: application/json" \
     "$url"

@@ -19,6 +19,7 @@ package de.ckc.agwa.pilight.config;
 import de.ckc.agwa.pilight.services.Families;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.Light;
+import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import de.ckc.agwa.pilight.services.client.PiLightServiceClient;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -141,6 +142,7 @@ public class PiLightConfigUIController implements Initializable {
                     PiLightConfigMain.CONFIG_FILE.getAbsolutePath());
             statusText.setText(statusI18n);
         }
+
         // FIXME: I/O should be done in a background thread.
         saveConfig();
 
@@ -172,10 +174,17 @@ public class PiLightConfigUIController implements Initializable {
             String statusI18n = MessageFormat.format(i18n.getString("status.server.connect"), serverURL);
             statusText.setText(statusI18n);
         }
+
         PiLightServiceClient serviceClient = new PiLightServiceClient(serverURL);
         String serverStatus = serviceClient.serviceStatusPlain();
         {
             String statusI18n = MessageFormat.format(this.i18n.getString("status.server.status"), serverStatus);
+            statusText.setText(statusI18n);
+        }
+
+        {
+            PiLightServiceStatus piLightServiceStatus = serviceClient.serviceStatus();
+            String statusI18n = MessageFormat.format(this.i18n.getString("status.server.status"), piLightServiceStatus);
             statusText.setText(statusI18n);
         }
 

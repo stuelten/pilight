@@ -16,12 +16,14 @@
 
 package de.ckc.agwa.pilight.services.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ckc.agwa.pilight.services.Families;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.LightState;
 import de.ckc.agwa.pilight.services.PiLightService;
 import de.ckc.agwa.pilight.services.PiLightServiceStatus;
 import de.ckc.agwa.pilight.services.rest.PiLightRestfulService;
+import de.ckc.agwa.pilight.services.rest.PiLightRestfulServiceMain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  * A de.ckc.agwa.pilight.services.client sending and receiving status updates for lights.
@@ -91,7 +92,7 @@ public class PiLightServiceClient implements PiLightService {
         LOGGER.info("setBaseUri('{}'): called", baseUri);
         this.baseUri = baseUri;
         if (null != baseUri) {
-            Client client = ClientBuilder.newClient();
+            Client client = ClientBuilder.newClient(PiLightRestfulServiceMain.createConfig());
             webTarget = client.target(baseUri);
         }
     }
@@ -117,10 +118,13 @@ public class PiLightServiceClient implements PiLightService {
     public PiLightServiceStatus serviceStatus() {
         PiLightServiceStatus ret;
         try {
-            ret = webTarget
+            String payload = webTarget
                     .path(PiLightRestfulService.SERVICE_STATUS_PATH)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .get(PiLightServiceStatus.class);
+                    .get(String.class);
+
+            ObjectMapper mapper = new ObjectMapper();
+            ret = mapper.readValue(payload, PiLightServiceStatus.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
             ret = null;
@@ -132,10 +136,13 @@ public class PiLightServiceClient implements PiLightService {
     public Families serviceKnownFamilies() {
         Families ret;
         try {
-            ret = webTarget
+            String payload = webTarget
                     .path(PiLightRestfulService.SERVICE_KNOWN_FAMILY_NAMES_PATH)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .get(Families.class);
+                    .get(String.class);
+
+            ObjectMapper mapper = new ObjectMapper();
+            ret = mapper.readValue(payload, Families.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
             ret = null;
@@ -150,10 +157,13 @@ public class PiLightServiceClient implements PiLightService {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName);
 
-            ret = webTarget
+            String payload = webTarget
                     .path(servicePath)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .get(Family.class);
+                    .get(String.class);
+
+            ObjectMapper mapper = new ObjectMapper();
+            ret = mapper.readValue(payload, Family.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
             ret = null;
@@ -169,10 +179,13 @@ public class PiLightServiceClient implements PiLightService {
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName) //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, lightName);
 
-            ret = webTarget
+            String payload = webTarget
                     .path(servicePath)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .get(LightState.class);
+                    .get(String.class);
+
+            ObjectMapper mapper = new ObjectMapper();
+            ret = mapper.readValue(payload, LightState.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
             ret = new LightState(false);
@@ -181,27 +194,37 @@ public class PiLightServiceClient implements PiLightService {
     }
 
     @Override
-    public void serviceFamilyLightStatusPut(String familyName, String lightName, Boolean state) {
+    public LightState serviceFamilyLightStatusPut(String familyName, String lightName, Boolean state) {
+        LightState lightState = new LightState(state);
+        return serviceFamilyLightStatusPut(familyName, lightName, lightState);
+    }
+
+    @Override
+    public LightState serviceFamilyLightStatusPut(String familyName, String lightName, LightState state) {
+        LightState ret = null;
         try {
             String servicePath = PiLightRestfulService.SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_FAMILY, familyName) //
                     .replace(PiLightRestfulService.TEMPLATE_PARAM_LIGHT, lightName);
 
-            LightState lightState = new LightState(state);
-            Response response = webTarget
+            ObjectMapper mapper = new ObjectMapper();
+            String payloadRequest = mapper.writeValueAsString(state);
+            Entity<String> entity = Entity.entity(payloadRequest, MediaType.APPLICATION_JSON_TYPE);
+
+            String payloadResponse = webTarget
                     .path(servicePath)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .put(Entity.entity(lightState, MediaType.APPLICATION_JSON_TYPE));
+                    .put(entity, String.class);
 
-            int responseStatus = response.getStatus();
-            if (HTTP_STATUS_200_OK != responseStatus
-                    && HTTP_STATUS_201_CREATED != responseStatus
-                    && HTTP_STATUS_204_NO_CONTENT != responseStatus) {
-                LOGGER.info("Response for '{}', '{}': '{}'", familyName, lightName, response);
-            }
+            ret = mapper.readValue(payloadResponse, LightState.class);
         } catch (Exception e) {
             LOGGER.warn("Ignoring exception for request '{}'", e.getMessage());
         }
+        if (null == ret) {
+            LOGGER.warn("Response for '{}', '{}', '{}' did not return light's state but null",
+                    familyName, lightName, state);
+        }
+        return ret;
     }
 
 }

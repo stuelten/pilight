@@ -16,6 +16,8 @@
 
 package de.ckc.agwa.pilight.services.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ckc.agwa.pilight.services.Families;
 import de.ckc.agwa.pilight.services.Family;
 import de.ckc.agwa.pilight.services.LightState;
@@ -34,6 +36,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 
 /**
  * This service receives and serves the status of lights for some families.
@@ -107,16 +110,41 @@ public class PiLightRestfulService {
 
     // ----------------------------------------------------------------------
 
+    private String mapToJSON(Object ret) {
+        ObjectMapper mapper = new ObjectMapper();
+        String serviceRet = null;
+        try {
+            serviceRet = mapper.writeValueAsString(ret);
+        } catch (JsonProcessingException e) {
+            serviceRet = "Error mapping result: " + e;
+            LOGGER.warn(serviceRet, e);
+        }
+        return serviceRet;
+    }
+
+    private <T> T mapFromJSON(String payload, Class<T> clazz) {
+        T ret = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            ret = mapper.readValue(payload, clazz);
+        } catch (IOException e) {
+            LOGGER.warn("Error mapping result: " + e, e);
+        }
+        return ret;
+    }
+
+    // ----------------------------------------------------------------------
+
     @GET
     @Path(SERVICE_STATUS_PATH)
     @Produces(MediaType.APPLICATION_JSON)
-    public PiLightServiceStatus serviceStatus() {
+    public String serviceStatus() {
         LOGGER.debug("serviceStatus(): Called");
 
         PiLightServiceStatus ret = service.serviceStatus();
 
         LOGGER.info("serviceStatus(): return '{}'", ret);
-        return ret;
+        return mapToJSON(ret);
     }
 
     @GET
@@ -136,13 +164,13 @@ public class PiLightRestfulService {
     @GET
     @Path(SERVICE_KNOWN_FAMILY_NAMES_PATH)
     @Produces(MediaType.APPLICATION_JSON)
-    public Families serviceKnownFamilies() {
+    public String serviceKnownFamilies() {
         LOGGER.debug("serviceKnownFamilies(): Called");
 
         Families ret = service.serviceKnownFamilies();
 
-        LOGGER.info("serviceKnownFamilyNames(): return '{}'", (Object) ret);
-        return ret;
+        LOGGER.info("serviceKnownFamilyNames(): return '{}'", ret);
+        return mapToJSON(ret);
     }
 
     // ----------------------------------------------------------------------
@@ -150,38 +178,70 @@ public class PiLightRestfulService {
     @GET
     @Path(SERVICE_FAMILY_INFO_LIGHTS_TEMPLATE)
     @Produces(MediaType.APPLICATION_JSON)
-    public Family serviceFamilyInfoLights(@PathParam(PATH_PARAM_FAMILY) String family) {
+    public String serviceFamilyInfoLights(@PathParam(PATH_PARAM_FAMILY) String family) {
         LOGGER.debug("serviceFamilyInfo('{}'): called", family);
 
         Family ret = service.serviceFamilyInfo(family);
 
         LOGGER.info("serviceFamilyInfo('{}'): return '{}'", family, ret);
-        return ret;
+        return mapToJSON(ret);
     }
 
     @GET
     @Path(SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE)
     @Produces(MediaType.APPLICATION_JSON)
-    public LightState serviceFamilyLightStatusGet(@PathParam(PATH_PARAM_FAMILY) String family,
+    public String serviceFamilyLightStatusGet(@PathParam(PATH_PARAM_FAMILY) String family,
                                               @PathParam(PATH_PARAM_LIGHT) String light) {
         LOGGER.debug("serviceFamilyLightStatusGet('{}','{}'): called", family, light);
 
-        LightState status = service.serviceFamilyLightStatusGet(family, light);
+        LightState ret = service.serviceFamilyLightStatusGet(family, light);
 
-        LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", family, light, status);
-        return status;
+        LOGGER.info("serviceFamilyLightStatusGet('{}', '{}'): return '{}'", family, light, ret);
+        return mapToJSON(ret);
     }
 
+    /**
+     * PUTs the new light state.
+     * @param family the family's name
+     * @param light the light's name
+     * @param state the state ({@code "false"} or {@code "true"})
+     * @return the old {@link LightState}
+     */
     @PUT
     @Path(SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE)
     @Consumes(MediaType.APPLICATION_JSON)
-    public void serviceFamilyLightStatusPut(@PathParam(PATH_PARAM_FAMILY) String family,
+    @Produces(MediaType.APPLICATION_JSON)
+    public String serviceFamilyLightStatusPut(@PathParam(PATH_PARAM_FAMILY) String family,
                                               @PathParam(PATH_PARAM_LIGHT) String light,
-                                            LightState state) {
+                                              String state) {
         LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", family, light, state);
 
-        Boolean checkedStatus = state.isOn();
-        service.serviceFamilyLightStatusPut(family, light, checkedStatus);
+         // service.serviceFamilyLightStatusGet(family, light);
+        LightState lightState = mapFromJSON(state, LightState.class);
+        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): set state '{}'", family, light, state, lightState);
+        LightState ret = service.serviceFamilyLightStatusPut(family, light, lightState);
+
+        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): return '{}'", family, light, state, ret);
+        return mapToJSON(ret);
+    }
+
+    /**
+     * A replacement to use GET instead of PUT to set the light.
+     *
+     * @param family the family's name
+     * @param light  the light's name
+     * @param state  the state ({@code "false"} or {@code "true"})
+     * @return the old {@link LightState}
+     */
+    @GET
+    @Path(SERVICE_FAMILY_LIGHT_STATUS_TEMPLATE + "/{state}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String serviceFamilyLightStatusSet(@PathParam(PATH_PARAM_FAMILY) String family,
+                                              @PathParam(PATH_PARAM_LIGHT) String light,
+                                              @PathParam("state") String state) {
+        LOGGER.info("serviceFamilyLightStatusSet('{}','{}','{}'): called", family, light, state);
+
+        return serviceFamilyLightStatusPut(family, light, state);
     }
 
     // ----------------------------------------------------------------------

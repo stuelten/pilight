@@ -82,14 +82,23 @@ public class PiLightServiceClientTest extends JerseyTest {
         final PiLightServiceStatus previousStatus = serviceClient.serviceStatus();
         Assert.assertNotNull(previousStatus);
 
+        // family is unknown
         {
             Family family = serviceClient.serviceFamilyInfo(FAMILY);
             Assert.assertNull(family);
         }
         {
+            Families families = serviceClient.serviceKnownFamilies();
+            Assert.assertNotNull(families);
+            Assert.assertFalse(families.getNames().contains(FAMILY));
+        }
+        // family's lights are unknown
+        {
             Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
             Assert.assertFalse(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
         }
+
+        // create family and lamps
         {
             serviceClient.serviceFamilyLightStatusPut(FAMILY, LIGHT1, true);
             Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
@@ -98,6 +107,8 @@ public class PiLightServiceClientTest extends JerseyTest {
             Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT1).isOn());
             Assert.assertTrue(serviceClient.serviceFamilyLightStatusGet(FAMILY, LIGHT2).isOn());
         }
+
+        // now, family and it's lights must be known
         {
             Family family = serviceClient.serviceFamilyInfo(FAMILY);
             Assert.assertNotNull(family);
@@ -108,6 +119,8 @@ public class PiLightServiceClientTest extends JerseyTest {
             Assert.assertNotNull(families);
             Assert.assertTrue(families.getNames().contains(FAMILY));
         }
+
+        // now status must return at least one more family
         {
             PiLightServiceStatus res = serviceClient.serviceStatus();
             Assert.assertNotNull(res);

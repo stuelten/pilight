@@ -124,21 +124,39 @@ public class PiLightServiceImpl implements PiLightService {
     }
 
     @Override
-    public void serviceFamilyLightStatusPut(String familyName,
-                                            String lightName,
-                                            Boolean state) {
-        LOGGER.debug("serviceFamilyLightStatusPut('{}','{}','{}'): called", familyName, lightName, state);
+    public LightState serviceFamilyLightStatusPut(String familyName, String lightName, Boolean state) {
+        LightState lightState = new LightState(state);
+        return serviceFamilyLightStatusPut(familyName, lightName, lightState);
+    }
+
+    @Override
+    public LightState serviceFamilyLightStatusPut(String familyName,
+                                                  String lightName,
+                                                  LightState state) {
+        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): called", familyName, lightName, state);
         Objects.requireNonNull(familyName);
         Objects.requireNonNull(lightName);
         Objects.requireNonNull(state);
 
-        Light light = new Light(lightName, state);
+        LightState ret;
+
+        // prepare new state
+        Light light = new Light(lightName, state.isOn());
         Family family = familyMap.get(familyName);
         if (null == family) {
             family = new Family(familyName);
         }
+
+        // get old state
+        Light lightOldState = family.getLight(lightName);
+        ret = new LightState(null != lightOldState && lightOldState.getState());
+
+        // set new state
         family.putLight(light);
         familyMap.put(familyName, family);
+
+        LOGGER.info("serviceFamilyLightStatusPut('{}','{}','{}'): return '{}'", familyName, lightName, state, ret);
+        return ret;
     }
 
     // ----------------------------------------------------------------------

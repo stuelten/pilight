@@ -92,7 +92,6 @@ public class PiLightRestfulServiceTest extends JerseyTest {
         Assert.assertNotNull("Server status must not be null", serverStatus);
         Assert.assertThat("Status must know one family", serverStatus.getFamiliesCount(), IsEqual.equalTo(1));
         Assert.assertThat("Status must know one light", serverStatus.getLightsCount(), IsEqual.equalTo(1));
-
     }
 
     /**
@@ -139,7 +138,6 @@ public class PiLightRestfulServiceTest extends JerseyTest {
     private Families getFamilies() {
         String path = PiLightRestfulService.SERVICE_PREFIX
                 + PiLightRestfulService.SERVICE_KNOWN_FAMILY_NAMES_PATH;
-
 
         return target(path).request(MediaType.APPLICATION_JSON_TYPE).get(Families.class);
     }

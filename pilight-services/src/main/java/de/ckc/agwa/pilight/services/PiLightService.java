@@ -65,8 +65,17 @@ public interface PiLightService {
      *
      * @param familyName the name of the family
      * @param lightName  the light
+     * @param state the state of the light
+     */
+    LightState serviceFamilyLightStatusPut(String familyName, String lightName, LightState state);
+
+    /**
+     * Set the status for some light.
+     *
+     * @param familyName the name of the family
+     * @param lightName  the light
      * @param state {@code true} for a burning light, {@code false} otherwise
      */
-    void serviceFamilyLightStatusPut(String familyName, String lightName, Boolean state);
+    LightState serviceFamilyLightStatusPut(String familyName, String lightName, Boolean state);
 
 }

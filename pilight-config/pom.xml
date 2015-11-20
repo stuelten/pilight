@@ -29,7 +29,8 @@
     <artifactId>pilight-config</artifactId>
 
     <description>
-        A simple Application to configure Network Access into Debian config files.
+        This Application configures network access,
+        the server to use and the family's and lamp's names.
     </description>
 
     <dependencies>

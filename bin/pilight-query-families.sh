@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Queries the status
+# Queries the names of all families
 #
 
 if [ "$1" == "-b" -o "$1" == "--baseurl" ]
@@ -13,8 +13,8 @@ else
 fi
 
 # build service path
-url="${BASE_URL}/status"
+url="${BASE_URL}/info/families"
 
 # call service
-curl -i  --header "Accept: text/plain" \
-    "${url}"
+curl -v --header "Accept:application/json" \
+    "$url"

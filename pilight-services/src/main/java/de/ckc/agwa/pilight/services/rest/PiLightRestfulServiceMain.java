@@ -50,7 +50,7 @@ public class PiLightRestfulServiceMain {
     /**
      * Search for service classes in the service package and below.
      */
-    private static final String SERVICE_ROOT = PiLightServiceStatus.class.getPackage().getName();
+    private static final String DOMAIN_CLASS_PACKAGE = PiLightServiceStatus.class.getPackage().getName();
 
     // ----------------------------------------------------------------------
 
@@ -107,7 +107,7 @@ public class PiLightRestfulServiceMain {
     }
 
     /**
-     * Configures Jackson/Jersey to use classes in package {@link #SERVICE_ROOT}
+     * Configures Jackson/Jersey to use classes in package {@link #DOMAIN_CLASS_PACKAGE}
      * and the {@link MoxyJsonConfig} from {@link #createMoxyJsonResolver()}
      * for resource lookup.
      *
@@ -115,7 +115,7 @@ public class PiLightRestfulServiceMain {
      */
     public static ResourceConfig createConfig() {
         ResourceConfig ret = new ResourceConfig()
-                .packages(SERVICE_ROOT)
+                .packages(true, DOMAIN_CLASS_PACKAGE)
                 .register(createMoxyJsonResolver());
         LOGGER.debug("createConfig(): '{}'", ret);
         return ret;

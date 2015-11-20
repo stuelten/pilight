@@ -4,4 +4,4 @@
 LIB_DIR=$( dirname "$0" )/target
 MAIN_CLASS=de.ckc.agwa.pilight.services.rest.PiLightRestfulServiceMain
 
-java -cp ${LIB_DIR}/pilight-services-de.ckc.agwa.pilight.services.json.json-*-jar-with-dependencies.jar ${MAIN_CLASS}
+java -cp ${LIB_DIR}/pilight-services-*-jar-with-dependencies.jar ${MAIN_CLASS}
