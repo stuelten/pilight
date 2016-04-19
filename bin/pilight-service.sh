@@ -6,10 +6,10 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Der Distanz-Server
-# Description:       Das init-Skript für den pilight-service-Server
+# Description:       init-script for pilight-service start
 ### END INIT INFO
 
-# Author: ckc AG
+# Author:  Timo Stülten, ckc group
 
 # Do NOT "set -e"
 

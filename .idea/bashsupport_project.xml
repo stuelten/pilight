@@ -3,6 +3,7 @@
   <component name="BashSupportProjectSettings">
     <option name="globalVariables">
       <set>
+        <option value="BASE_URL" />
         <option value="PATH_PARAM_FAMILY" />
         <option value="SERVICE_STATUS_PATH" />
       </set>

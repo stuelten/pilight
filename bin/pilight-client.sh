@@ -1,21 +1,11 @@
 #!/usr/bin/env bash
 #
-# Queries the names of all families
-#
+# Calls the java client
 
-if [ "$1" == "-b" -o "$1" == "--baseurl" ]
-then
-    BASE_URL="$2"
-    shift
-    shift
-else
-    BASE_URL=http://kannkeule.de:9997/pilight
-fi
+# import config
+. $( dirname "$0" )/pilight-config.sh
 
-LIB_DIR=pilight-services/target
-MAIN_CLASS=de.ckc.agwa.pilight.services.client.PiLightServiceClientMain
-
-java -cp ${LIB_DIR}/pilight-services-de.ckc.agwa.pilight.services.json.json-*-jar-with-dependencies.jar \
+java -cp ${CLASS_PATH} \
     ${MAIN_CLASS} \
     -b ${BASE_URL} \
     $@
