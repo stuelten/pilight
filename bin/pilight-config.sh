@@ -15,7 +15,9 @@ export CLASS_PATH
 unset i
 
 # main class for java code
-export MAIN_CLASS=de.ckc.agwa.pilight.services.rest.PiLightRestfulServiceMain
+export MAIN_CLASS_MOTHER=de.ckc.agwa.pilight.logic.MotherMain
+export MAIN_CLASS_CLIENT=de.ckc.agwa.pilight.services.client.PiLightServiceClientMain
+export MAIN_CLASS_SERVICE=de.ckc.agwa.pilight.services.rest.PiLightRestfulServiceMain
 
 # URL to use if none given
 export PILIGHT_BASE_URL="http://kannkeule.de:9997/pilight"
