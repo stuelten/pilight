@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#
 # Starts Restful service in embedded grizzly server
 
 # import config
