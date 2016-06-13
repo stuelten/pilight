@@ -1,4 +1,5 @@
-/* Copyright 2016 stuelten.
+/*
+ * Copyright (c) 2016 Timo Stülten <timo@stuelten.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +15,17 @@
  */
 package org.subluna.pilight.lightcentral;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collection;
@@ -32,6 +39,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/families/{familyName}/lamps/")
 public class LampRestController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LampRestController.class);
 
     private final FamilyRepository familyRepository;
     private final LampRepository lampRepository;
@@ -42,6 +50,7 @@ public class LampRestController {
             LampRepository lampRepository) {
         this.familyRepository = familyRepository;
         this.lampRepository = lampRepository;
+        LOGGER.info("new LampRestController: '{}'", this);
     }
 
     // ----------------------------------------------------------------------
@@ -49,8 +58,10 @@ public class LampRestController {
     @RequestMapping(method = RequestMethod.GET)
     Collection<Lamp> readLamps(
             @PathVariable(value = "familyName") String familyName) {
+        LOGGER.info("readLamps: '{}'", familyName);
         Collection<Lamp> ret;
         ret = this.lampRepository.findByFamilyName(familyName);
+        LOGGER.info("readLamps:  return '{}':'{}'", familyName, ret);
         return ret;
     }
 
@@ -58,12 +69,15 @@ public class LampRestController {
     Lamp get(
             @PathVariable(value = "familyName") String familyName,
             @PathVariable(value = "lampName") String lampName) {
+        LOGGER.info("get:  '{}':'{}'", familyName, lampName);
+
         Lamp ret = null;
         Optional<Lamp> lamp = lampRepository
                 .findByFamilyNameAndName(familyName, lampName);
         if (lamp.isPresent()) {
             ret = lamp.get();
         }
+        LOGGER.info("get:  return '{}':'{}':'{}'", familyName, lampName, ret);
         return ret;
     }
 
@@ -72,13 +86,15 @@ public class LampRestController {
             @PathVariable(value = "familyName") String familyName,
             @PathVariable(value = "lampName") String lampName,
             @RequestBody Lamp lamp) {
+        LOGGER.info("add:  '{}':'{}':'{}'", familyName, lampName, lamp);
+
         Family family = familyRepository.findOne(familyName);
         if (family == null) {
             family = new Family(familyName);
-            familyRepository.save(family);
+            family = familyRepository.save(family);
         }
-
         family.getLamps().add(lamp);
+        lamp.setFamily(family);
         Lamp savedLamp = lampRepository.save(lamp);
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -92,8 +108,20 @@ public class LampRestController {
     public void delete(
             @PathVariable(value = "familyName") String familyName,
             @PathVariable(value = "lampName") String lampName) {
+        LOGGER.info("delete:  '{}':'{}'", familyName, lampName);
+
         this.lampRepository.findByFamilyNameAndName(familyName, lampName)
                 .ifPresent(lampRepository::delete);
+    }
+
+    // ----------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return "LampRestController{" +
+                "familyRepository=" + familyRepository +
+                ", lampRepository=" + lampRepository +
+                '}';
     }
 
 }

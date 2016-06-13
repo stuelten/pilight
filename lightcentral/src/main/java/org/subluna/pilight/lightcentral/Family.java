@@ -1,4 +1,5 @@
-/* Copyright 2016 stuelten.
+/*
+ * Copyright (c) 2016 Timo Stülten <timo@stuelten.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +32,7 @@ public class Family {
     @Id
     private String name;
 
-    @OneToMany(mappedBy = "family")
+    @OneToMany // (mappedBy = "family")
     private Set<Lamp> lamps = new LinkedHashSet<>();
 
     // ----------------------------------------------------------------------
@@ -52,6 +53,20 @@ public class Family {
 
     public Set<Lamp> getLamps() {
         return lamps;
+    }
+
+    public void setLamps(Set<Lamp> lamps) {
+        this.lamps = lamps;
+    }
+
+    // ----------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return "Family{" +
+                "name='" + name + '\'' +
+                ", lamps=" + lamps +
+                '}';
     }
 
 }
